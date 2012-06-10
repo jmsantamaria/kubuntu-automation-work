@@ -1,0 +1,217 @@
+#!/usr/bin/python
+
+import cgi
+import datetime
+import os.path
+import sys
+#import gzip
+from launchpadlib.launchpad import Launchpad
+
+release = "precise"
+version = "4.8.4"
+
+STATUS_SUCCESS = 0
+STATUS_WARNING = 1
+STATUS_ERROR = 2
+STATUS_BUILDING = -1
+STATUS_WAITING = -2
+
+def get_log(url):
+    # hack to get build log for private PPAs
+    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
+    return lp._browser.get(url)
+
+def get_cmake(log):
+    start = log.index("\ndh_auto_configure") + 1
+    end = log.rindex("\n", 0, log.index("dh_auto_build")) - 1
+    cmakeLog = log[start:end]
+    if cmakeLog.find("Could NOT find") != -1:
+        status = STATUS_WARNING
+    else:
+        status = STATUS_SUCCESS
+
+    return (cmakeLog, status)
+
+def get_symbols(log):
+    if "dpkg-gensymbols: warning: some symbols or patterns disappeared in the symbols file" in log:
+        status = STATUS_ERROR
+    elif "dpkg-gensymbols: warning: some new symbols appeared in the symbols file" in log:
+        status = STATUS_WARNING
+    else:
+        status = STATUS_SUCCESS
+
+    return ("", status)
+
+def get_list_missing(log):
+    start = log.index("=== Start list-missing") + 22
+    end = log.index("=== End list-missing")
+    output = log[start:end].strip("\r\n\t ")
+    if output:
+        status = STATUS_ERROR
+    else:
+        status = STATUS_SUCCESS
+
+    return (output, status)
+
+lp = Launchpad.login_with("ubuntu-dev-tools", "production")
+
+ubuntu = lp.distributions["ubuntu"]
+lpseries = ubuntu.getSeries(name_or_version=release)
+
+ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+
+print """
+<html>
+
+<head>
+  <title>Kubuntu KDE SRU status</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="kubuntu-ppa-build-status.css" />
+
+<script type="text/javascript">
+<!--
+    function toggleVisibility(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+
+       return false;
+    }
+//-->
+</script>
+
+</head>
+
+<body>
+
+<h1 id="top">Kubuntu KDE %s -> %s SRU status</h1>
+
+<table class="grid">
+
+<thead><tr>
+  <th>Package</th>
+  <th>Arch</th>
+  <th>Log</th>
+  <th>Status messages</th>
+  </tr></thead>
+
+  <tbody>
+""" % (version, release)
+
+builds = {}
+
+for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"):
+    package = source.source_package_name
+    packageVersion = source.source_package_version
+    if not (packageVersion.startswith("4:" + version) or packageVersion.startswith(version)):
+        continue
+
+    if package in builds:
+        print "Error multiple versions of the same package"
+        sys.exit(1)
+
+    builds[package] = {}
+
+    for build in source.getBuilds():
+        arch = build.arch_tag
+        builds[package][arch] = {}
+
+        #logFilename = "logs/" + (package + "_" + packageVersion + "_" + arch).replace("/", "_") + ".log.gz"
+
+        builds[package][arch]["logfile"] = build.build_log_url
+        builds[package][arch]["version"] = packageVersion
+
+        if build.buildstate == "Successfully built":
+            log = get_log(build.build_log_url)
+
+            #if not os.path.exists(logFilename):
+            #    f = gzip.GzipFile(logFilename, "wb")
+            #    f.write(log)
+            #    f.close()
+
+            builds[package][arch]["status"] = STATUS_SUCCESS
+            builds[package][arch]["message"] = ""
+
+            output, status = get_cmake(log)
+            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            output, status = get_symbols(log)
+            if status == STATUS_ERROR:
+                msg = "Missing symbols"
+            elif status == STATUS_WARNING:
+                msg = "New symbols"
+
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>symbol files:</h3>\n<div>" + msg + "</div>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            try:
+                output, status = get_list_missing(log)
+            except ValueError:
+                if arch == "i386":
+                    status = STATUS_WARNING
+                    output = "No list-missing in build log."
+                else:
+                    status = STATUS_SUCCESS
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+        elif build.buildstate == "Needs building" or build.buildstate == "Dependency wait":
+            builds[package][arch]["status"] = STATUS_WAITING
+            builds[package][arch]["message"] =  build.buildstate
+        elif build.buildstate == "Currently building" or build.buildstate == "Uploading build":
+            builds[package][arch]["status"] = STATUS_BUILDING
+            builds[package][arch]["message"] = build.buildstate
+        elif build.buildstate == "Failed to build":
+            log = get_log(build.build_log_url)
+            if log.find("kde-sc-dev-latest : Breaks:") != -1:
+                builds[package][arch]["status"] = STATUS_WAITING
+                builds[package][arch]["message"] = "Dependency wait"
+            else:
+                builds[package][arch]["status"] = STATUS_ERROR
+                builds[package][arch]["message"] = build.buildstate
+        else:
+            builds[package][arch]["status"] = STATUS_ERROR
+            builds[package][arch]["message"] = build.buildstate
+
+
+odd = True
+i = 1
+
+for package in builds:
+    for arch in builds[package]:
+        build = builds[package][arch]
+
+        if odd:
+            trclass = "odd"
+            odd = False
+        else:
+            trclass = "even"
+            odd = True
+
+        message = build["message"]
+        if len(message) > 100:
+            message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
+
+        print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td>%s</td>' % (trclass, build["status"], cgi.escape(build["version"]), package, arch)
+        print '<td><a href="%s">logfile</a></td><td>%s</td></tr>\n' % (build["logfile"], message)
+
+        i += 1
+
+print """
+</tbody>
+
+</table>
+"""
+
+print "<br/><div>Last updated on %s</div>\n" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+
+print """
+</body>
+</html>
+"""
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

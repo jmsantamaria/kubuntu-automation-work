@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+import re
+import subprocess
+import sys
+
+version = sys.argv[1]
+
+versionParts = version.split(".")
+lastDigit = int(versionParts[-1])
+
+if lastDigit >= 80:
+    stability = "unstable"
+else:
+    stability = "stable"
+
+p = subprocess.Popen(["sftp", "-b", "-", "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/" % (stability, version)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+output, _ = p.communicate("ls")
+
+for line in output.splitlines():
+    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
+    if match:
+        print match.group(1)
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

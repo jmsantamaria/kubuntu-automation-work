@@ -1,0 +1,81 @@
+#!/usr/bin/python
+
+import re
+import apt_pkg
+from launchpadlib.launchpad import Launchpad
+import sys
+
+release = "quantal"
+ppa = False
+
+apt_pkg.init()
+
+lp = Launchpad.login_with("kubuntu-retry-builds", "production")
+
+ubuntu = lp.distributions["ubuntu"]
+lpseries = ubuntu.getSeries(name_or_version=release)
+if ppa:
+    archive = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+else:
+    archive = ubuntu.main_archive
+
+def get_log(url):
+    # hack to get build log for private PPAs
+    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
+    return lp._browser.get(url)
+
+def get_binary_version(binaryName, arch):
+    archSeries = lpseries.getDistroArchSeries(archtag=arch)
+    binaries = archive.getPublishedBinaries(distro_arch_series=archSeries, status="Published", binary_name=binaryName, exact_match=True)
+    if not binaries:
+        return False
+    else:
+        return binaries[0].binary_package_version
+
+def can_retry(log, arch):
+    matches = re.findall(r'Breaks: ([^ ]+) \(< ([^\)]+)\)', log)
+    if not matches:
+        return False
+
+    for match in matches:
+        currentVersion = get_binary_version(match[0], arch)
+        if not currentVersion:
+            return False
+        if apt_pkg.version_compare(currentVersion, match[1]) < 0:
+            return False
+
+    return True
+
+f = open("kdesc-packages-"+release+".txt", "r")
+kdesc = f.readlines()
+f.close()
+
+kdesc = map(lambda line: line.strip("\r\n\t "), kdesc)
+kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
+
+# move libraries to the front
+kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
+
+
+for package in kdesc:
+    sources = archive.getPublishedSources(distro_series=lpseries, exact_match=True, status="Published", pocket="Release", source_name=package)
+    try:
+        source = sources[0]
+    except IndexError:
+        print >> sys.stderr, "Package not found: " + package
+        continue
+
+    for build in source.getBuilds():
+        if build.buildstate != "Failed to build":
+            continue
+
+        arch = build.arch_tag
+        log = get_log(build.build_log_url)
+
+        if can_retry(log, arch):
+            print "Retrying %s (%s)" % (source.source_package_name, arch)
+            build.retry()
+        else:
+            print "Can't retry: %s (%s)" % (source.source_package_name, arch)
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

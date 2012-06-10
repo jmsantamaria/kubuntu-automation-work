@@ -1,0 +1,208 @@
+#!/usr/bin/python
+
+import glob
+import os
+from launchpadlib.launchpad import Launchpad
+import re
+import subprocess
+import sys
+import tempfile
+import urllib
+
+release = "quantal"
+version = "4.8.90"
+changelogEntry = "New upstream beta release."
+sru = False
+
+def readAllFromFile(filename):
+    f = open(filename, "r")
+    result = f.read()
+    f.close()
+    return result
+
+def firstLineMatch(expression, lines):
+    for line in lines:
+        match = expression.search(line)
+        if match:
+            return line
+
+    return False
+
+def sanitizeBranch(package):
+    archiveChangelog = extractDebianFile(package, "debian/changelog")
+    bzrChangelog = readAllFromFile("debian/changelog")
+    if not archiveChangelog or not bzrChangelog:
+        return False
+
+    archiveChangelog = archiveChangelog.splitlines()
+    bzrChangelog = bzrChangelog.splitlines()
+
+    archiveTopline = firstLineMatch(topline, archiveChangelog)
+    archiveEndline = firstLineMatch(endline, archiveChangelog)
+
+    if archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog:
+        return False
+
+    return True
+
+def extractDebianFile(package, extractfile):
+    try:
+        source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Release", source_name=package)[0]
+    except IndexError:
+        return False
+
+    pkgFiles = []
+    sourceUrls = source.sourceFileUrls()
+    for plainUrl in sourceUrls:
+        url = urllib.unquote(plainUrl)
+        # fetch non-orig tarball files
+        match = re.search(r'/([^/]*(?:\.diff\.gz|\.debian\.tar\.[a-z0-9]+|\.dsc))$', url)
+        if match:
+            localfile = match.group(1)
+            if localfile[-4:] == ".dsc":
+                dscfile = localfile
+            pkgFiles.append(localfile)
+            urllib.urlretrieve(plainUrl, localfile)
+
+    if len(pkgFiles) < 2:
+        return False
+
+    pDscExtract = subprocess.Popen(["dscextract", dscfile, extractfile], stdout=subprocess.PIPE)
+    data = pDscExtract.communicate()[0]
+    if pDscExtract.returncode != 0:
+        return False
+
+    for filename in pkgFiles:
+        os.remove(filename)
+
+    return data
+
+if not sru:
+    launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
+    ubuntu = launchpad.distributions["ubuntu"]
+    archive = ubuntu.main_archive
+    series = ubuntu.current_series
+
+    topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
+                         '((\s+%(name_chars)s+)+)\;'
+                         % {'name_chars': '[-+0-9a-z.]'},
+                         re.IGNORECASE)
+    endline = re.compile('^ -- (.*) <(.*)>(  ?)((\w+\,\s*)?\d{1,2}\s+\w+\s+'
+                         '\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}(\s+\([^\\\(\)]\))?\s*)$')
+
+versionParts = version.split(".")
+lastDigit = int(versionParts[-1])
+
+if lastDigit >= 80:
+    stability = "unstable"
+else:
+    stability = "stable"
+
+f = open("kdesc-packages-" + release + ".txt", "r")
+kdesc = f.readlines()
+f.close()
+
+kdesc = map(lambda line: line.strip("\r\n\t "), kdesc)
+kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
+
+basedir = tempfile.mkdtemp()
+uploaddir = basedir + "/upload"
+
+os.mkdir(uploaddir)
+
+for package in kdesc:
+    os.mkdir(basedir + "/" + package)
+    os.chdir(basedir + "/" + package)
+
+    # fetch orig tarball
+    remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % (stability, version, package, version)
+    subprocess.check_call(["scp", remote, "."])
+    orig = "%s_%s.orig.tar.xz" % (package, version)
+    os.rename("%s-%s.tar.xz" % (package, version), orig)
+
+    if sru:
+        subprocess.check_call(["tar", "xJf", orig])
+
+        # fetch and extract previous version
+        subprocess.check_call(["pull-lp-source", "-d", package, release])
+
+        dscname = glob.glob("%s_*.dsc" % (package,))[0]
+        match = re.match(re.escape(package) + r'_([\d\.]+)-', dscname)
+        prevVersion = match.group(1)
+
+        subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
+        os.rename("%s-%s/debian" % (package, prevVersion), "./debian")
+
+        p = subprocess.Popen(["diff", "-Nurw", "%s-%s" % (package, prevVersion), "%s-%s" % (package, version)], stdout=subprocess.PIPE)
+        diff, _ = p.communicate()
+        p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        diffstat, _ = p.communicate(diff)
+        if p.returncode != 0:
+            raise subprocess.CalledProcessError(p.returncode)
+        diffstatLines = diffstat.strip("\r\n\t ").splitlines()
+        diffstatLines = filter(lambda line: not line.endswith("/index.cache.bz2"), diffstatLines)
+
+        # we need to upload all packages that in kde-sc-dev-latest Breaks
+        # TODO what about bindings?
+        if package.startswith("lib") or package == "kde4libs" or package == "kdepimlibs" or package == "kde-workspace" or package == "marble":
+            significantChanges = True
+        else:
+            if not diffstatLines:
+                print "==== Skipping %s, same as the previous version" % (package,)
+                continue
+            significantChanges = False
+
+        for line in diffstatLines:
+            if line.endswith(".cpp") or line.endswith(".h"):
+                significantChanges = True
+                break
+
+        if not significantChanges:
+            p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
+            p.communicate("Package: %s\n\n=== diffstat ===\n\n%s\n\n=== diff ===\n\n%s" % (package, diffstat, diff))
+            sys.stdout.write("Update package [Y/n]? ")
+            choice = raw_input().lower()
+            if choice not in ("yes", "y", ""):
+                continue
+
+        os.rename("./debian", "%s-%s/debian" % (package, version))
+        os.chdir("%s-%s" % (package, version))
+    else:
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + package, "bzr"])
+        os.chdir("bzr")
+
+        if not sanitizeBranch(package):
+            print "==== Skipping %s, bzr branch has unexpected content" % (package,)
+            continue
+
+    control = readAllFromFile("debian/control")
+    control = re.sub(r'kde-sc-dev-latest \(>= 4:[\d\.]+\)', "kde-sc-dev-latest (>= 4:%s)" % (version,), control)
+    f = open("debian/control", "w")
+    f.write(control)
+    f.close()
+
+    debianVersion = "0ubuntu"
+    if sru:
+        debianVersion += "0.1~ppa1"
+    else:
+        debianVersion += "1"
+
+    if sru:
+        changelogRelease = release
+    else:
+        changelogRelease = "UNRELEASED"
+    subprocess.check_call(["dch", "-v", "4:%s-%s" % (version, debianVersion), "-D", changelogRelease, changelogEntry])
+
+    if sru:
+        subprocess.check_call(["debuild", "-S", "-nc"])
+    else:
+        subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--", "-nc"])
+        subprocess.check_call(["debcommit", "-a"])
+        debianVersion += "~ppa1"
+        # TODO bzr push?
+
+    subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
+
+print "\n\n=== Packages are ready for upload in " + uploaddir
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

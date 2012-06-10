@@ -1,0 +1,51 @@
+.grid {
+    background-color:#e3e3e3;
+    font-size:12px;
+    font-family:verdana,sans-serif;
+    border:none;
+}
+
+.grid td {
+    padding:3px;
+    border:none;
+    vertical-align:top;
+}
+
+
+.grid thead {
+    text-align:left;
+    background-color:#f0f0f0;
+    color:#666;
+}
+
+/*.grid tbody tr:hover {
+    background-color: #f0e68c;
+}*/
+
+.odd {
+    background-color:#edf3fe;
+}
+
+.even {
+    background-color:#fff;
+}
+
+.grid .status0 {
+    background:#00cc00;
+}
+
+.grid .status1 {
+    background:#ff9900;
+}
+
+.grid .status2 {
+    background:#cc0000;
+}
+
+.grid .status-1 {
+    background:#00ccff;
+}
+
+.grid .status-2 {
+    background:#00ccff;
+}

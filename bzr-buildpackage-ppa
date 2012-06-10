@@ -1,0 +1,47 @@
+#!/usr/bin/python
+
+import argparse
+from distro_info import UbuntuDistroInfo
+import os.path
+import subprocess
+import sys
+
+parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
+parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
+parser.add_argument("-s", "--suffix", default=1, help="PPA version suffix, i.e. ~ppaX (default: 1)")
+parser.add_argument("options", nargs="*", help="debuild options")
+
+args = parser.parse_args()
+
+if not os.path.exists("debian/changelog"):
+    print >> sys.stderr, "Error: Not a Debian package."
+    sys.exit(1)
+
+f = open("debian/changelog", "r")
+lines = f.readlines()
+f.close()
+
+if not "UNRELEASED" in lines[0]:
+    print >> sys.stderr, "Error: Distribution is not \"UNRELEASED\"."
+    sys.exit(1)
+
+if "ppa" in lines[0]:
+    print >> sys.stderr, "Error: Version contains \"ppa\"."
+    sys.exit(1)
+
+orgChangelog = "".join(lines)
+
+lines[0] = lines[0].replace("UNRELEASED", args.dist, 1)
+lines[0] = lines[0].replace(")", "~ppa" + str(args.suffix) + ")", 1)
+
+f = open("debian/changelog", "w")
+f.write("".join(lines))
+f.close()
+
+subprocess.call(["bzr-buildpackage", "-S", "--"] + args.options)
+
+f = open("debian/changelog", "w")
+f.write(orgChangelog)
+f.close()
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
