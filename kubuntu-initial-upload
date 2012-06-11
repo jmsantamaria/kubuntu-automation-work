@@ -230,7 +230,7 @@ for package in packages:
         subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--", "-nc"])
         subprocess.check_call(["debcommit", "-a"])
         debianVersion += "~ppa1"
-        # TODO bzr push?
+        subprocess.check_call(["bzr", "push", ":parent"])
 
     subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
 
