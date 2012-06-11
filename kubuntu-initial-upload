@@ -77,6 +77,12 @@ def extractDebianFile(package, extractfile):
 
     return data
 
+def upstreamName(package):
+    if package == "kde4libs":
+        return "kdelibs"
+    else:
+        return package
+
 if not sru:
     launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
     ubuntu = launchpad.distributions["ubuntu"]
@@ -115,10 +121,10 @@ for package in kdesc:
     os.chdir(basedir + "/" + package)
 
     # fetch orig tarball
-    remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % (stability, version, package, version)
+    remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % (stability, version, upstreamName(package), version)
     subprocess.check_call(["scp", remote, "."])
     orig = "%s_%s.orig.tar.xz" % (package, version)
-    os.rename("%s-%s.tar.xz" % (package, version), orig)
+    os.rename("%s-%s.tar.xz" % (upstreamName(package), version), orig)
 
     if sru:
         subprocess.check_call(["tar", "xJf", orig])
@@ -168,7 +174,7 @@ for package in kdesc:
         os.rename("./debian", "%s-%s/debian" % (package, version))
         os.chdir("%s-%s" % (package, version))
     else:
-        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + package, "bzr"])
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
         os.chdir("bzr")
 
         if not sanitizeBranch(package):
