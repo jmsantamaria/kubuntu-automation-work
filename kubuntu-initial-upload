@@ -41,8 +41,13 @@ def firstLineMatch(expression, lines):
 
 def sanitizeBranch(package):
     archiveChangelog = extractDebianFile(package, "debian/changelog")
+    if archiveChangelog == True:
+        print "=== " + package + " is not in the archive"
+        return True
+    elif not archiveChangelog:
+        return False
     bzrChangelog = readAllFromFile("debian/changelog")
-    if not archiveChangelog or not bzrChangelog:
+    if not bzrChangelog:
         return False
 
     archiveChangelog = archiveChangelog.splitlines()
@@ -60,7 +65,7 @@ def extractDebianFile(package, extractfile):
     try:
         source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Release", source_name=package)[0]
     except IndexError:
-        return False
+        return True
 
     pkgFiles = []
     sourceUrls = source.sourceFileUrls()
