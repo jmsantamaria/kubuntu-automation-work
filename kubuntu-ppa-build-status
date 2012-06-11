@@ -14,7 +14,7 @@ parser.add_argument("-v", "--version", required=True, help="Upstream version")
 args = parser.parse_args()
 
 release = args.dist
-version = args,version
+version = args.version
 
 STATUS_SUCCESS = 0
 STATUS_WARNING = 1
