@@ -115,13 +115,13 @@ if lastDigit >= 80:
 else:
     stability = "stable"
 
-f = open("kdesc-packages-" + release + ".txt", "r")
-packages = f.readlines()
-f.close()
-
 if args.packages:
     packages = args.packages.split(",")
 else:
+    f = open("kdesc-packages-" + release + ".txt", "r")
+    packages = f.readlines()
+    f.close()
+
     packages = map(lambda line: line.strip("\r\n\t "), packages)
     packages = filter(lambda line: line and not line.startswith("#"), packages)
 
