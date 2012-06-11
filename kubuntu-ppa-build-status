@@ -31,7 +31,7 @@ def get_cmake(log):
     start = log.index("\ndh_auto_configure") + 1
     end = log.rindex("\n", 0, log.index("dh_auto_build")) - 1
     cmakeLog = log[start:end]
-    if cmakeLog.find("Could NOT find") != -1:
+    if cmakeLog.find("Could NOT find") != -1 or cmakeLog.find("CMake Warning") != -1:
         status = STATUS_WARNING
     else:
         status = STATUS_SUCCESS
