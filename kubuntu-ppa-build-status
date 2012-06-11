@@ -203,7 +203,11 @@ for package in builds:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
         print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td>%s</td>' % (trclass, build["status"], cgi.escape(build["version"]), package, arch)
-        print '<td><a href="%s">logfile</a></td><td>%s</td></tr>\n' % (build["logfile"], message)
+        if build["logfile"]:
+            print '<td><a href="%s">logfile</a></td>' % (build["logfile"],)
+        else:
+            print '<td>&nbsp;</td>'
+        print '<td>%s</td></tr>\n' % (message,)
 
         i += 1
 
