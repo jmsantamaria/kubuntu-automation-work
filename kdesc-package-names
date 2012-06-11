@@ -20,6 +20,10 @@ output, _ = p.communicate("ls")
 for line in output.splitlines():
     match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
     if match:
-        print match.group(1)
+        name = match.group(1)
+        if name == "kdelibs":
+            print "kde4libs"
+        else:
+            print match.group(1)
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

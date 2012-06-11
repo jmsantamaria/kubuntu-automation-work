@@ -26,7 +26,7 @@ kdegames
 kdegraphics-mobipocket
 kdegraphics-strigi-analyzer
 kdegraphics-thumbnailers
-kdelibs
+kde4libs
 kdemultimedia
 kdenetwork
 kdepim
