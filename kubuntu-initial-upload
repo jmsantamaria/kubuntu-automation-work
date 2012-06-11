@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import argparse
 import glob
 import os
 from launchpadlib.launchpad import Launchpad
@@ -9,10 +10,20 @@ import sys
 import tempfile
 import urllib
 
-release = "quantal"
-version = "4.8.90"
-changelogEntry = "New upstream beta release."
-sru = False
+parser = argparse.ArgumentParser(description="Upload new KDE SC version to the PPA.")
+parser.add_argument("-d", "--dist", required=True, help="Distribution name")
+parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-m", "--message", required=True, help="Changelog and commit message")
+parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
+parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
+parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
+
+args = parser.parse_args()
+
+release = args.dist
+version = args.version
+changelogEntry = args.message
+sru = args.sru
 
 def readAllFromFile(filename):
     f = open(filename, "r")
@@ -105,18 +116,27 @@ else:
     stability = "stable"
 
 f = open("kdesc-packages-" + release + ".txt", "r")
-kdesc = f.readlines()
+packages = f.readlines()
 f.close()
 
-kdesc = map(lambda line: line.strip("\r\n\t "), kdesc)
-kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
+if args.packages:
+    packages = args.packages.split(",")
+else:
+    packages = map(lambda line: line.strip("\r\n\t "), packages)
+    packages = filter(lambda line: line and not line.startswith("#"), packages)
 
-basedir = tempfile.mkdtemp()
+    # move libraries to the front
+    packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
+
+if args.tmpdir:
+    basedir = args.tmpdir
+else:
+    basedir = tempfile.mkdtemp()
 uploaddir = basedir + "/upload"
 
 os.mkdir(uploaddir)
 
-for package in kdesc:
+for package in packages:
     os.mkdir(basedir + "/" + package)
     os.chdir(basedir + "/" + package)
 

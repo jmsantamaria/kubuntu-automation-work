@@ -1,12 +1,20 @@
 #!/usr/bin/python
 
-import re
 import apt_pkg
+import argparse
+from distro_info import UbuntuDistroInfo
 from launchpadlib.launchpad import Launchpad
+import re
 import sys
 
-release = "quantal"
-ppa = False
+parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
+parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
+parser.add_argument("--ppa", action="store_true", help="Check the PPA instead of the main archive.")
+
+args = parser.parse_args()
+
+release = args.dist
+ppa = args.ppa
 
 apt_pkg.init()
 
