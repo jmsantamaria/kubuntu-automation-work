@@ -6,5 +6,7 @@
   "printer-applet": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "ark": [ "qjson" ],
   "kde-runtime": [ "Xine" ],
-  "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ]
+  "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
+  "kross-interpreters": [ "FALCON", "Ruby" ],
+  "kdewebdev": [ "Ruby" ]
 }
