@@ -3,9 +3,11 @@
 import argparse
 import cgi
 import datetime
-import os.path
-import sys
+import json
 from launchpadlib.launchpad import Launchpad
+import os.path
+import re
+import sys
 
 parser = argparse.ArgumentParser(description="Generate a build status report .")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
@@ -27,16 +29,88 @@ def get_log(url):
     url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
     return lp._browser.get(url)
 
-def get_cmake(log):
+def isCmakeDepIgnored(depLine, package):
+    if not package in cmakeIgnore:
+        return False
+
+    for dep in cmakeIgnore[package]:
+        if depLine.startswith(dep):
+            return True
+
+    return False
+
+def get_cmake(log, package):
     start = log.index("\ndh_auto_configure") + 1
     end = log.rindex("\n", 0, log.index("dh_auto_build")) - 1
     cmakeLog = log[start:end]
-    if cmakeLog.find("Could NOT find") != -1 or cmakeLog.find("CMake Warning") != -1:
-        status = STATUS_WARNING
+    logLines = cmakeLog.splitlines()
+    highlightLines = set()
+
+    if "The following OPTIONAL packages could NOT be located" in cmakeLog:
+        startMsg = False
+        startLine = False
+        numIgnored = 0
+        numNotIgnored = 0
+        for i, line in enumerate(logLines):
+            if not startMsg and "The following OPTIONAL packages could NOT be located" in line:
+                startMsg = True
+            elif startMsg and not startLine and "--------------------------------" in line:
+                startLine = True
+            elif startMsg and startLine:
+                if "--------------------------------" in line:
+                    break
+                match = re.search(r'^ *\* (.*)$', line)
+                if match:
+                    ignore = isCmakeDepIgnored(match.group(1), package)
+                    if ignore:
+                        numIgnored += 1
+                    else:
+                        numNotIgnored += 1
+                        highlightLines.add(i)
+
+        if numIgnored == 0 and numNotIgnored == 0:
+            # how could this happen?!
+            status = STATUS_ERROR
+        elif numNotIgnored != 0:
+            status = STATUS_WARNING
+        else:
+            status = STATUS_SUCCESS
+    elif "Could NOT find" in cmakeLog:
+        numIgnored = 0
+        numNotIgnored = 0
+        for i, line in enumerate(logLines):
+            pos = line.find("Could NOT find")
+            if pos == -1:
+                continue
+            ignore = isCmakeDepIgnored(line[pos + 15:], package)
+            if ignore:
+                numIgnored += 1
+            else:
+                numNotIgnored += 1
+                highlightLines.add(i)
+        if numIgnored == 0 and numNotIgnored == 0:
+            # how could this happen?!
+            status = STATUS_ERROR
+        elif numNotIgnored != 0:
+            status = STATUS_WARNING
+        else:
+            status = STATUS_SUCCESS
     else:
         status = STATUS_SUCCESS
 
-    return (cmakeLog, status)
+    for i, line in enumerate(logLines):
+        if "CMake Warning" in line:
+            if status == STATUS_SUCCESS:
+                status = STATUS_WARNING
+            highlightLines.add(i)
+
+    for i, line in enumerate(logLines):
+        line = cgi.escape(line)
+        if i in highlightLines:
+            line = "<b>" + line + "</b>"
+        logLines[i] = line
+
+    return ("\n".join(logLines), status)
 
 def get_symbols(log):
     if "dpkg-gensymbols: warning: some symbols or patterns disappeared in the symbols file" in log:
@@ -65,6 +139,10 @@ ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
 
 ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+
+f = open("cmake-ignore.json", "r")
+cmakeIgnore = json.load(f)
+f.close()
 
 print """
 <html>
@@ -140,8 +218,8 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
 
-            output, status = get_cmake(log)
-            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            output, status = get_cmake(log, package)
+            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             output, status = get_symbols(log)
