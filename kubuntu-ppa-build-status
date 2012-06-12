@@ -93,6 +93,8 @@ def get_cmake(log, package):
             status = STATUS_WARNING
         else:
             status = STATUS_SUCCESS
+    elif "All external packages have been found" in cmakeLog:
+        status = STATUS_SUCCESS
     elif ("Could NOT find" in cmakeLog) or ("Could not find a package configuration file provided by" in cmakeLog):
         numIgnored = 0
         numNotIgnored = 0
