@@ -93,14 +93,20 @@ def get_cmake(log, package):
             status = STATUS_WARNING
         else:
             status = STATUS_SUCCESS
-    elif "Could NOT find" in cmakeLog:
+    elif ("Could NOT find" in cmakeLog) or ("Could not find a package configuration file provided by" in cmakeLog):
         numIgnored = 0
         numNotIgnored = 0
         for i, line in enumerate(logLines):
             pos = line.find("Could NOT find")
-            if pos == -1:
-                continue
-            ignore = isCmakeDepIgnored(line[pos + 15:], package)
+            if pos != -1:
+                pos += 15
+            else:
+                pos = line.find("Could not find a package configuration file provided by \"")
+                if pos != -1:
+                    pos += 57
+                else:
+                    continue
+            ignore = isCmakeDepIgnored(line[pos:], package)
             if ignore:
                 numIgnored += 1
             else:
@@ -117,7 +123,7 @@ def get_cmake(log, package):
         status = STATUS_SUCCESS
 
     for i, line in enumerate(logLines):
-        if "CMake Warning" in line:
+        if "CMake Warning" in line and not "CMake Warning at /usr/share/kde4/apps/cmake/modules/MacroOptionalFindPackage.cmake" in line:
             if status == STATUS_SUCCESS:
                 status = STATUS_WARNING
             highlightLines.add(i)
