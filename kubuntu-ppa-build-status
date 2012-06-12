@@ -8,6 +8,7 @@ from launchpadlib.launchpad import Launchpad
 import os.path
 import re
 import sys
+import time
 
 parser = argparse.ArgumentParser(description="Generate a build status report .")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
@@ -27,7 +28,11 @@ STATUS_WAITING = -2
 def get_log(url):
     # hack to get build log for private PPAs
     url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
-    return lp._browser.get(url)
+    try:
+        return lp._browser.get(url)
+    except:
+        time.sleep(3)
+        return lp._browser.get(url)
 
 def isCmakeDepIgnored(depLine, package):
     if not package in cmakeIgnore:
