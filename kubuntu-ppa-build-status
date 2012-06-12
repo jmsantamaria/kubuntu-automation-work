@@ -276,7 +276,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
 odd = True
 i = 1
 
-for package in builds:
+for package in sorted(builds.iterkeys()):
     for arch in builds[package]:
         build = builds[package][arch]
 
