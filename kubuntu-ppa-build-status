@@ -306,7 +306,7 @@ print """
 </table>
 """
 
-print "<br/><div>Last updated on %s</div>\n" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 
 print """
 </body>
