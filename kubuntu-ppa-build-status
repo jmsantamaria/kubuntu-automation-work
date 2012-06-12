@@ -3,6 +3,7 @@
 import argparse
 import cgi
 import datetime
+import gzip
 import json
 from launchpadlib.launchpad import Launchpad
 import os.path
@@ -25,14 +26,26 @@ STATUS_ERROR = 2
 STATUS_BUILDING = -1
 STATUS_WAITING = -2
 
-def get_log(url):
+def get_log(build):
+    buildId = int(build.self_link[build.self_link.rfind("/") + 1:])
+    cacheFilename = "logCache/" + str(buildId) + ".gz"
+
+    if os.path.isfile(cacheFilename):
+        f = gzip.GzipFile(cacheFilename, "r")
+        content = f.read()
+        f.close()
+        return content
+
+    url = build.build_log_url
     # hack to get build log for private PPAs
-    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
-    try:
-        return lp._browser.get(url)
-    except:
-        time.sleep(3)
-        return lp._browser.get(url)
+    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/1.0/")
+    content = lp._browser.get(url)
+
+    f = gzip.GzipFile(cacheFilename, "w")
+    f.write(content)
+    f.close()
+
+    return content
 
 def isCmakeDepIgnored(depLine, package):
     if not package in cmakeIgnore:
@@ -207,18 +220,11 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
         arch = build.arch_tag
         builds[package][arch] = {}
 
-        #logFilename = "logs/" + (package + "_" + packageVersion + "_" + arch).replace("/", "_") + ".log.gz"
-
         builds[package][arch]["logfile"] = build.build_log_url
         builds[package][arch]["version"] = packageVersion
 
         if build.buildstate == "Successfully built":
-            log = get_log(build.build_log_url)
-
-            #if not os.path.exists(logFilename):
-            #    f = gzip.GzipFile(logFilename, "wb")
-            #    f.write(log)
-            #    f.close()
+            log = get_log(build)
 
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
@@ -255,7 +261,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_BUILDING
             builds[package][arch]["message"] = build.buildstate
         elif build.buildstate == "Failed to build":
-            log = get_log(build.build_log_url)
+            log = get_log(build)
             if log.find("kde-sc-dev-latest : Breaks:") != -1:
                 builds[package][arch]["status"] = STATUS_WAITING
                 builds[package][arch]["message"] = "Dependency wait"
