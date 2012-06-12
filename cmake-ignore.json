@@ -8,5 +8,6 @@
   "kde-runtime": [ "Xine" ],
   "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "kross-interpreters": [ "FALCON", "Ruby" ],
-  "kdewebdev": [ "Ruby" ]
+  "kdewebdev": [ "Ruby" ],
+  "kde-workspace": [ "GoogleGadgets", "XMMS" ]
 }
