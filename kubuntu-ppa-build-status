@@ -157,6 +157,22 @@ def get_list_missing(log):
 
     return (output, status)
 
+def get_dh_list_missing(log):
+    output = []
+    if "exists in debian/tmp but is not installed to anywhere" in log:
+        logLines = log.splitlines()
+        for line in logLines:
+            match = re.search(r'dh_install: (.*) exists in debian/tmp but is not installed to anywhere')
+            if match:
+                output.append(match.group(1))
+
+    if not output:
+        status = STATUS_SUCCESS
+    else:
+        status = STATUS_ERROR
+
+    return ("\n".join(output), status)
+
 lp = Launchpad.login_with("ubuntu-dev-tools", "production")
 
 ubuntu = lp.distributions["ubuntu"]
@@ -248,11 +264,16 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             try:
                 output, status = get_list_missing(log)
             except ValueError:
-                if arch == "i386":
+                if (arch == "i386") and not (("--list-missing" in log) or ("--fail-missing" in log)):
                     status = STATUS_WARNING
                     output = "No list-missing in build log."
                 else:
                     status = STATUS_SUCCESS
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            output, status = get_dh_list_missing(log)
             if status != STATUS_SUCCESS:
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
