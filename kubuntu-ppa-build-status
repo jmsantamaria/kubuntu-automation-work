@@ -229,10 +229,6 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
 
-            output, status = get_cmake(log, package)
-            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
-            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
-
             output, status = get_symbols(log)
             if status == STATUS_ERROR:
                 msg = "Missing symbols"
@@ -240,7 +236,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                 msg = "New symbols"
 
             if status != STATUS_SUCCESS:
-                builds[package][arch]["message"] += "<h3>symbol files:</h3>\n<div>" + msg + "</div>\n"
+                builds[package][arch]["message"] += "<h3>symbol files:</h3>\n<div style=\"font-weight: bold;\">" + msg + "</div>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             try:
@@ -253,6 +249,10 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                     status = STATUS_SUCCESS
             if status != STATUS_SUCCESS:
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            output, status = get_cmake(log, package)
+            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
         elif build.buildstate == "Needs building" or build.buildstate == "Dependency wait":
             builds[package][arch]["status"] = STATUS_WAITING
