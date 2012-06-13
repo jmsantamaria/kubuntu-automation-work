@@ -2,12 +2,13 @@
   "kde4libs": [ "FAM", "HUPnP", "media-player-info", "Aspell" ],
   "kate": [ "SharedMimeInfo" ],
   "okular": [ "CHM" ],
-  "kdegames": [ "PyQt4", "PyKDE4", "SQLite", "Twisted" ],
+  "kdegames": [ "qvoronoi", "PyQt4", "PyKDE4", "SQLite", "Twisted" ],
   "printer-applet": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "ark": [ "qjson" ],
   "kde-runtime": [ "Xine" ],
   "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "kross-interpreters": [ "FALCON", "Ruby" ],
   "kdewebdev": [ "Ruby" ],
-  "kde-workspace": [ "GoogleGadgets", "XMMS" ]
+  "kde-workspace": [ "GoogleGadgets", "XMMS" ],
+  "marble": [ "libshp", "QtMobility", "QtLocation" ]
 }
