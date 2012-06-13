@@ -58,7 +58,10 @@ def isCmakeDepIgnored(depLine, package):
     return False
 
 def get_cmake(log, package):
-    start = log.index("\ndh_auto_configure") + 1
+    try:
+        start = log.index("\ndh_auto_configure") + 1
+    except ValueError:
+        start = log.index("\n   dh_auto_configure") + 1
     end = log.rindex("\n", 0, log.index("dh_auto_build")) - 1
     cmakeLog = log[start:end]
     logLines = cmakeLog.splitlines()
@@ -164,7 +167,7 @@ def get_dh_list_missing(log):
     if "exists in debian/tmp but is not installed to anywhere" in log:
         logLines = log.splitlines()
         for line in logLines:
-            match = re.search(r'dh_install: (.*) exists in debian/tmp but is not installed to anywhere')
+            match = re.search(r'dh_install: (.*) exists in debian/tmp but is not installed to anywhere', line)
             if match:
                 output.append(match.group(1))
 
