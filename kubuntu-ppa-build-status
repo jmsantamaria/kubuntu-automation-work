@@ -41,9 +41,10 @@ def get_log(build):
     url = url.replace("https://launchpad.net/", "https://api.launchpad.net/1.0/")
     content = lp._browser.get(url)
 
-    f = gzip.GzipFile(cacheFilename, "w")
-    f.write(content)
-    f.close()
+    if build.buildstate == "Successfully built":
+        f = gzip.GzipFile(cacheFilename, "w")
+        f.write(content)
+        f.close()
 
     return content
 
