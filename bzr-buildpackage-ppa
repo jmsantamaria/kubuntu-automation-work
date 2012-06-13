@@ -38,7 +38,11 @@ f = open("debian/changelog", "w")
 f.write("".join(lines))
 f.close()
 
-subprocess.call(["bzr-buildpackage", "-S", "--"] + args.options)
+application = ["bzr-buildpackage", "-S", "--"]
+if args.suffix > 1:
+    application += ["-sd"]
+application += args.options
+subprocess.call(application)
 
 f = open("debian/changelog", "w")
 f.write(orgChangelog)
