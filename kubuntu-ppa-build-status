@@ -14,6 +14,8 @@ import time
 parser = argparse.ArgumentParser(description="Generate a build status report .")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
+parser.add_argument("--cache", default="cache", help="Directory where the cahce is stored")
 
 args = parser.parse_args()
 
@@ -28,7 +30,7 @@ STATUS_WAITING = -2
 
 def get_log(build):
     buildId = int(build.self_link[build.self_link.rfind("/") + 1:])
-    cacheFilename = "logCache/" + str(buildId) + ".gz"
+    cacheFilename = args.cache + "/buildlogs/" + str(buildId) + ".gz"
 
     if os.path.isfile(cacheFilename):
         f = gzip.GzipFile(cacheFilename, "r")
@@ -179,7 +181,8 @@ def get_dh_list_missing(log):
 
     return ("\n".join(output), status)
 
-lp = Launchpad.login_with("kubuntu-ppa-build-status", "production")
+if args.credentials:
+    lp = Launchpad.login_with("kubuntu-ppa-build-status", "production", args.cache, credentials_file=args.credentials)
 
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
