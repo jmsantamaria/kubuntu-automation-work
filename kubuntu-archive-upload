@@ -1,0 +1,159 @@
+#!/usr/bin/python
+
+import argparse
+from distro_info import UbuntuDistroInfo
+import glob
+from launchpadlib.launchpad import Launchpad
+import os
+import re
+import subprocess
+import sys
+
+parser = argparse.ArgumentParser(description="Upload new KDE SC version to the main archive.")
+parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
+parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
+parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
+
+args = parser.parse_args()
+
+version = args.version
+if not args.sru:
+    release = UbuntuDistroInfo().devel()
+else:
+    release = UbuntuDistroInfo().stable()
+
+lp = Launchpad.login_anonymously("kubuntu-archive-upload", "production")
+ubuntu = lp.distributions["ubuntu"]
+lpseries = ubuntu.getSeries(name_or_version=release)
+if not args.sru:
+    ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+else:
+    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="ppa")
+
+if args.packages:
+    packages = args.packages.split(",")
+else:
+    f = open("kdesc-packages-" + release + ".txt", "r")
+    packages = f.readlines()
+    f.close()
+
+    packages = map(lambda line: line.strip("\r\n\t "), packages)
+    packages = filter(lambda line: line and not line.startswith("#"), packages)
+
+if args.tmpdir:
+    basedir = args.tmpdir
+else:
+    basedir = tempfile.mkdtemp()
+uploaddir = basedir + "/upload"
+
+os.mkdir(uploaddir)
+
+topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
+                     '((\s+%(name_chars)s+)+)\;'
+                     % {'name_chars': '[-+0-9a-z.]'},
+                     re.IGNORECASE)
+
+def parseChangelogVersions(path):
+    f = open(path, "r")
+    lines = f.readlines()
+    f.close()
+
+    versions = []
+    for line in lines:
+        match = topline.search(line.strip("\r\n"))
+        if match:
+            versions.append(match.group(2))
+    return versions
+
+def upstreamName(package):
+    if package == "kde4libs":
+        return "kdelibs"
+    else:
+        return package
+
+for package in packages:
+    os.mkdir(basedir + "/" + package)
+    os.chdir(basedir + "/" + package)
+
+    if not args.sru:
+        subprocess.check_call(["pull-ninjas-source", "-d", package, release])
+        ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
+
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
+        os.chdir("bzr")
+    else:
+        try:
+            subprocess.check_call(["pull-ppa-source", "kubuntu-ppa/ppa", package, release])
+        except subprocess.CalledProcessError, e:
+            if e.returncode == 2:
+                print >> sys.stderr, "=== Skipping " + package + ", package not found."
+                continue
+            else:
+                raise e
+        os.chdir(glob.glob("%s-%s*" % (package, version))[0])
+
+    versions = parseChangelogVersions("debian/changelog")
+    if not version in versions[0] or version in versions[1]:
+        print >> sys.stderr, "=== Skipping " + package + ", changelog invalid."
+        continue
+    packageVersion = versions[0]
+
+    changelogRelease = release
+    if args.sru:
+        changelogRelease += "-proposed"
+    subprocess.check_call(["dch", "-r", "-m", "-D", changelogRelease, ""])
+
+    f = open("debian/changelog", "r")
+    changelogLines = f.readlines()
+    f.close()
+
+    if "ppa" in changelogLines[0]:
+        print >> sys.stderr, "=== Stripping ~ppa from version."
+        changelogLines[0] = re.sub(r'~ppa\d+', "", changelogLines[0])
+        packageVersion = re.sub(r'~ppa\d+', "", packageVersion)
+        if args.sru:
+            changelogLines[0] = changelogLines[0].replace(release + ";", release + "-proposed;")
+        f = open("debian/changelog", "w")
+        f.write("".join(changelogLines))
+        f.close()
+    elif args.sru:
+        print >> sys.stderr, "No ~ppa in " + package + "changelog, aborting"
+        sys.exit(1)
+
+    if not args.sru:
+        subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
+        subprocess.check_call(["bzr", "tag"])
+
+        subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc"])
+    else:
+        subprocess.check_call(["debuild", "-S", "-nc"])
+
+    dscFileVersion = packageVersion
+    match = re.search(r'^(\d+:)', dscFileVersion)
+    if match:
+        dscFileVersion = dscFileVersion[len(match.group(1)):]
+    archiveDsc = "%s_%s.dsc" % (package, dscFileVersion)
+
+    os.chdir("..")
+
+    if not args.sru:
+        p = subprocess.Popen(["debdiff", ninjasDsc, archiveDsc], stdout=subprocess.PIPE)
+        diff, _ = p.communicate()
+        if p.returncode != 0 and p.returncode != 1:
+            print >> sys.stderr, "=== debdiff error, aborting."
+            sys.exit(1)
+        p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        diffstat, _ = p.communicate(diff)
+        diffstatLines = diffstat.strip("\r\n\t ").splitlines()
+        if len(diffstatLines) > 1 or diffstatLines[0] != "debian/changelog":
+            print >> sys.stderr, "=== Package differs from PPA, skipping %s." % (package)
+            continue
+
+        #os.chdir("bzr")
+        #subprocess.check_call(["bzr", "push", ":parent"])
+        #os.chdir("..")
+
+    subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
