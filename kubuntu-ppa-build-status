@@ -11,7 +11,7 @@ import re
 import sys
 import time
 
-parser = argparse.ArgumentParser(description="Generate a build status report .")
+parser = argparse.ArgumentParser(description="Generate a build status report.")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
