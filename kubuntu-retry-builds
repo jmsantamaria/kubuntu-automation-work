@@ -10,11 +10,16 @@ import sys
 parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
 parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
 parser.add_argument("--ppa", action="store_true", help="Check the PPA instead of the main archive.")
+parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
 
 args = parser.parse_args()
 
 release = args.dist
 ppa = args.ppa
+if args.proposed:
+    pocket = "Proposed"
+else:
+    pocket = "Release"
 
 apt_pkg.init()
 
@@ -66,7 +71,7 @@ kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or pa
 
 
 for package in kdesc:
-    sources = archive.getPublishedSources(distro_series=lpseries, exact_match=True, status="Published", pocket="Release", source_name=package)
+    sources = archive.getPublishedSources(distro_series=lpseries, exact_match=True, status="Published", pocket=pocket, source_name=package)
     try:
         source = sources[0]
     except IndexError:
