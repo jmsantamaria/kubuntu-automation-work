@@ -158,7 +158,7 @@ for package in packages:
         subprocess.check_call(["pull-lp-source", "-d", package, release])
 
         dscname = glob.glob("%s_*.dsc" % (package,))[0]
-        match = re.match(re.escape(package) + r'_([\d\.]+)-', dscname)
+        match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
         prevVersion = match.group(1)
 
         subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
