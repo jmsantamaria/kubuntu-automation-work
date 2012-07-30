@@ -196,6 +196,8 @@ for package in packages:
             if choice not in ("yes", "y", ""):
                 continue
 
+        if upstreamName(package) != package:
+            os.rename("%s-%s" % (upstreamName(package), version), "%s-%s" % (package, version))
         os.rename("./debian", "%s-%s/debian" % (package, version))
         os.chdir("%s-%s" % (package, version))
     else:
