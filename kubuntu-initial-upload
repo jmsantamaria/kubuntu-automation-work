@@ -134,7 +134,7 @@ else:
     packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
 if args.tmpdir:
-    basedir = args.tmpdir
+    basedir = os.path.abspath(args.tmpdir)
 else:
     basedir = tempfile.mkdtemp()
 uploaddir = basedir + "/upload"
