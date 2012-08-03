@@ -41,7 +41,11 @@ def get_log(build):
     url = build.build_log_url
     # hack to get build log for private PPAs
     url = url.replace("https://launchpad.net/", "https://api.launchpad.net/1.0/")
-    content = lp._browser.get(url)
+    try:
+        content = lp._browser.get(url)
+    except:
+        time.sleep(5)
+        content = lp._browser.get(url)
 
     if build.buildstate == "Successfully built":
         f = gzip.GzipFile(cacheFilename, "w")
