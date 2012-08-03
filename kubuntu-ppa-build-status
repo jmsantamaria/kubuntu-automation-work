@@ -6,7 +6,7 @@ import datetime
 import gzip
 import json
 from launchpadlib.launchpad import Launchpad
-import os.path
+import os
 import re
 import sys
 import time
@@ -203,6 +203,9 @@ ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
 f = open("cmake-ignore.json", "r")
 cmakeIgnore = json.load(f)
 f.close()
+
+if not os.path.isdir(args.cache + "/buildlogs"):
+    os.mkdir(args.cache + "/buildlogs")
 
 print """
 <html>
