@@ -10,6 +10,7 @@
   "kross-interpreters": [ "FALCON", "Ruby" ],
   "kdewebdev": [ "Ruby" ],
   "kde-workspace": [ "GoogleGadgets", "XMMS" ],
+  "kdenetwork" : [ "XMMS", "msiLBC" ],
   "marble": [ "libshp", "QtMobility", "QtLocation" ],
   "smokeqt": [ "Qwt5 for Qt4" ],
   "qtruby": [ "Qwt5 for Qt4" ],
