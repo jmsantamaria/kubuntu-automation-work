@@ -1,0 +1,4 @@
+Add following to your .ssh/config
+
+Host ftpmaster.kde.org
+    User ftpubuntu
