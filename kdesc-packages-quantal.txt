@@ -95,7 +95,6 @@ smokegen
 smokekde
 smokeqt
 step
-strigi-multimedia
 superkaramba
 svgpart
 sweeper
