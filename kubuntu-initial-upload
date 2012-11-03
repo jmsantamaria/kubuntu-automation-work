@@ -24,6 +24,7 @@ release = args.dist
 version = args.version
 changelogEntry = args.message
 sru = args.sru
+cwd = os.getcwd()
 
 def readAllFromFile(filename):
     f = open(filename, "r")
@@ -99,6 +100,16 @@ def upstreamName(package):
     else:
         return package
 
+def readPackages(filename):
+    f = open(filename, "r")
+    packages = f.readlines()
+    f.close()
+
+    packages = map(lambda line: line.strip("\r\n\t "), packages)
+    packages = filter(lambda line: line and not line.startswith("#"), packages)
+
+    return packages
+
 if not sru:
     launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
     ubuntu = launchpad.distributions["ubuntu"]
@@ -123,12 +134,7 @@ else:
 if args.packages:
     packages = args.packages.split(",")
 else:
-    f = open("kdesc-packages-" + release + ".txt", "r")
-    packages = f.readlines()
-    f.close()
-
-    packages = map(lambda line: line.strip("\r\n\t "), packages)
-    packages = filter(lambda line: line and not line.startswith("#"), packages)
+    packages = readPackages("kdesc-packages-" + release + ".txt")
 
     # move libraries to the front
     packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
@@ -209,7 +215,9 @@ for package in packages:
             continue
 
     control = readAllFromFile("debian/control")
-    control = re.sub(r'kde-sc-dev-latest \(>= 4:[\d\.]+\)', "kde-sc-dev-latest (>= 4:%s)" % (version,), control)
+    # bump buil-dep versions for packages that were in kde-sc-dev-latest
+    for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
+        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= 4:%s)' % (builddep, version), control)
     f = open("debian/control", "w")
     f.write(control)
     f.close()
