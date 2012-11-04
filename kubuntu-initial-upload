@@ -215,7 +215,9 @@ for package in packages:
         os.chdir("bzr")
 
         if not sanitizeBranch(package):
-            print "==== Skipping %s, bzr branch has unexpected content" % (package,)
+            print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
+            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+            moved.append(package)
             continue
 
     control = readAllFromFile("debian/control")
@@ -258,7 +260,7 @@ for package in packages:
 print "\n\n=== Packages are ready for upload in " + uploaddir
 
 if len(moved) > 0:
-    print "\n=== The following packages failed and have been moved to manual/:"
+    print "\n=== The following packages couldn't be processed and have been moved to manual/"
     print ", ".join(moved)
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
