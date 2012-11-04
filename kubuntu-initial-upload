@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import urllib
+import shutil
 
 parser = argparse.ArgumentParser(description="Upload new KDE SC version to the PPA.")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
@@ -146,6 +147,9 @@ else:
 uploaddir = basedir + "/upload"
 
 os.mkdir(uploaddir)
+os.mkdir(basedir + "/manual")
+
+moved = []
 
 for package in packages:
     os.mkdir(basedir + "/" + package)
@@ -234,16 +238,27 @@ for package in packages:
         changelogRelease = "UNRELEASED"
     subprocess.check_call(["dch", "-v", "4:%s-%s" % (version, debianVersion), "-D", changelogRelease, changelogEntry])
 
-    if sru:
-        subprocess.check_call(["debuild", "-S", "-nc"])
-    else:
-        subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--", "-nc"])
-        subprocess.check_call(["debcommit", "-a"])
-        debianVersion += "~ppa1"
-        subprocess.check_call(["bzr", "push", ":parent"])
+    try:
+        if sru:
+            subprocess.check_call(["debuild", "-S", "-nc"])
+        else:
+            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--", "-nc"])
+            subprocess.check_call(["debcommit", "-a"])
+            debianVersion += "~ppa1"
+            subprocess.check_call(["bzr", "push", ":parent"])
 
-    subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
+        subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
+    except subprocess.CalledProcessError, e:
+        # package build failed, manual intervention necessary
+        print "==== " + package + " build was interrupted, moving to manual/"
+        shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+        moved.append(package)
+
 
 print "\n\n=== Packages are ready for upload in " + uploaddir
+
+if len(moved) > 0:
+    print "\n=== The following packages failed and have been moved to manual/:"
+    print ", ".join(moved)
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
