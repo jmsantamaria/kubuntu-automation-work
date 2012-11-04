@@ -78,7 +78,7 @@ libkexiv2
 libkipi
 libksane
 marble
-mplayerthumbs
+#mplayerthumbs
 nepomuk-core
 okular
 oxygen-icons
