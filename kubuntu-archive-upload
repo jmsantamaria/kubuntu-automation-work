@@ -49,6 +49,8 @@ uploaddir = basedir + "/upload"
 
 os.mkdir(uploaddir)
 
+skipped = []
+
 topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
                      '((\s+%(name_chars)s+)+)\;'
                      % {'name_chars': '[-+0-9a-z.]'},
@@ -77,7 +79,7 @@ for package in packages:
     os.chdir(basedir + "/" + package)
 
     if not args.sru:
-        subprocess.check_call(["pull-ninjas-source", "-d", package, release])
+        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
@@ -148,6 +150,7 @@ for package in packages:
         diffstatLines = diffstat.strip("\r\n\t ").splitlines()
         if len(diffstatLines) > 1 or diffstatLines[0] != "debian/changelog":
             print >> sys.stderr, "=== Package differs from PPA, skipping %s." % (package)
+            skipped.append(package)
             continue
 
         #os.chdir("bzr")
@@ -156,4 +159,5 @@ for package in packages:
 
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
 
+print "Skipped packages: " + ', '.join(skipped)
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
