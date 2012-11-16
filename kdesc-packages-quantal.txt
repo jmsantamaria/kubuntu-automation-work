@@ -47,7 +47,6 @@ kgeography
 kgpg
 khangman
 kig
-#kimono
 kiten
 klettres
 kmag
@@ -89,7 +88,6 @@ perlqt
 printer-applet
 pykde4
 qtruby
-#qyoto
 rocs
 smokegen
 smokekde

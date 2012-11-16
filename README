@@ -2,3 +2,11 @@ Add following to your .ssh/config
 
 Host ftpmaster.kde.org
     User ftpubuntu
+
+./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
+and check the output
+
+export PATH=`pwd`:$PATH
+
+./kubuntu-initial-upload -d quantal -v 4.9.2 -m "New upstream bugfix release" -y 12.10
+
