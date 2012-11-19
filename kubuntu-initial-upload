@@ -253,7 +253,7 @@ for package in packages:
         if sru:
             subprocess.check_call(["debuild", "-S", "-nc"])
         else:
-            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--", "-nc"])
+            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", args.distversion, "--", "-nc"])
             subprocess.check_call(["debcommit", "-a"])
             debianVersion += "~ppa1"
             subprocess.check_call(["bzr", "push", ":parent"])
