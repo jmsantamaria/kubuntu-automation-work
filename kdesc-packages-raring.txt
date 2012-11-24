@@ -78,6 +78,7 @@ libksane
 marble
 mplayerthumbs
 nepomuk-core
+nepomuk-widgets
 okular
 oxygen-icons
 pairs
@@ -85,6 +86,7 @@ parley
 perlkde
 perlqt
 picmi
+print-manager
 pykde4
 qtruby
 rocs
