@@ -30,6 +30,7 @@ kdeartwork
 kdegraphics-mobipocket
 kdegraphics-strigi-analyzer
 kdegraphics-thumbnailers
+kde4libs
 kdenetwork
 kdepim
 kdepim-runtime
@@ -61,7 +62,6 @@ kruler
 ksaneplugin
 kscd
 ksnapshot
-kspaceduel
 kstars
 ktimer
 ktouch
@@ -76,7 +76,6 @@ libkexiv2
 libkipi
 libksane
 marble
-mplayerthumbs
 nepomuk-core
 nepomuk-widgets
 okular
@@ -85,7 +84,6 @@ pairs
 parley
 perlkde
 perlqt
-picmi
 print-manager
 pykde4
 qtruby

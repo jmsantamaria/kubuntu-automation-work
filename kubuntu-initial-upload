@@ -154,8 +154,11 @@ try:
     os.mkdir(uploaddir)
 except OSError:
     print "using " + uploaddir
-    pass
-os.mkdir(basedir + "/manual")
+
+try:
+    os.mkdir(basedir + "/manual")
+except OSError:
+    print "using " + basedir + "/manual"
 
 moved = []
 
