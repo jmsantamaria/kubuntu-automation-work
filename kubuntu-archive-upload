@@ -96,7 +96,7 @@ for package in packages:
         os.chdir(glob.glob("%s-%s*" % (package, version))[0])
 
     versions = parseChangelogVersions("debian/changelog")
-    if not version in versions[0] or version in versions[1]:
+    if version not in versions:
         print >> sys.stderr, "=== Skipping " + package + ", changelog invalid."
         continue
     packageVersion = versions[0]
@@ -129,7 +129,7 @@ for package in packages:
         subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         subprocess.check_call(["bzr", "tag"])
 
-        subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc"])
+        subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
     else:
         subprocess.check_call(["debuild", "-S", "-nc"])
 
@@ -150,10 +150,16 @@ for package in packages:
         p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         diffstat, _ = p.communicate(diff)
         diffstatLines = diffstat.strip("\r\n\t ").splitlines()
-        if len(diffstatLines) > 1 or diffstatLines[0] != "debian/changelog":
-            print >> sys.stderr, "=== Package differs from PPA, skipping %s." % (package)
-            skipped.append(package)
-            continue
+        ## FIXME: Potential issue for a IndexOutOfRange error
+        if len(diffstatLines) > 1 or or diffstatLines[0] != "debian/changelog":
+            p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
+            p.communicate("Package: %s\n\n=== diffstat ===\n\n%s\n\n=== diff ===\n\n%s" % (package, diffstat, diff))
+            sys.stdout.write("==Package %s from the PPA differs from bzr, continue [Y/n]? " % (package))
+            choice = raw_input().lower()
+            if choice not in ("yes", "y", ""):
+                sys.stdout.write("== %s skipped\n" % (package))
+                skipped.append(package)
+                continue
 
         #os.chdir("bzr")
         #subprocess.check_call(["bzr", "push", ":parent"])
