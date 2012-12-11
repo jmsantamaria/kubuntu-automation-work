@@ -12,7 +12,7 @@ import sys
 parser = argparse.ArgumentParser(description="Upload new KDE SC version to the main archive.")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
-parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
+parser.add_argument("-t", "--tmpdir", help="Temporary dir where the packages are prepared")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
 parser.add_argument("--push", action="store_true", help="push branches immediately [Not Recommended!]")
 
