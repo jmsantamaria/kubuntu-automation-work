@@ -14,6 +14,7 @@ parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
 parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
+parser.add_argument("--push", action="store_true", help="push branches immediately [Not Recommended!]")
 
 args = parser.parse_args()
 
@@ -161,9 +162,10 @@ for package in packages:
                 skipped.append(package)
                 continue
 
-        #os.chdir("bzr")
-        #subprocess.check_call(["bzr", "push", ":parent"])
-        #os.chdir("..")
+        if args.push:
+            os.chdir("bzr")
+            subprocess.check_call(["bzr", "push", ":parent"])
+            os.chdir("..")
 
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
 
