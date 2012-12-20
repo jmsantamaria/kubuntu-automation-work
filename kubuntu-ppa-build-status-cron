@@ -1,0 +1,37 @@
+#!/bin/sh
+
+if [ ! -e ./kubuntu-ppa-build-status-cron.conf ]; then
+    echo "config file missing. Not set up yet?"
+    exit 1
+fi
+. ./kubuntu-ppa-build-status-cron.conf
+
+URL=https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
+
+WORKDIR=`pwd`
+
+[ -e $CACHEDIR ] || mkdir -p $CACHEDIR
+[ -e $STATUSDIR ] || mkdir -p $STATUSDIR
+
+if [ ! -w $CACHEDIR ]; then
+    echo "$CACHEDIR not writable! Cannot continue"
+    exit 2
+elif [ ! -w $STATUSDIR ]; then
+    echo "$STATUSDIR not writable! Cannot continue"
+    exit 3
+fi
+
+cd $CACHEDIR
+wget $URL
+# check if we need to do something
+if [ -e $FILE.old ]; then
+    if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
+        exit 0
+    fi
+fi
+mv $FILE $FILE.old
+cd $WORKDIR
+
+# regenerate status page
+./kubuntu-ppa-build-status -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS > $STATUSDIR/${KDE_RELEASE}_${RELEASE}.html.new
+mv $STATUSDIR/${KDE_RELEASE}_${RELEASE}.html.new $STATUSDIR/${KDE_RELEASE}_${RELEASE}.html
