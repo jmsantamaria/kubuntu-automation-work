@@ -32,5 +32,5 @@ mv $FILE $FILE.old
 cd $WORKDIR
 
 # regenerate status page
-./kubuntu-ppa-build-status -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS > $STATUSDIR/${KDE_VERSION}_${RELEASE}.html.new
-mv $STATUSDIR/${KDE_VERSION}_${RELEASE}.html.new $STATUSDIR/${KDE_VERSION}_${RELEASE}.html
+./kubuntu-ppa-build-status -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS > $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new
+mv $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html
