@@ -6,8 +6,6 @@ if [ ! -e ./kubuntu-ppa-build-status-cron.conf ]; then
 fi
 . ./kubuntu-ppa-build-status-cron.conf
 
-URL=https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
-
 WORKDIR=`pwd`
 
 [ -e $CACHEDIR ] || mkdir -p $CACHEDIR
@@ -22,7 +20,7 @@ elif [ ! -w $STATUSDIR ]; then
 fi
 
 cd $CACHEDIR
-wget $URL
+wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
 # check if we need to do something
 if [ -e $FILE.old ]; then
     if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
