@@ -24,6 +24,7 @@ wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/di
 # check if we need to do something
 if [ -e $FILE.old ]; then
     if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
+        rm $FILE
         exit 0
     fi
 fi
