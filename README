@@ -9,3 +9,8 @@ and check the output
 export PATH=`pwd`:$PATH
 
 ./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
+
+Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
+- copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
+  and fill the necessary variables.
+  CREDENTIALS is the user:pw part from the https apt ppa url
