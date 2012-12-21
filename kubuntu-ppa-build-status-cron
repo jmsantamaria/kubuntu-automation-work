@@ -4,7 +4,12 @@ if [ ! -e ./kubuntu-ppa-build-status-cron.conf ]; then
     echo "config file missing. Not set up yet?"
     exit 1
 fi
-. ./kubuntu-ppa-build-status-cron.conf
+
+if [ -z "$KUBUNTU_PPA_BUILD_STATUS_CONFIG" ]; then
+    . ./kubuntu-ppa-build-status-cron.conf
+else
+    . $KUBUNTU_PPA_BUILD_STATUS_CONFIG
+fi
 
 WORKDIR=`pwd`
 
