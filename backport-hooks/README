@@ -1,0 +1,10 @@
+ADJUSTMENT HOOKS USED BY KUBUNTU-BATCH-BACKPORT
+
+The scripts that are used as hooks have to be executable files and will be run
+in the debian directory of the package.
+
+Please put any adjustments that need to me made to a package so it can be
+backported into a script here
+
+There are to be named as:
+<pkg>-<backportrelease>

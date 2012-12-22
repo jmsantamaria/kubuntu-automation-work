@@ -1,0 +1,105 @@
+#!/bin/bash
+
+script=$0
+ppa="ppa:kubuntu-ninjas/ppa"
+cachedir="$(pwd)/cache/backport"
+hookdir="$(pwd)/backport-hooks"
+
+printhelp() {
+    echo "Batch Backport script"
+    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] -v kde-version -f from-release -t to-release -V to-release-version"
+    echo
+    echo "options:"
+    echo "  -v --version            version of the kde release"
+    echo "  -f --from-release       release codename that the packages are published in"
+    echo "  -t --to-release         release codename that you're backporting to"
+    echo "  -V --to-release-version version of the release you're backporting to"
+    echo "  -p --ppa                ppa to upload to [ppa:kubuntu-ninjas/ppa]"
+    echo "  -c --cache              location where the packages will be prepared in [./cache/backport]"
+    echo "  -b --hookdir            location of the backport hooks [./backport-hooks]"
+    echo "  -u --upload             upload packages immediately"
+    echo "  -h --help               show this help and exit"
+    exit 0
+
+}
+
+while [[ "$1" =~ -.* ]]; do
+    if [[ "$1" == "-v" || "$1" == "--version" ]]; then
+        shift
+        version="$1"
+        shift
+    elif [[ "$1" == "-f" || "$1" == "--from-release" ]]; then
+        shift
+        from_release="$1"
+        shift
+    elif [[ "$1" == "-t" || "$1" == "--to-release" ]]; then
+        shift
+        release="$1"
+        shift
+    elif [[ "$1" == "-V" || "$1" == "--to-release-version" ]]; then
+        shift
+        rver="$1"
+        shift
+    elif [[ "$1" == "-p" || "$1" == "--ppa" ]]; then
+        shift
+        ppa="$1"
+        shift
+    elif [[ "$1" == "-c" || "$1" == "--cache" ]]; then
+        shift
+        cachedir="$1"
+        shift
+    elif [[ "$1" == "-u" || "$1" == "--upload" ]]; then
+        upload="1"
+        shift
+    elif [[ "$1" == "-b" || "$1" == "--hookdir" ]]; then
+        shift
+        hookdir="$1"
+        shift
+    elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        printhelp
+    fi
+
+done
+
+if [[ -z "$version" || -z "$from_release" || -z "$release" || -z "rver" ]]; then
+    echo "At least one required option is missing!"
+    printhelp
+fi
+
+if [[ "$ppa" == "ppa:kubuntu-ninjas/ppa" ]]; then
+    urgency="low"
+else
+    urgency="medium"
+fi
+
+mkdir -p $cachedir
+
+for pkg in $(cat kdesc-packages-$release-backport.txt); do
+
+    cd $cachedir
+
+    pull-ninjas-source $pkg $from_release
+
+    cd $pkg-$version/debian || continue # package isn't there
+
+    ubuntu_version_tmp1="$(head -n 1 changelog)"
+    ubuntu_version_tmp2=${ubuntu_version_tmp1##*-}
+    ubuntu_version=${ubuntu_version_tmp2%%~*}
+
+    dch -b -v "4:$version-$ubuntu_version~ubuntu${rver}~ppa1" -u $urgency -D $release "$release backport"
+
+    # run package adjustment hook
+    test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
+
+    if [ -n "$upload" ]; then
+        debuild -S -sd
+    else
+        debuild -S -sd -us -uc
+    fi
+
+    cd $cachedir
+
+    if [ -n "$upload" ]; then
+        dput $ppa ${pkg}_$version-$ubuntu_version~ubuntu${rver}~ppa1_source.changes
+    fi
+done
