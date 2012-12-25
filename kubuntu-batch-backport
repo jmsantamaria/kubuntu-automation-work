@@ -66,6 +66,8 @@ if [[ -z "$version" || -z "$from_release" || -z "$release" || -z "rver" ]]; then
     printhelp
 fi
 
+# if we don't give the builds a higher priority for public builds it simply
+# takes too long as we need several retry iterations until everything is built
 if [[ "$ppa" == "ppa:kubuntu-ninjas/ppa" ]]; then
     urgency="low"
 else
