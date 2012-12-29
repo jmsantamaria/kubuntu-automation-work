@@ -1,14 +1,4 @@
 kdelibs5-dev
 kdepimlibs5-dev
 kde-workspace-dev
-libkactivities-dev
 nepomuk-core-dev
-libkcddb-dev
-libkcompactdisc-dev
-libkdcraw-dev
-libkdeedu-dev
-libkexiv2-dev
-libkipi-dev
-libkonq5-dev
-libksane-dev
-libmarble-dev
