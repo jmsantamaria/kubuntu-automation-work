@@ -200,8 +200,9 @@ for package in packages:
         diffstatLines = filter(lambda line: not line.endswith("/index.cache.bz2"), diffstatLines)
 
         # we need to upload all packages that in kde-sc-dev-latest Breaks
+        # except for the packages that have a stable ABI
         # TODO what about bindings?
-        if package.startswith("lib") or package == "kde4libs" or package == "kdepimlibs" or package == "kde-workspace" or package == "marble":
+        if package == "kde4libs" or package == "kdepimlibs" or package == "kde-workspace":
             significantChanges = True
         else:
             if not diffstatLines:
