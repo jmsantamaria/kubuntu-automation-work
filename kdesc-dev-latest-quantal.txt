@@ -1,4 +1,3 @@
 kdelibs5-dev
 kdepimlibs5-dev
 kde-workspace-dev
-nepomuk-core-dev
