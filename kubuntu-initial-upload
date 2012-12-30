@@ -117,15 +117,16 @@ def readPackages(filename):
 
     return packages
 
-if not sru:
-    launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
-    ubuntu = launchpad.distributions["ubuntu"]
-    distversion = args.distversion
-    if args.distversion == None:
-        distversion = ubuntu.getSeries(name_or_version=release).version
-    archive = ubuntu.main_archive
-    series = ubuntu.current_series
 
+launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
+ubuntu = launchpad.distributions["ubuntu"]
+distversion = args.distversion
+if args.distversion == None:
+    distversion = ubuntu.getSeries(name_or_version=release).version
+archive = ubuntu.main_archive
+series = ubuntu.current_series
+
+if not sru:
     topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
                          '((\s+%(name_chars)s+)+)\;'
                          % {'name_chars': '[-+0-9a-z.]'},
@@ -247,7 +248,7 @@ for package in packages:
 
     debianVersion = "0ubuntu"
     if sru:
-        debianVersion += "0.1~ppa1"
+        debianVersion += "0.1~ubuntu" + distversion + "~ppa1"
     else:
         debianVersion += "1"
 
