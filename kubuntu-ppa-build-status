@@ -190,6 +190,36 @@ def get_dh_list_missing(log):
 
     return ("\n".join(output), status)
 
+def get_depwait(log):
+    output = []
+    unsatisfied = False
+    for line in log.splitlines():
+        if re.search('Unable to locate package', line):
+            output.append(re.sub('E: Unable to locate package ', '', line))
+
+        if re.search('has no installation candidate', line):
+            l = re.sub(".*?'", '', line, count=1)
+            l = re.sub("'.*", '', l)
+            output.append(l)
+
+        if unsatisfied:
+            pkgname = True
+            for res in re.split('\(|\)', line):
+                if pkgname:
+                    # package name
+                    output.append(res)
+                    pkgname = False
+                else:
+                    versionlist = res.split(' ')
+                    output.append(" >= " + versionlist[len(versionlist) - 1] + " ")
+                    pkgname = True
+            break
+        if re.match('After installing, the following source dependencies are still unsatisfied:', line):
+            unsatisfied = True
+
+    return "\n".join(output)
+
+
 if args.credentials:
     lp = Launchpad.login_with("kubuntu-ppa-build-status", "production", args.cache, credentials_file=args.credentials)
 else:
@@ -304,9 +334,12 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             output, status = get_cmake(log, package)
             builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
-        elif build.buildstate == "Needs building" or build.buildstate == "Dependency wait":
+        elif build.buildstate == "Needs building":
             builds[package][arch]["status"] = STATUS_WAITING
-            builds[package][arch]["message"] =  build.buildstate
+            builds[package][arch]["message"] = build.buildstate
+        elif build.buildstate == "Dependency wait":
+            builds[package][arch]["status"] = STATUS_WAITING
+            builds[package][arch]["message"] = build.buildstate + ": " + get_depwait(get_log(build))
         elif build.buildstate == "Currently building" or build.buildstate == "Uploading build":
             builds[package][arch]["status"] = STATUS_BUILDING
             builds[package][arch]["message"] = build.buildstate
