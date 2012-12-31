@@ -82,7 +82,8 @@ for pkg in $(cat kdesc-packages-$release-backport.txt); do
 
     pull-ninjas-source $pkg $from_release
 
-    cd $pkg-$version/debian || continue # package isn't there
+    test -e $pkg-$version || continue # package not in ppa
+    cd $pkg-$version/debian
 
     ubuntu_version_tmp1="$(head -n 1 changelog)"
     ubuntu_version_tmp2=${ubuntu_version_tmp1##*-}
