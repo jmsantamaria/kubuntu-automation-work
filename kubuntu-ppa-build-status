@@ -344,11 +344,17 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_BUILDING
             builds[package][arch]["message"] = build.buildstate
         elif build.buildstate == "Failed to build":
-            log = get_log(build)
-            if log.find("kde-sc-dev-latest : Breaks:") != -1:
-                builds[package][arch]["status"] = STATUS_WAITING
-                builds[package][arch]["message"] = "Dependency wait"
-            else:
+            try:
+                log = get_log(build)
+                if log.find("kde-sc-dev-latest : Breaks:") != -1:
+                    builds[package][arch]["status"] = STATUS_WAITING
+                    builds[package][arch]["message"] = "Dependency wait"
+                else:
+                    builds[package][arch]["status"] = STATUS_ERROR
+                    builds[package][arch]["message"] = build.buildstate
+            except AttributeError:
+                # fetching the log fails when launchpad fails the build for
+                # internal reasons
                 builds[package][arch]["status"] = STATUS_ERROR
                 builds[package][arch]["message"] = build.buildstate
         else:
