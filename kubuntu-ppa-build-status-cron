@@ -31,7 +31,9 @@ wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/di
 # FIXME: this doesn't work for build failures...
 if [ -e $FILE.old ]; then
     if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
-        exit 0
+        if [ -z "$KUBUNTU_PPA_BUILD_STATUS_FORCE" ]; then
+            exit 0
+        fi
     fi
 fi
 mv $FILE $FILE.old
