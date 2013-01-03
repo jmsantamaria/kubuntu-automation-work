@@ -380,7 +380,7 @@ for package in sorted(builds.iterkeys()):
             odd = True
 
         message = build["message"]
-        if len(message) > 100:
+        if len(message) > 150:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
         print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td>%s</td>' % (trclass, build["status"], cgi.escape(build["version"]), package, arch)
