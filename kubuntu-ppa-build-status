@@ -339,7 +339,10 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["message"] = build.buildstate
         elif build.buildstate == "Dependency wait":
             builds[package][arch]["status"] = STATUS_WAITING
-            builds[package][arch]["message"] = build.buildstate + ": " + get_depwait(get_log(build))
+            try:
+                builds[package][arch]["message"] = build.buildstate + ": " + get_depwait(get_log(build))
+            except AttributeError:
+                builds[package][arch]["message"] = build.buildstate
         elif build.buildstate == "Currently building" or build.buildstate == "Uploading build":
             builds[package][arch]["status"] = STATUS_BUILDING
             builds[package][arch]["message"] = build.buildstate
