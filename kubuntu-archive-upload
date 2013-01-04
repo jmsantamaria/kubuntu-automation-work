@@ -152,7 +152,7 @@ for package in packages:
         diffstat, _ = p.communicate(diff)
         diffstatLines = diffstat.strip("\r\n\t ").splitlines()
         ## FIXME: Potential issue for a IndexOutOfRange error
-        if len(diffstatLines) > 1 or or diffstatLines[0] != "debian/changelog":
+        if len(diffstatLines) > 1 or diffstatLines[0] != "debian/changelog":
             p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
             p.communicate("Package: %s\n\n=== diffstat ===\n\n%s\n\n=== diff ===\n\n%s" % (package, diffstat, diff))
             sys.stdout.write("==Package %s from the PPA differs from bzr, continue [Y/n]? " % (package))
