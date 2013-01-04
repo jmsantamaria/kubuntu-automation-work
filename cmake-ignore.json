@@ -15,5 +15,6 @@
   "smokeqt": [ "Qwt5 for Qt4" ],
   "qtruby": [ "Qwt5 for Qt4" ],
   "perlqt": [ "Qwt5 for Qt4" ],
-  "pykde4": [ "Polkit-Qt" ]
+  "pykde4": [ "Polkit-Qt" ],
+  "kajongg": [ "PythonLibrary" ],
 }
