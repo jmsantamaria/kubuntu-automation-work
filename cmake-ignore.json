@@ -18,4 +18,5 @@
   "pykde4": [ "Polkit-Qt" ],
   "kajongg": [ "PythonLibrary" ],
   "kdeadmin": [ "NepomukCore" ],
+  "kgpg": [ "NepomukCore" ],
 }
