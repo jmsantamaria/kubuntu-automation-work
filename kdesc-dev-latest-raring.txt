@@ -12,3 +12,5 @@ libkipi-dev
 libkonq5-dev
 libksane-dev
 libmarble-dev
+libkdegames-dev
+analitza-dev
