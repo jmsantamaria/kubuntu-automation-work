@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sed -e 's/boost1.49/boost1.48/g' \
+    -e 's/libboost-graph1.49-dev/libboost-graph1.48-dev/g' \
+    -e 's/libboost-python1.49-dev/libboost-python1.48-dev/g' \
+    -e 's/libboost-thread1.49-dev/libboost-thread1.48-dev/g' \
+    -i control
