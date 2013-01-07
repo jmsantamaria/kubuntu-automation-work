@@ -92,6 +92,8 @@ for pkg in $(cat kdesc-packages-$release-backport.txt); do
     dch -b -v "4:$version-$ubuntu_version~ubuntu${rver}~ppa1" -u $urgency -D $release "$release backport"
 
     # run package adjustment hook
+    export hookdir
+    test -x $hookdir/$release && $hookdir/$release
     test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
 
     if [ -n "$upload" ]; then
