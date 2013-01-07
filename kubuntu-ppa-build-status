@@ -286,7 +286,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
         continue
 
     if package in builds:
-        print "Error multiple versions of the same package"
+        print "Error multiple versions of the same package %s" % package
         sys.exit(1)
 
     builds[package] = {}
