@@ -8,3 +8,6 @@ backported into a script here
 
 There are to be named as:
 <pkg>-<backportrelease>
+or
+<backportrelease>
+(will be run on all packages)
