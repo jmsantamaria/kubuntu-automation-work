@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sed -e 's/libavogadro-dev (>= 1.0.3-1ubuntu5)/libavogadro-dev (>= 1.0.3-1ubuntu4)/g' \
+    -e 's/Build-Depends:/Build-Depends: libglew1.5-dev,/g' \
+    -i control
