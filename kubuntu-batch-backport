@@ -7,7 +7,7 @@ hookdir="$(pwd)/backport-hooks"
 
 printhelp() {
     echo "Batch Backport script"
-    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] -v kde-version -f from-release -t to-release -V to-release-version"
+    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] [-P listfile ] -v kde-version -f from-release -t to-release -V to-release-version"
     echo
     echo "options:"
     echo "  -v --version            version of the kde release"
@@ -15,6 +15,7 @@ printhelp() {
     echo "  -t --to-release         release codename that you're backporting to"
     echo "  -V --to-release-version version of the release you're backporting to"
     echo "  -p --ppa                ppa to upload to [ppa:kubuntu-ninjas/ppa]"
+    echo "  -P --packagelist        file with list of packages to be backported [kdesc-packages-\${to-release}-backport.txt]"
     echo "  -c --cache              location where the packages will be prepared in [./cache/backport]"
     echo "  -b --hookdir            location of the backport hooks [./backport-hooks]"
     echo "  -u --upload             upload packages immediately"
@@ -43,6 +44,10 @@ while [[ "$1" =~ -.* ]]; do
     elif [[ "$1" == "-p" || "$1" == "--ppa" ]]; then
         shift
         ppa="$1"
+        shift
+    elif [[ "$1" == "-P" || "$1" == "--packagelist" ]]; then
+        shift
+        listfile="$1"
         shift
     elif [[ "$1" == "-c" || "$1" == "--cache" ]]; then
         shift
@@ -76,7 +81,11 @@ fi
 
 mkdir -p $cachedir
 
-for pkg in $(cat kdesc-packages-$release-backport.txt); do
+if [ -z "$listfile" ]; then
+    listfile="kdesc-packages-$release-backport.txt"
+fi
+
+for pkg in $(cat $listfile); do
 
     cd $cachedir
 
