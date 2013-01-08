@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sed -e 's/python-kde4-dev (>= 4:4.9.80)/python-kde4-dev/g' \
+    -e '/^ libpython2.7-dev,$/d' \
+    -i control
