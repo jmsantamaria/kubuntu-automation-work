@@ -19,5 +19,6 @@
   "kajongg": [ "PythonLibrary" ],
   "kdeadmin": [ "NepomukCore" ],
   "kgpg": [ "NepomukCore" ],
-  "korundum": [ "NepomukCore" ]
+  "korundum": [ "NepomukCore" ],
+  "kactivities": [ "C++11 enabled compiler" ]
 }
