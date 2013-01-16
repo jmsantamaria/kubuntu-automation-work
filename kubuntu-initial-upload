@@ -65,8 +65,7 @@ def sanitizeBranch(package):
     archiveEndline = firstLineMatch(endline, archiveChangelog)
 
     if archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog:
-        print "archiveTopline not in bzrChangelog or.."
-        #return False
+        return False
 
     return True
 
@@ -236,7 +235,7 @@ for package in packages:
         if not sanitizeBranch(package):
             print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
             shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-            moved.append(package)
+            moved.append((package, "bzr unclean or out of sync"))
             continue
 
     control = readAllFromFile("debian/control")
@@ -274,12 +273,15 @@ for package in packages:
         # package build failed, manual intervention necessary
         print "==== " + package + " build was interrupted, moving to manual/"
         shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-        moved.append(package)
+        moved.append((package, "build was interrupted"))
 
 print "\n\n=== Packages are ready for upload in " + uploaddir
 
 if len(moved) > 0:
+    output = []
+    for item in moved:
+        output.append(": ".join(item))
     print "\n=== The following packages couldn't be processed and have been moved to manual/"
-    print ", ".join(moved)
+    print "\n".join(output)
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
