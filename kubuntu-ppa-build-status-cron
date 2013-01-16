@@ -2,7 +2,6 @@
 
 if [ -z "$KUBUNTU_PPA_BUILD_STATUS_CONFIG" ]; then
     KUBUNTU_PPA_BUILD_STATUS_CONFIG=./kubuntu-ppa-build-status-cron.conf
-else
 fi
 
 if [ ! -e "$KUBUNTU_PPA_BUILD_STATUS_CONFIG" ]; then
