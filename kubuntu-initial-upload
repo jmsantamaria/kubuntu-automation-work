@@ -43,8 +43,6 @@ def firstLineMatch(expression, lines):
 
     return False
 
-# FIXME: this needs to reliably check whether the bzr branch and the archive
-# package match as we'll end dropping versions otherwise
 def sanitizeBranch(package):
     archiveChangelog = extractDebianFile(package, "debian/changelog")
     if archiveChangelog == True:
