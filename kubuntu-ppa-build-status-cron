@@ -26,7 +26,11 @@ fi
 
 cd $CACHEDIR
 rm -f $FILE
-wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
+if test "$PPA" = "kubuntu-ninjas/ppa"; then
+    wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
+else
+    wget http://ppa.launchpad.net/$PPA/ubuntu/dists/$RELEASE/$FILE
+fi
 # check if we need to do something
 # FIXME: this doesn't work for build failures...
 if [ -e $FILE.old ]; then
