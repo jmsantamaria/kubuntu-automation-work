@@ -12,6 +12,7 @@ import sys
 import time
 
 parser = argparse.ArgumentParser(description="Generate a build status report.")
+parser.add_argument("-p", "--ppa", help="PPA to download the package from. Format: <user>/<ppa name>")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
@@ -228,7 +229,16 @@ else:
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
 
-ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+if args.ppa:
+    if len(args.ppa.split(":")) > 1:
+        args.ppa = args.ppa.split(":")[1]
+    ppaParts = args.ppa.split("/")
+    if len(ppaParts) != 2:
+        parser.print_help()
+        sys.exit(1)
+else:
+    ppaParts = ["kubuntu-ninjas", "ppa"]
+ppa = lp.people[ppaParts[0]].getPPAByName(name=ppaParts[1])
 
 f = open("cmake-ignore.json", "r")
 cmakeIgnore = json.load(f)
