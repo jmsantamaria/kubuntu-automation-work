@@ -102,7 +102,11 @@ for pkg in $(cat $listfile); do
 
     ubuntu_version_tmp1="$(head -n 1 changelog)"
     ubuntu_version_tmp2=${ubuntu_version_tmp1##*(}
-    ubuntu_version=${ubuntu_version_tmp2%%~*}
+    if [[ "$ubuntu_version_tmp2" =~ .*~.* ]]; then
+        ubuntu_version=${ubuntu_version_tmp2%%~*}
+    else
+        ubuntu_version=${ubuntu_version_tmp2%%)*}
+    fi
 
     dch -b -v "$ubuntu_version~ubuntu${rver}~ppa$build" -u $urgency -D $release "$release backport"
 
