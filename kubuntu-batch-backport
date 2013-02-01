@@ -100,6 +100,8 @@ for pkg in $(cat $listfile); do
     test -e $pkg-$version* || continue # package not in ppa
     cd $pkg-$version*/debian
 
+    # FIXME: this breaks as soon as a package has a ~ in the upstream version
+    # part, like 3~rc or so
     ubuntu_version_tmp1="$(head -n 1 changelog)"
     ubuntu_version_tmp2=${ubuntu_version_tmp1##*(}
     if [[ "$ubuntu_version_tmp2" =~ .*~.* ]]; then
