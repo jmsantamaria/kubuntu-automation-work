@@ -4,10 +4,11 @@ script=$0
 ppa="ppa:kubuntu-ninjas/ppa"
 cachedir="$(pwd)/cache/backport"
 hookdir="$(pwd)/backport-hooks"
+build=1
 
 printhelp() {
     echo "Batch Backport script"
-    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] [-P listfile ] -v kde-version -f from-release -t to-release -V to-release-version"
+    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] [-P listfile ] [-B num] -v kde-version -f from-release -t to-release -V to-release-version"
     echo
     echo "options:"
     echo "  -v --version            version of the kde release"
@@ -19,6 +20,7 @@ printhelp() {
     echo "  -c --cache              location where the packages will be prepared in [./cache/backport]"
     echo "  -b --hookdir            location of the backport hooks [./backport-hooks]"
     echo "  -u --upload             upload packages immediately"
+    echo "  -B --build              build number (~ppa<num>) [1]"
     echo "  -h --help               show this help and exit"
     exit 0
 
@@ -60,6 +62,10 @@ while [[ "$1" =~ -.* ]]; do
         shift
         hookdir="$1"
         shift
+    elif [[ "$1" == "-B" || "$1" == "--build" ]]; then
+        shift
+        build="$1"
+        shift
     elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
         printhelp
     fi
@@ -98,7 +104,7 @@ for pkg in $(cat $listfile); do
     ubuntu_version_tmp2=${ubuntu_version_tmp1##*(}
     ubuntu_version=${ubuntu_version_tmp2%%~*}
 
-    dch -b -v "$ubuntu_version~ubuntu${rver}~ppa1" -u $urgency -D $release "$release backport"
+    dch -b -v "$ubuntu_version~ubuntu${rver}~ppa$build" -u $urgency -D $release "$release backport"
 
     # run package adjustment hook
     export hookdir
