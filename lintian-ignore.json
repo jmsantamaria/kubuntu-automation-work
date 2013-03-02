@@ -8,12 +8,15 @@
              "package-has-long-file-name",
              "icon-size-and-directory-name-mismatch" ],
     "kdepim-runtime": [ "image-file-in-usr-lib",
-                        "package-name-doesnt-match-sonames" ],
+                        "package-name-doesnt-match-sonames",
+                        "executable-not-elf-or-script" ],
     "kanagram": [ "package-name-doesnt-match-sonames" ],
     "kdepim": [ "image-file-in-usr-lib" ],
     "kgoldrunner": [ "unusual-interpreter" ],
     "khangman": [ "package-name-doesnt-match-sonames" ],
     "kolf": [ "package-name-doesnt-match-sonames" ],
     "nepomuk-core": [ "nepomuk-core: package-name-doesnt-match-sonames",
-                      "nepomuk-core: shlib-without-versioned-soname" ]
+                      "nepomuk-core: shlib-without-versioned-soname" ],
+    "kde-workspace": [ "kdm: manpage-has-errors-from-man",
+                       "kde-style-oxygen: package-name-doesnt-match-sonames" ]
 }
