@@ -392,8 +392,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                     output = "No lintian output in build log."
                 else:
                     status = STATUS_SUCCESS
-            if status != STATUS_SUCCESS:
-                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
+            builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             try:
