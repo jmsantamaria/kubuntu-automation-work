@@ -8,6 +8,7 @@
              "package-has-long-file-name",
              "icon-size-and-directory-name-mismatch",
              "wrong-name-for-upstream-changelog",
+             "dev-pkg-without-shlib-symlink",
              "embedded-javascript-library" ],
     "kdepim-runtime": [ "image-file-in-usr-lib",
                         "package-name-doesnt-match-sonames",
