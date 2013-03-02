@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import time
+import lazr
 
 parser = argparse.ArgumentParser(description="Generate a build status report.")
 parser.add_argument("-p", "--ppa", help="PPA to download the package from. Format: <user>/<ppa name>")
@@ -175,6 +176,39 @@ def get_list_missing(log):
 
     return (output, status)
 
+def is_lintian_warning_ignored(line, package):
+
+    if 'all' in lintianIgnore:
+        for warning in lintianIgnore['all']:
+            if line.find(warning) >= 0:
+                return True
+
+    if not package in lintianIgnore:
+        return False
+
+    for warning in lintianIgnore[package]:
+        if line.find(warning) >= 0:
+            return True
+
+    return False
+
+def get_lintian(log, package):
+    start = log.index("=== Start lintian") + 17
+    end = log.index("=== End lintian")
+    result = log[start:end].splitlines()
+    status = STATUS_SUCCESS
+    output = []
+    for line in result:
+        if line.startswith("warning") or line.startswith("make"):
+            continue # warnings unrelated to the actual lintian output
+        if (line.startswith('E:') or line.startswith('W:')) and not is_lintian_warning_ignored(line, package):
+            status = STATUS_WARNING
+            output.append("<b>" + line + "</b>")
+        else:
+            output.append(line)
+
+    return ("\n".join(output), status)
+
 def get_dh_list_missing(log):
     output = []
     if "exists in debian/tmp but is not installed to anywhere" in log:
@@ -244,6 +278,10 @@ f = open("cmake-ignore.json", "r")
 cmakeIgnore = json.load(f)
 f.close()
 
+f = open("lintian-ignore.json", "r")
+lintianIgnore = json.load(f)
+f.close()
+
 if not os.path.isdir(args.cache + "/buildlogs"):
     os.mkdir(args.cache + "/buildlogs")
 
@@ -309,7 +347,12 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
         builds[package][arch]["version"] = packageVersion
 
         if build.buildstate == "Successfully built":
-            log = get_log(build)
+            try:
+                log = get_log(build)
+            except:
+                builds[package][arch]["status"] = STATUS_WARNING
+                builds[package][arch]["message"] = "Failed to fetch build log\n"
+                continue
 
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
@@ -341,8 +384,24 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
-            output, status = get_cmake(log, package)
-            builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
+            try:
+                output, status = get_lintian(log, package)
+            except ValueError:
+                if (arch == "i386"):
+                    status = STATUS_WARNING
+                    output = "No lintian output in build log."
+                else:
+                    status = STATUS_SUCCESS
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            try:
+                output, status = get_cmake(log, package)
+                builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
+            except ValueError:
+                status = STATUS_WARNING
+                builds[package][arch]["message"] = "error while fetching cmake log"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
         elif build.buildstate == "Needs building":
             builds[package][arch]["status"] = STATUS_WAITING
@@ -351,7 +410,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_WAITING
             try:
                 builds[package][arch]["message"] = build.buildstate + ": " + get_depwait(get_log(build))
-            except AttributeError:
+            except (AttributeError, lazr.restfulclient.errors.RestfulError):
                 builds[package][arch]["message"] = build.buildstate
         elif build.buildstate == "Currently building" or build.buildstate == "Uploading build":
             builds[package][arch]["status"] = STATUS_BUILDING
@@ -365,7 +424,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                 else:
                     builds[package][arch]["status"] = STATUS_ERROR
                     builds[package][arch]["message"] = build.buildstate
-            except AttributeError:
+            except:
                 # fetching the log fails when launchpad fails the build for
                 # internal reasons
                 builds[package][arch]["status"] = STATUS_ERROR
