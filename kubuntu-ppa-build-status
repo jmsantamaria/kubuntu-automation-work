@@ -344,6 +344,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
         builds[package][arch] = {}
 
         builds[package][arch]["logfile"] = build.build_log_url
+        builds[package][arch]["weblink"] = build.web_link
         builds[package][arch]["version"] = packageVersion
 
         if build.buildstate == "Successfully built":
@@ -451,7 +452,7 @@ for package in sorted(builds.iterkeys()):
         if len(message) > 150:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
-        print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td>%s</td>' % (trclass, build["status"], cgi.escape(build["version"]), package, arch)
+        print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, build["weblink"], arch)
         if build["logfile"]:
             print '<td><a href="%s">logfile</a></td>' % (build["logfile"],)
         else:
