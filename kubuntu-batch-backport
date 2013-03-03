@@ -5,10 +5,11 @@ ppa="ppa:kubuntu-ninjas/ppa"
 cachedir="$(pwd)/cache/backport"
 hookdir="$(pwd)/backport-hooks"
 build=1
+include_source=""
 
 printhelp() {
     echo "Batch Backport script"
-    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] [-P listfile ] [-B num] -v kde-version -f from-release -t to-release -V to-release-version"
+    echo "synopsis: $script [-c cachedir] [-p ppa] [-u] [-b hookdir] [-P listfile ] [-B num] [-sa] -v kde-version -f from-release -t to-release -V to-release-version"
     echo
     echo "options:"
     echo "  -v --version            version of the kde release"
@@ -21,6 +22,7 @@ printhelp() {
     echo "  -b --hookdir            location of the backport hooks [./backport-hooks]"
     echo "  -u --upload             upload packages immediately"
     echo "  -B --build              build number (~ppa<num>) [1]"
+    echo "  -sa                     include usptream source (Default: no)"
     echo "  -h --help               show this help and exit"
     exit 0
 
@@ -57,6 +59,9 @@ while [[ "$1" =~ -.* ]]; do
         shift
     elif [[ "$1" == "-u" || "$1" == "--upload" ]]; then
         upload="1"
+        shift
+    elif [[ "$1" == "-sa" ]]; then
+        include_source="-sa"
         shift
     elif [[ "$1" == "-b" || "$1" == "--hookdir" ]]; then
         shift
@@ -118,9 +123,9 @@ for pkg in $(cat $listfile); do
     test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
 
     if [ -n "$upload" ]; then
-        debuild -S -sa
+        debuild -S $include_source
     else
-        debuild -S -sa -us -uc
+        debuild -S $include_source -us -uc
     fi
 
     cd $cachedir
