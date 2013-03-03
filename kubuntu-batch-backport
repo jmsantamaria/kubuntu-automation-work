@@ -112,15 +112,7 @@ for pkg in $(cat $listfile); do
     test -x $hookdir/$release && $hookdir/$release
     test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
 
-    if [ -n "$upload" ]; then
-        debuild -S $include_source
-    else
-        debuild -S $include_source -us -uc
-    fi
+    debuild -S $include_source -us -uc
 
     cd $cachedir
-
-    if [ -n "$upload" ]; then
-        dput $ppa ${pkg}_${ubuntu_version##*:}~ubuntu${rver}~ppa1_source.changes
-    fi
 done
