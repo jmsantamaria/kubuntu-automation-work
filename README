@@ -6,7 +6,7 @@ Host ftpmaster.kde.org
 ./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
 and check the output
 
-export PATH=`pwd`:$PATH
+export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
 
 ./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
 
