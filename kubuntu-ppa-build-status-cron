@@ -24,24 +24,24 @@ elif [ ! -w $STATUSDIR ]; then
     exit 3
 fi
 
-cd $CACHEDIR
-rm -f $FILE
-if test "$PPA" = "kubuntu-ninjas/ppa"; then
-    wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
-else
-    wget http://ppa.launchpad.net/$PPA/ubuntu/dists/$RELEASE/$FILE
-fi
-# check if we need to do something
-# FIXME: this doesn't work for build failures...
-if [ -e $FILE.old ]; then
-    if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
-        if [ -z "$KUBUNTU_PPA_BUILD_STATUS_FORCE" ]; then
+if [ -n "$KUBUNTU_PPA_BUILD_STATUS_LIGHTWEIGHT" ]; then
+    cd $CACHEDIR
+    rm -f $FILE
+    if test "$PPA" = "kubuntu-ninjas/ppa"; then
+        wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
+    else
+        wget http://ppa.launchpad.net/$PPA/ubuntu/dists/$RELEASE/$FILE
+    fi
+    # check if we need to do something
+    # FIXME: this doesn't work for build failures...
+    if [ -e $FILE.old ]; then
+        if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
             exit 0
         fi
     fi
+    mv $FILE $FILE.old
+    cd $WORKDIR
 fi
-mv $FILE $FILE.old
-cd $WORKDIR
 
 # regenerate status page
 ./kubuntu-ppa-build-status -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS -p $PPA --cache $CACHEDIR > $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new 2>&1
