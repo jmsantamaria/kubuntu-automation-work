@@ -1,0 +1,4 @@
+# kubuntu ppa build status job
+*/15 *	* * *	root cd /opt/kubuntu_build_status/kubuntu-automation/ && KUBUNTU_PPA_BUILD_STATUS_CONFIG=./raring.conf ./kubuntu-ppa-build-status-cron > /dev/null
+*/15 *	* * *	root cd /opt/kubuntu_build_status/kubuntu-automation/ && KUBUNTU_PPA_BUILD_STATUS_CONFIG=./quantal.conf ./kubuntu-ppa-build-status-cron > /dev/null
+*/15 *	* * *	root cd /opt/kubuntu_build_status/kubuntu-automation/ && KUBUNTU_PPA_BUILD_STATUS_CONFIG=./precise.conf ./kubuntu-ppa-build-status-cron > /dev/null
