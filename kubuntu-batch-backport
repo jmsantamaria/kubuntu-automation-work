@@ -6,6 +6,7 @@ cachedir="$(pwd)/cache/backport"
 hookdir="$(pwd)/backport-hooks"
 build=1
 include_source=""
+source="kubuntu-ninjas/ppa"
 
 printhelp() {
     echo "Batch Backport script"
@@ -23,6 +24,8 @@ printhelp() {
     echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks]"
     echo "  -B --build <num>                  build number (~ppa<num>) [1]"
     echo "  -u --urgency <urgency>            urgency to use in changelog [low]"
+    echo "  -s --source <archive>             archive/ppa to pull the packages from [kubuntu-ninjas/ppa],"
+    echo "                                    use 'archive' to pull from the primary archive"
     echo "  -sa                               include usptream source (Default: no)"
     echo "  -h --help                         show this help and exit"
     exit 0
@@ -69,6 +72,10 @@ while [[ "$1" =~ -.* ]]; do
         shift
         build="$1"
         shift
+    elif [[ "$1" == "-s" || "$1" == "--source" ]]; then
+        shift
+        source="$1"
+        shift
     elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
         printhelp
     fi
@@ -90,7 +97,11 @@ for pkg in $(cat $listfile); do
 
     cd $cachedir
 
-    pull-ninjas-source $pkg $from_release
+    if [[ "$source" == "archive" ]]; then
+        pull-lp-source $pkg $from_release
+    else
+        pull-ppa-source $source $pkg $from_release
+    fi
 
     test -e $pkg-$version* || continue # package not in ppa
     cd $pkg-$version*/debian
