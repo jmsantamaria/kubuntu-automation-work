@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# no kscreen in quantal
+quilt pop -a
+sed -e '/kubuntu_no_krandr.diff/d' -i patches/series
+quilt push -a
+# install old randr stuff
+sed -e 's/freespacenotifier (>= ${source:Version})/freespacenotifier (>= ${source:Version}), kde-workspace-randr (>= ${source:Version})/'
+    -i control
