@@ -216,7 +216,7 @@ for package in packages:
             significantChanges = False
 
         for line in diffstatLines:
-            if line.endswith(".cpp") or line.endswith(".h"):
+            if line.endswith(".cpp") or line.endswith(".h") or line.endswith(".desktop"):
                 significantChanges = True
                 break
 
