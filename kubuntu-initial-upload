@@ -184,6 +184,12 @@ for package in packages:
 
         dscname = glob.glob("%s_*.dsc" % (package,))[0]
         match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
+        if not match:
+            print "==== Skipping %s, version parsing failed, moving to manual/" % (package,)
+            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+            moved.append((package, "version parsing failed"))
+            continue
+
         prevVersion = match.group(1)
 
         subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
