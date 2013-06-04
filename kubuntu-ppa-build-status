@@ -385,16 +385,15 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
-            try:
-                output, status = get_lintian(log, package)
-            except ValueError:
-                if (arch == "i386"):
+            # Lintian output is only generated on i386
+            if (arch == "i386"):
+                try:
+                    output, status = get_lintian(log, package)
+                except ValueError:
                     status = STATUS_WARNING
                     output = "No lintian output in build log."
-                else:
-                    status = STATUS_SUCCESS
-            builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
-            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
+                builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             try:
                 output, status = get_cmake(log, package)
