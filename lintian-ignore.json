@@ -13,7 +13,8 @@
              "extra-license-file",
              "data.tar.xz-member-without-dpkg-pre-depends",
              "binary-nmu-debian-revision-in-source",
-             "binary-nmu-uses-old-version-style" ],
+             "binary-nmu-uses-old-version-style",
+             "syntax-error-in-dep5-copyright" ],
     "kde4libs": [ "script-not-executable usr/share/kde4/apps/kconf_update/kcookiescfg.pl" ],
     "kdepim-runtime": [ "image-file-in-usr-lib",
                         "package-name-doesnt-match-sonames",
@@ -53,7 +54,6 @@
                        "print-manager: shlib-without-versioned-soname" ],
     "rocs": [ "package-name-doesnt-match-sonames" ],
     "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ],
-    "kanagram": [ "syntax-error-in-dep5-copyright" ],
     "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
                     "kopete: package-name-doesnt-match-sonames",
                     "kopete: script-with-language-extension"]
