@@ -1,6 +1,7 @@
 {
   "kde4libs": [ "FAM", "HUPnP", "media-player-info", "Aspell" ],
   "kate": [ "SharedMimeInfo" ],
+  "kalzium": [ "Chemical mime data" ],
   "okular": [ "CHM" ],
   "kdegames": [ "qvoronoi", "PyQt4", "PyKDE4", "SQLite", "Twisted" ],
   "printer-applet": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
