@@ -45,4 +45,5 @@
                        "print-manager: shlib-without-versioned-soname" ],
     "rocs": [ "package-name-doesnt-match-sonames" ],
     "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ]
+    "kanagram": [ "syntax-error-in-dep5-copyright" ]
 }
