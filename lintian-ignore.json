@@ -19,6 +19,7 @@
                         "package-name-doesnt-match-sonames",
                         "executable-not-elf-or-script" ],
     "kanagram": [ "package-name-doesnt-match-sonames" ],
+    "kactivities": [ "dbg-package-missing-depends" ],
     "kdepim": [ "image-file-in-usr-lib",
                 "korganizer: package-name-doesnt-match-sonames", 
                 "executable-not-elf-or-script usr/share/autostart/korgac.desktop", 
