@@ -136,3 +136,4 @@ step
 superkaramba
 svgpart
 sweeper
+mplayerthumbs
