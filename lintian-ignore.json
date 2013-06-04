@@ -52,4 +52,8 @@
     "rocs": [ "package-name-doesnt-match-sonames" ],
     "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ]
     "kanagram": [ "syntax-error-in-dep5-copyright" ]
+    "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
+                    "kopete: package-name-doesnt-match-sonames",
+                    "kopete: script-with-language-extension",
+                  ]
 }
