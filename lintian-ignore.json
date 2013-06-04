@@ -35,7 +35,13 @@
                        "kde-style-oxygen: package-name-doesnt-match-sonames",
                        "kde-workspace-bin: package-name-doesnt-match-sonames",
                        "libkwinglutils1abi1: symbols-file-contains-debian-revision",
-                       "libkwineffects1abi4: symbols-file-contains-debian-revision"],
+                       "libkwineffects1abi4: symbols-file-contains-debian-revision"
+                     ],
+    "kde-baseapps": [ "kfind: desktop-entry-lacks-main-category",
+                      "konqueror: desktop-entry-lacks-main-category" 
+                      "libkonq5-templates: script-not-executable usr/share/templates/.source/Program.desktop" 
+                      "libkonq5-templates: unusual-interpreter usr/share/templates/.source/Program.desktop" 
+                    ],
     "kpat": [ "package-name-doesnt-match-sonames",
               "shlib-without-versioned-soname" ],
     "ksirk": [ "package-name-doesnt-match-sonames",
