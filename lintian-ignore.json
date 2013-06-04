@@ -40,8 +40,8 @@
                        "libkwineffects1abi4: symbols-file-contains-debian-revision"
                      ],
     "kde-baseapps": [ "kfind: desktop-entry-lacks-main-category",
-                      "konqueror: desktop-entry-lacks-main-category" 
-                      "libkonq5-templates: script-not-executable usr/share/templates/.source/Program.desktop" 
+                      "konqueror: desktop-entry-lacks-main-category",
+                      "libkonq5-templates: script-not-executable usr/share/templates/.source/Program.desktop",
                       "libkonq5-templates: unusual-interpreter usr/share/templates/.source/Program.desktop" 
                     ],
     "kpat": [ "package-name-doesnt-match-sonames",
@@ -52,10 +52,9 @@
     "print-manager": [ "package-name-doesnt-match-sonames",
                        "print-manager: shlib-without-versioned-soname" ],
     "rocs": [ "package-name-doesnt-match-sonames" ],
-    "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ]
-    "kanagram": [ "syntax-error-in-dep5-copyright" ]
+    "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ],
+    "kanagram": [ "syntax-error-in-dep5-copyright" ],
     "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
                     "kopete: package-name-doesnt-match-sonames",
-                    "kopete: script-with-language-extension",
-                  ]
+                    "kopete: script-with-language-extension"]
 }
