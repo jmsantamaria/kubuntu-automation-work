@@ -24,7 +24,7 @@
     "kdepim": [ "image-file-in-usr-lib",
                 "korganizer: package-name-doesnt-match-sonames", 
                 "executable-not-elf-or-script usr/share/autostart/korgac.desktop", 
-                "executable-not-elf-or-script usr/share/autostart/kalarm.autostart.desktop" 
+                "executable-not-elf-or-script usr/share/autostart/kalarm.autostart.desktop",
                 "kleopatra: package-name-doesnt-match-sonames" 
               ],
     "kgoldrunner": [ "unusual-interpreter",
