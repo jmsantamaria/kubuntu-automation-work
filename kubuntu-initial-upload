@@ -172,7 +172,7 @@ for package in packages:
 
     # fetch orig tarball
     remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % (stability, version, upstreamName(package), version)
-    subprocess.check_call(["scp", remote, "."])
+    subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
     orig = "%s_%s.orig.tar.xz" % (package, version)
     os.rename("%s-%s.tar.xz" % (upstreamName(package), version), orig)
 
