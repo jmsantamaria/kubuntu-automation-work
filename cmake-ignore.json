@@ -22,6 +22,6 @@
   "kgpg": [ "NepomukCore" ],
   "korundum": [ "NepomukCore" ],
   "kactivities": [ "C++11 enabled compiler" ],
-  "kdepim": [ "dblatex" ]
+  "kdepim": [ "dblatex" ],
   "kolourpaint": [ "PkgConfig" ]
 }
