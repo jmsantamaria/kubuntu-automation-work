@@ -24,5 +24,6 @@
   "kactivities": [ "C++11 enabled compiler" ],
   "kdepim": [ "dblatex" ],
   "kolourpaint": [ "PkgConfig" ],
-  "palapeli": [ "qvoronoi" ]
+  "palapeli": [ "qvoronoi" ],
+  "parley": [ "PkgConfig" ]
 }
