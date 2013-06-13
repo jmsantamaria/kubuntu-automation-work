@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+#UNFINISHED
+#Copyright Jonathan Riddell 2013
+# may be copied under the terms of the GNU GPL v 3 or later
+#nicer than the shell script in calligra-l10n
+
+import re
+import glob
+import argparse
+import subprocess
+import os
+import shutil
+
+renameLangs = {
+               "pt_BR": "ptbr",
+               "en_GB": "engb",
+               "ca@valencia": "cavalencia",
+               "zh_CN": "zhcn",
+               "zh_TW": "zhtw"
+              }
+
+parser = argparse.ArgumentParser(description="Upload new KDE SC version to the PPA. Downloads to current working directory.")
+parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-o", "--oldversion", required=True, help="Current version in archive")
+
+args = parser.parse_args()
+version = args.version
+oldversion = args.oldversion
+
+versionParts = version.split(".")
+lastDigit = int(versionParts[-1])
+
+if lastDigit >= 80:
+    stability = "unstable"
+else:
+    stability = "stable"
+
+# fetch orig tarball
+remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/calligra-%s/calligra-l10n/*tar*" % (stability, version)
+subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
+
+tars = glob.glob("calligra-l10n-*-%s.tar.xz" % (version))
+for tar in tars:
+  print tar
+  result = re.match(r"calligra-l10n-(.*)-2.(.*).tar.xz", tar)
+  lang = result.group(1)
+  if lang in renameLangs:
+    lang = renameLangs[lang]
+  print "lang: " + lang
+  os.rename(tar, "calligra-l10n_%s.orig-%s.tar.bz2" % (version, lang))
+
+
+subprocess.check_call(["wget", "-c",
+                       "https://launchpad.net/ubuntu/+archive/primary/+files/calligra-l10n_%s-0ubuntu1.debian.tar.bz2" % (oldversion)])
+
+subprocess.check_call(["tar", "xf", "calligra-l10n_%s-0ubuntu1.debian.tar.bz2" % (oldversion)])
+
+try:
+  os.mkdir("calligra-l10n-%s" % (version))
+except OSError:
+  pass
+os.chdir("calligra-l10n-%s" % (version))
+
+subprocess.check_call(["rm", "-r", "debian/"])
+
+try:
+  shutil.copytree("../debian", "debian")
+except OSError:
+  print str(OSError.message) #FIXME umm what?
+
+subprocess.check_call(["dch", "--newversion", "1:%s-0ubuntu1" % (version), "--distribution", "saucy", "New upstream release"])
+
+os.chdir("..")
+subprocess.check_call(["tar", "zcf", "calligra-l10n_%s.orig.tar.gz"%(version), "calligra-l10n-%s"%(version)])
+os.chdir("calligra-l10n-%s" % (version))
+
+
+
+
+#orig = "%s_%s.orig.tar.xz" % (package, version)
+#os.rename("%s-%s.tar.xz" % (upstreamName(package), version), orig)
