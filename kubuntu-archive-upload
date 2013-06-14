@@ -48,7 +48,11 @@ else:
     basedir = tempfile.mkdtemp()
 uploaddir = basedir + "/upload"
 
-os.mkdir(uploaddir)
+try:
+  os.mkdir(uploaddir)
+except OSError:
+  print uploaddir + " dir exists"
+  pass
 
 skipped = []
 
@@ -76,7 +80,10 @@ def upstreamName(package):
         return package
 
 for package in packages:
-    os.mkdir(basedir + "/" + package)
+    try:
+      os.mkdir(basedir + "/" + package)
+    except OSError:
+      print basedir + "/" + package + " exists"
     os.chdir(basedir + "/" + package)
 
     if not args.sru:
@@ -128,7 +135,7 @@ for package in packages:
 
     if not args.sru:
         subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
-        subprocess.check_call(["bzr", "tag"])
+        subprocess.check_call(["bzr", "tag", release])
 
         subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
     else:

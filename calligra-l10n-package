@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
-#UNFINISHED
 #Copyright Jonathan Riddell 2013
 # may be copied under the terms of the GNU GPL v 3 or later
-#nicer than the shell script in calligra-l10n
+#nicer than upstream2orig in calligra-l10n
 
 import re
 import glob
@@ -38,7 +37,7 @@ else:
 
 # fetch orig tarball
 remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/calligra-%s/calligra-l10n/*tar*" % (stability, version)
-subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
+subprocess.check_call(["rsync", "--progress", "-CvzapP", "--compress-level=9", "-e ssh", remote, "."])
 
 tars = glob.glob("calligra-l10n-*-%s.tar.xz" % (version))
 for tar in tars:
@@ -48,7 +47,11 @@ for tar in tars:
   if lang in renameLangs:
     lang = renameLangs[lang]
   print "lang: " + lang
-  os.rename(tar, "calligra-l10n_%s.orig-%s.tar.bz2" % (version, lang))
+  try:
+    os.symlink(tar, "calligra-l10n_%s.orig-%s.tar.xz" % (version, lang))
+  except OSError:
+    pass #file exists
+  #os.rename(tar, "calligra-l10n_%s.orig-%s.tar.xz" % (version, lang))
 
 
 subprocess.check_call(["wget", "-c",
@@ -60,9 +63,24 @@ try:
   os.mkdir("calligra-l10n-%s" % (version))
 except OSError:
   pass
+subprocess.check_call(["tar", "zcf", "calligra-l10n_%s.orig.tar.gz"%(version), "calligra-l10n-%s"%(version)])
+
+for tar in tars:
+  result = re.match(r"calligra-l10n-(.*)-2.(.*).tar.xz", tar)
+  lang = result.group(1)
+  upstreamLang = lang
+  if lang in renameLangs:
+    lang = renameLangs[lang]
+  print [ "tar", "xf", "calligra-l10n_%s.orig-%s.tar.xz"%(version, lang) ]
+  subprocess.check_call([ "tar", "xf", "calligra-l10n_%s.orig-%s.tar.xz"%(version, lang) ])
+  try:
+    os.rename("calligra-l10n-%s-%s"%(upstreamLang,version), "calligra-l10n-%s/%s"%(version, lang))
+  except OSError:
+    print "dir already exists %s"%(lang)
+
 os.chdir("calligra-l10n-%s" % (version))
 
-subprocess.check_call(["rm", "-r", "debian/"])
+subprocess.check_call(["rm", "-rf", "debian/"])
 
 try:
   shutil.copytree("../debian", "debian")
@@ -72,7 +90,6 @@ except OSError:
 subprocess.check_call(["dch", "--newversion", "1:%s-0ubuntu1" % (version), "--distribution", "saucy", "New upstream release"])
 
 os.chdir("..")
-subprocess.check_call(["tar", "zcf", "calligra-l10n_%s.orig.tar.gz"%(version), "calligra-l10n-%s"%(version)])
 os.chdir("calligra-l10n-%s" % (version))
 
 
