@@ -269,11 +269,11 @@ for package in packages:
         if sru:
             subprocess.check_call(["debuild", "-S", "-nc"])
         else:
-            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
             subprocess.check_call(["debcommit", "-a"])
             debianVersion += "~ubuntu" + distversion + "~ppa1"
             if not args.nopush:
                 subprocess.check_call(["bzr", "push", ":parent"])
+            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
     except subprocess.CalledProcessError, e:
