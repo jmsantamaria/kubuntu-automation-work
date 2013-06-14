@@ -44,7 +44,6 @@ kdepim
 kdepim-runtime
 kdepimlibs
 kdeplasma-addons
-kdesdk
 kdetoys
 kdewebdev
 kdf
