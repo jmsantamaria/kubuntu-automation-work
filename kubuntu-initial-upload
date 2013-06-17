@@ -249,8 +249,6 @@ for package in packages:
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
     for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
         control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= 4:%s)' % (builddep, version), control)
-        control = re.sub(r'%s\s*,' % builddep, '%s (>= 4:%s),' % (builddep, version), control)
-        control = re.sub(r'%s\s*\n' % builddep, '%s (>= 4:%s)\n' % (builddep, version), control)
     f = open("debian/control", "w")
     f.write(control)
     f.close()
