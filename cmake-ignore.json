@@ -1,5 +1,5 @@
 {
-  "kde4libs": [ "FAM", "HUPnP", "media-player-info", "Aspell" ],
+  "kde4libs": [ "FAM", "HUpnp", "media-player-info", "ASPELL" ],
   "kate": [ "SharedMimeInfo" ],
   "kalzium": [ "Chemical mime data" ],
   "okular": [ "CHM" ],
