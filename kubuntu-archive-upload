@@ -110,10 +110,6 @@ for package in packages:
     packageVersion = versions[0]
 
     changelogRelease = release
-    if args.sru:
-        changelogRelease += "-proposed"
-    else:
-        changelogRelease += "-proposed"
     subprocess.check_call(["dch", "-r", "-m", "-D", changelogRelease, ""])
 
     f = open("debian/changelog", "r")
