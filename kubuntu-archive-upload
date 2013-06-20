@@ -120,8 +120,6 @@ for package in packages:
         print >> sys.stderr, "=== Stripping [~ubuntuX]~ppa from version."
         changelogLines[0] = re.sub(r'(~ubuntu[\d\.]+)?~ppa\d+', "", changelogLines[0])
         packageVersion = re.sub(r'(~ubuntu[\d\.]+)?~ppa\d+', "", packageVersion)
-        if args.sru:
-            changelogLines[0] = changelogLines[0].replace(release + ";", release + "-proposed;")
         f = open("debian/changelog", "w")
         f.write("".join(changelogLines))
         f.close()
