@@ -59,5 +59,7 @@
     "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
                     "kopete: package-name-doesnt-match-sonames",
                     "kopete: script-with-language-extension"],
-    "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ]
+    "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ],
+    "kde-dev-scripts": [ "script-with-language-extension" ]
+    "lokalize": [ "executable-not-elf-or-script" ]
 }
