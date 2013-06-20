@@ -8,6 +8,7 @@
   "ark": [ "qjson" ],
   "kde-runtime": [ "Xine" ],
   "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
+  "krdc": [ "freerdp" ],
   "kross-interpreters": [ "FALCON", "Ruby" ],
   "kdewebdev": [ "Ruby" ],
   "kde-workspace": [ "GoogleGadgets", "XMMS" ],
