@@ -15,7 +15,8 @@
              "binary-nmu-debian-revision-in-source",
              "binary-nmu-uses-old-version-style",
              "syntax-error-in-dep5-copyright",
-             "library-not-linked-against-libc" ],
+             "library-not-linked-against-libc",
+             "script-with-language-extension" ],
     "kde4libs": [ "script-not-executable usr/share/kde4/apps/kconf_update/kcookiescfg.pl" ],
     "kdepim-runtime": [ "image-file-in-usr-lib",
                         "package-name-doesnt-match-sonames",
@@ -58,6 +59,5 @@
     "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
                     "kopete: package-name-doesnt-match-sonames",
                     "kopete: script-with-language-extension"],
-    "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ],
-    "kde-dev-scripts": [ "script-with-language-extension" ]
+    "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ]
 }
