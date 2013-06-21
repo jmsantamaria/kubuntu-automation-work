@@ -311,7 +311,7 @@ print """
 
 <body>
 
-<h1 id="top">Kubuntu KDE %s -> %s status</h1>
+<h1 id="top">Kubuntu KDE %s -> %s status [%s]</h1>
 
 <table class="grid">
 
@@ -323,7 +323,7 @@ print """
   </tr></thead>
 
   <tbody>
-""" % (version, release)
+""" % (version, release, args.ppa)
 
 builds = {}
 
