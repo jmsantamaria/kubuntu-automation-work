@@ -123,7 +123,7 @@ for pkg in $(cat $listfile); do
     test -x $hookdir/$release && $hookdir/$release
     test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
 
-    debuild -S $include_source -us -uc
+    debuild --no-lintian -S $include_source -us -uc
 
     cd $cachedir
 done
