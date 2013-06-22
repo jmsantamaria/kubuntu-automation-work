@@ -54,7 +54,7 @@ kdepim
 kdepim-runtime
 kdepimlibs
 kdeplasma-addons
-kdesdk-kio-slaves
+kdesdk-kioslaves
 kdesdk-strigi-analyzers
 kdesdk-thumbnailers
 kdewebdev
@@ -96,6 +96,7 @@ konsole
 kopete
 korundum
 kpat
+kppp
 krdc
 kremotecontrol
 kreversi
