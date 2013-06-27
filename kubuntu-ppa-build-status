@@ -272,6 +272,7 @@ if args.ppa:
         sys.exit(1)
 else:
     ppaParts = ["kubuntu-ninjas", "ppa"]
+    args.ppa = "kubuntu-ninjas/ppa"
 ppa = lp.people[ppaParts[0]].getPPAByName(name=ppaParts[1])
 
 f = open("cmake-ignore.json", "r")
@@ -311,7 +312,7 @@ print """
 
 <body>
 
-<h1 id="top">Kubuntu KDE %s -> %s status [%s]</h1>
+<h1 id="top">Kubuntu KDE %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
 
 <table class="grid">
 
@@ -323,7 +324,7 @@ print """
   </tr></thead>
 
   <tbody>
-""" % (version, release, args.ppa)
+""" % (version, release, ppaParts[0], ppaParts[1], args.ppa)
 
 builds = {}
 
