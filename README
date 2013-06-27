@@ -5,6 +5,8 @@ Host ftpmaster.kde.org
 
 ./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
 and check the output
+- qyoto and kimono need to be removed from the list as we don't build the mono
+  bindings
 
 export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
 
