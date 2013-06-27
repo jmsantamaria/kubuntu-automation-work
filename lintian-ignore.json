@@ -56,10 +56,10 @@
                        "print-manager: shlib-without-versioned-soname" ],
     "rocs": [ "package-name-doesnt-match-sonames" ],
     "superkaramba": [ "non-dev-pkg-with-shlib-symlink" ],
-    "kdenetwork": [ "krfb: package-name-doesnt-match-sonames",
-                    "kopete: package-name-doesnt-match-sonames",
-                    "kopete: script-with-language-extension"],
+    "kopete": [ "package-name-doesnt-match-sonames",
+                "script-with-language-extension" ],
     "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ],
     "kde-dev-scripts": [ "script-with-language-extension" ],
-    "lokalize": [ "executable-not-elf-or-script" ]
+    "lokalize": [ "executable-not-elf-or-script" ],
+    "krfb": [ "package-name-doesnt-match-sonames" ]
 }
