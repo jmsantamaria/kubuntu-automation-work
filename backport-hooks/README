@@ -11,3 +11,6 @@ They are to be named as:
 or
 <backportrelease>
 (will be run on all packages)
+
+The stable folder contains the hooks for the current stable KDE release
+The unstable folder the hooks for the current unstable release.
