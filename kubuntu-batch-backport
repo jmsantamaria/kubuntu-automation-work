@@ -3,7 +3,7 @@
 script=$0
 urgency="low"
 cachedir="$(pwd)/cache/backport"
-hookdir="$(pwd)/backport-hooks"
+hookdir="$(pwd)/backport-hooks/stable"
 build=1
 include_source=""
 source="kubuntu-ninjas/ppa"
@@ -21,7 +21,7 @@ printhelp() {
     echo "options:"
     echo "  -P --packagelist <path>           file with list of packages to be backported [kdesc-packages-\${to-release}-backport.txt]"
     echo "  -c --cache <path>                 location where the packages will be prepared in [./cache/backport]"
-    echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks]"
+    echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks/stable]"
     echo "  -B --build <num>                  build number (~ppa<num>) [1]"
     echo "  -u --urgency <urgency>            urgency to use in changelog [low]"
     echo "  -s --source <archive>             archive/ppa to pull the packages from [kubuntu-ninjas/ppa],"
