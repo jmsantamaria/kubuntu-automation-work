@@ -181,9 +181,12 @@ for package in packages:
 
         # fetch and extract previous version
         try:
-            subprocess.check_call(["pull-lp-source", "-d", package, release])
+            subprocess.check_call(["pull-lp-source", "-d", package, release + "-proposed"])
         except:
-            moved.append((package, "something wicked happened when pulling package from launchpad"))
+            try: 
+                subprocess.check_call(["pull-lp-source", "-d", package, release])
+            except:
+                moved.append((package, "something wicked happened when pulling package from launchpad"))
 
         dscname = glob.glob("%s_*.dsc" % (package,))[0]
         match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
