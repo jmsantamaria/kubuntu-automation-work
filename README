@@ -1,4 +1,4 @@
-Add following to your .ssh/config
+Add following to your .ssh/config and make sure you have an ssh-agent running and the key unlocked
 
 Host ftpmaster.kde.org
     User ftpubuntu
