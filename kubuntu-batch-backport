@@ -3,10 +3,11 @@
 script=$0
 urgency="low"
 cachedir="$(pwd)/cache/backport"
-hookdir="$(pwd)/backport-hooks/stable"
+hookdir="$(pwd)/backport-hooks/"
 build=1
 include_source=""
 source="kubuntu-ninjas/ppa"
+release_type="stable"
 
 printhelp() {
     echo "Batch Backport script"
@@ -19,13 +20,14 @@ printhelp() {
     echo "  -V --to-release-version <version> version of the release you're backporting to"
     echo ""
     echo "options:"
-    echo "  -P --packagelist <path>           file with list of packages to be backported [kdesc-packages-\${to-release}-backport.txt]"
+    echo "  -P --packagelist <path>           file with list of packages to be backported [kdesc-packages-\${to-release}-\${type}-backport.txt]"
     echo "  -c --cache <path>                 location where the packages will be prepared in [./cache/backport]"
-    echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks/stable]"
+    echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks/\${type}]"
     echo "  -B --build <num>                  build number (~ppa<num>) [1]"
     echo "  -u --urgency <urgency>            urgency to use in changelog [low]"
     echo "  -s --source <archive>             archive/ppa to pull the packages from [kubuntu-ninjas/ppa],"
     echo "                                    use 'archive' to pull from the primary archive"
+    echo "  -T --type <type>                  release type [stable]"
     echo "  -sa                               include usptream source (Default: no)"
     echo "  -h --help                         show this help and exit"
     exit 0
@@ -76,6 +78,10 @@ while [[ "$1" =~ -.* ]]; do
         shift
         source="$1"
         shift
+    elif [[ "$1" == "-T" || "$1" == "--type" ]]; then
+        shift
+        release_type="$1"
+        shift
     elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
         printhelp
     fi
@@ -90,8 +96,10 @@ fi
 mkdir -p $cachedir
 
 if [ -z "$listfile" ]; then
-    listfile="kdesc-packages-$release-backport.txt"
+    listfile="kdesc-packages-$release-$release_type-backport.txt"
 fi
+
+hookdir=$hookdir/$release_type
 
 for pkg in $(cat $listfile); do
 
