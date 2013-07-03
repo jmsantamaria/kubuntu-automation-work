@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/libquazip0-dev/libquazip0-dev, zlib1g-dev/g' \
+    -i control
