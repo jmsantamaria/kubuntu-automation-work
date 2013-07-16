@@ -60,7 +60,8 @@
                 "script-with-language-extension" ],
     "nepomuk-widgets": [ "missing-field-in-dep5-copyright" ],
     "kde-dev-scripts": [ "script-with-language-extension",
-                         "shell-script-fails-syntax-check usr/bin/svnversions"
+                         "shell-script-fails-syntax-check usr/bin/svnversions",
+                         "shell-script-fails-syntax-check usr/bin/package_crystalsvg"
                        ],
     "lokalize": [ "executable-not-elf-or-script" ],
     "krfb": [ "package-name-doesnt-match-sonames" ]
