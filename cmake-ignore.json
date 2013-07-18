@@ -11,7 +11,7 @@
   "krdc": [ "freerdp" ],
   "kross-interpreters": [ "FALCON", "Ruby" ],
   "kdewebdev": [ "Ruby" ],
-  "kde-workspace": [ "GoogleGadgets", "XMMS" ],
+  "kde-workspace": [ "GoogleGadgets", "XMMS", "Xmms" ],
   "kdenetwork" : [ "XMMS", "msiLBC" ],
   "marble": [ "libshp", "QtMobility", "QtLocation" ],
   "smokeqt": [ "Qwt5 for Qt4" ],
