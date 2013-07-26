@@ -26,5 +26,6 @@
   "kdepim": [ "dblatex" ],
   "kolourpaint": [ "PkgConfig" ],
   "palapeli": [ "qvoronoi" ],
-  "parley": [ "PkgConfig" ]
+  "parley": [ "PkgConfig" ],
+  "kopete": [ "XMMS" ]
 }
