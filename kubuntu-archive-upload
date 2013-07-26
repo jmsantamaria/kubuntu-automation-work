@@ -129,7 +129,7 @@ for package in packages:
 
     if not args.sru:
         subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
-        subprocess.check_call(["bzr", "tag", release])
+        subprocess.check_call(["bzr", "tag", packageVersion])
 
         subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
     else:
