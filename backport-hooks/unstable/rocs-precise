@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# dot file format doesn't build, so remove it from install file
+sed -e '\#usr/lib/kde4/rocs_dotfileformat.so#d' \
+    -e '\#usr/share/kde4/services/rocs_dotfileformatplugin.desktop#d' \
+    -i rocs.install

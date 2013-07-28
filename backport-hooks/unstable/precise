@@ -1,0 +1,12 @@
+#!/bin/sh
+
+sed -e 's/boost1.53/boost1.48/g' \
+    -e 's/libboost-graph1.53-dev/libboost-graph1.48-dev/g' \
+    -e 's/libboost-graph1.53.0/libboost-graph1.48.0/g' \
+    -e 's/libboost-python1.53-dev/libboost-python1.48-dev/g' \
+    -e 's/libboost-thread1.53-dev/libboost-thread1.48-dev/g' \
+    -e 's/libtiff5-dev/libtiff4-dev/g' \
+    -i control
+
+# we don't need those - gcc 4.6 causes too much diff
+rm *.symbols
