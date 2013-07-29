@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are 
 parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
 parser.add_argument("--ppa", action="store_true", help="Check the PPA instead of the main archive.")
 parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
+parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
+parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
 
 args = parser.parse_args()
 
@@ -69,8 +71,15 @@ kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
 # move libraries to the front
 kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
+if args.all and args.ppa:
+    packages_ = archive.getPublishedSources(distro_series=lpseries, status="Published")
+    packages = set()
+    for pkg in packages_:
+        packages.add(pkg.source_package_name)
+else:
+    packages = kdesc
 
-for package in kdesc:
+for package in packages:
     sources = archive.getPublishedSources(distro_series=lpseries, exact_match=True, status="Published", pocket=pocket, source_name=package)
     try:
         source = sources[0]
@@ -85,7 +94,7 @@ for package in kdesc:
         arch = build.arch_tag
         log = get_log(build.build_log_url)
 
-        if can_retry(log, arch):
+        if can_retry(log, arch) or args.force:
             print "Retrying %s (%s)" % (source.source_package_name, arch)
             build.retry()
         else:
