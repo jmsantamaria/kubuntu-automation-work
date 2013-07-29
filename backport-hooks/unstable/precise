@@ -8,6 +8,7 @@ sed -e 's/boost1.53/boost1.48/g' \
     -e 's/libtiff5-dev/libtiff4-dev/g' \
     -e 's/libpython2.7-dev/python2.7-dev/g' \
     -e 's/ libwayland-dev,//g' \
+    -e 's/plasma-active-dev,//g' \
     -i control
 
 # we don't need those - gcc 4.6 causes too much diff
