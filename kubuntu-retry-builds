@@ -36,8 +36,11 @@ else:
 
 def get_log(url):
     # hack to get build log for private PPAs
-    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
-    return lp._browser.get(url)
+    try:
+        url = url.replace("https://launchpad.net/", "https://api.launchpad.net/devel/")
+        return lp._browser.get(url)
+    except:
+        return ""
 
 def get_binary_version(binaryName, arch):
     archSeries = lpseries.getDistroArchSeries(archtag=arch)
