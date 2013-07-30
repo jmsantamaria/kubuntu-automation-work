@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/libmusicbrainz5-dev/libmusicbrainz4-dev/g' \
+    -i control
