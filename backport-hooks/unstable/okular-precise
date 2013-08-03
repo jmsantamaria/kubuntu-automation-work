@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/plasma-active-dev,//g' \
+    -i control
