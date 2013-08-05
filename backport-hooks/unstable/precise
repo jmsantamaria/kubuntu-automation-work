@@ -17,8 +17,8 @@ sed -e 's/boost1.53/boost1.48/g' \
 rm *.symbols
 
 # LTS HW Backport Stack
-sed -e 's/libgl1-mesa-dev/libgl1-mesa-dev-lts-raring/g' \
-    -e 's/libgles2-mesa-dev/libgles2-mesa-dev-lts-raring/g' \
-    -e 's/libegl1-mesa-dev/libegl1-mesa-dev-lts-raring/g' \
-    -e 's/mesa-common-dev/mesa-common-dev-lts-raring/g' \
-    -i control
+#sed -e 's/libgl1-mesa-dev/libgl1-mesa-dev-lts-raring/g' \
+#    -e 's/libgles2-mesa-dev/libgles2-mesa-dev-lts-raring/g' \
+#    -e 's/libegl1-mesa-dev/libegl1-mesa-dev-lts-raring/g' \
+#    -e 's/mesa-common-dev/mesa-common-dev-lts-raring/g' \
+#    -i control
