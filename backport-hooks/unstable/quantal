@@ -7,4 +7,5 @@ sed -e 's/boost1.53/boost1.49/g' \
     -e 's/libboost-thread1.53-dev/libboost-thread1.49-dev/g' \
     -e 's/libpython2.7-dev/python2.7-dev/g' \
     -e 's/ libwayland-dev,//g' \
+    -e 's/libgphoto2-6-dev/libgphoto2-2-dev/g' \
     -i control
