@@ -5,6 +5,6 @@ quilt pop -a
 sed -e '/kubuntu_langpack_install.diff/d' -i patches/series
 quilt push -a
 # with this we don't need to depend on qapt and language-selector-common anymore
-sed -e '/^ libqapt-dev (>= 1.9.60)$/d' \
+sed -e 's/, libqapt-dev (>= 1.9.60)//' \
     -e '/^ language-selector-common, libqapt2-runtime$/d' \
     -i control

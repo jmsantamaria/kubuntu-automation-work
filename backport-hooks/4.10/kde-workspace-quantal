@@ -7,5 +7,3 @@ quilt push -a
 # install old randr stuff
 sed -e 's/freespacenotifier (>= ${source:Version})/freespacenotifier (>= ${source:Version}), kde-workspace-randr (>= ${source:Version})/' \
     -i control
-
-#    -e 's/^ ${sameVersionDep:kdelibs5-dev:kde-workspace-bin}/&, libglapi-mesa-lts-raring, libgl1-mesa-glx-lts-raring, libgles1-mesa-lts-raring/' \

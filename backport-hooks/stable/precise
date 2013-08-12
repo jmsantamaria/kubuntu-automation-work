@@ -1,12 +1,25 @@
 #!/bin/sh
 
-sed -e 's/boost1.49/boost1.48/g' \
-    -e 's/libboost-graph1.49-dev/libboost-graph1.48-dev/g' \
-    -e 's/libboost-graph1.49.0/libboost-graph1.48.0/g' \
-    -e 's/libboost-python1.49-dev/libboost-python1.48-dev/g' \
-    -e 's/libboost-thread1.49-dev/libboost-thread1.48-dev/g' \
+sed -e 's/boost1.53/boost1.48/g' \
+    -e 's/libboost-graph1.53-dev/libboost-graph1.48-dev/g' \
+    -e 's/libboost-graph1.53.0/libboost-graph1.48.0/g' \
+    -e 's/libboost-python1.53-dev/libboost-python1.48-dev/g' \
+    -e 's/libboost-thread1.53-dev/libboost-thread1.48-dev/g' \
     -e 's/libtiff5-dev/libtiff4-dev/g' \
+    -e 's/libpython2.7-dev/python2.7-dev/g' \
+    -e 's/ libwayland-dev,//g' \
+    -e 's/plasma-active-dev,//g' \
+    -e 's/libboost-dev/libboost1.48-dev/g' \
+    -e 's/libboost-graph-dev/libboost-graph1.48-dev/g' \
+    -e 's/libgphoto2-6-dev/libgphoto2-2-dev/g' \
     -i control
 
 # we don't need those - gcc 4.6 causes too much diff
 rm *.symbols
+
+# LTS HW Backport Stack
+#sed -e 's/libgl1-mesa-dev/libgl1-mesa-dev-lts-raring/g' \
+#    -e 's/libgles2-mesa-dev/libgles2-mesa-dev-lts-raring/g' \
+#    -e 's/libegl1-mesa-dev/libegl1-mesa-dev-lts-raring/g' \
+#    -e 's/mesa-common-dev/mesa-common-dev-lts-raring/g' \
+#    -i control
