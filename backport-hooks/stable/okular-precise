@@ -1,4 +1,4 @@
 #!/bin/sh
 
-sed -e 's/plasma-active-dev,//g' \
+sed -e '/plasma-active-dev,/d' \
     -i control

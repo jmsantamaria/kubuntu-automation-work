@@ -8,7 +8,6 @@ sed -e 's/boost1.53/boost1.48/g' \
     -e 's/libtiff5-dev/libtiff4-dev/g' \
     -e 's/libpython2.7-dev/python2.7-dev/g' \
     -e 's/ libwayland-dev,//g' \
-    -e 's/plasma-active-dev,//g' \
     -e 's/libboost-dev/libboost1.48-dev/g' \
     -e 's/libboost-graph-dev/libboost-graph1.48-dev/g' \
     -e 's/libgphoto2-6-dev/libgphoto2-2-dev/g' \
