@@ -2,3 +2,9 @@
 
 sed -e '/plasma-active-dev,/d' \
     -i control
+
+
+# disable the active package
+sed -e '/^Package: active-documentviewer$/,/^$/ s.^.#.' \
+    -i control
+rm -f active-documentviewer.install
