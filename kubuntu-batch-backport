@@ -128,8 +128,8 @@ for pkg in $(cat $listfile); do
 
     # run package adjustment hook
     export hookdir
-    test -x $hookdir/$release && $hookdir/$release
     test -x $hookdir/$pkg-$release && $hookdir/$pkg-$release
+    test -x $hookdir/$release && $hookdir/$release
 
     debuild --no-lintian -S $include_source -us -uc
 
