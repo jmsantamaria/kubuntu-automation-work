@@ -9,3 +9,5 @@ sed -e 's/boost1.53/boost1.49/g' \
     -e 's/ libwayland-dev,//g' \
     -e 's/libgphoto2-6-dev/libgphoto2-2-dev/g' \
     -i control
+
+rm *.symbols
