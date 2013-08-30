@@ -266,13 +266,18 @@ for package in packages:
         changelogRelease = release
     else:
         changelogRelease = "UNRELEASED"
-    subprocess.check_call(["dch", "-v", "4:%s-%s" % (version, debianVersion), "-D", changelogRelease, changelogEntry])
+    pkgChangelog = readAllFromFile("debian/changelog")
+    # Don't run dch again if the message is already part of the current
+    # changelog entry for this upstream version
+    pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, version), re.DOTALL)
+    if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % changelogEntry, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
+        subprocess.check_call(["dch", "-v", "4:%s-%s" % (version, debianVersion), "-D", changelogRelease, changelogEntry])
 
     try:
         if sru:
             subprocess.check_call(["debuild", "-S", "-nc"])
         else:
-            subprocess.check_call(["debcommit", "-a"])
+            subprocess.call(["debcommit", "-a"])
             debianVersion += "~ubuntu" + distversion + "~ppa1"
             if not args.nopush:
                 subprocess.check_call(["bzr", "push", ":parent"])
