@@ -2,4 +2,5 @@
 
 sed -e 's/libavogadro-dev (>= 1.0.3-1ubuntu5)/libavogadro-dev (>= 1.0.3-1ubuntu4)/g' \
     -e 's/libglew-dev/libglew1.5-dev/g' \
+    -e 's/Build-Depends:/Build-Depends: python2.7-dev, libboost-python1.48-dev,/g' \
     -i control
