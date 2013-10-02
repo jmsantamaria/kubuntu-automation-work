@@ -1,4 +1,4 @@
 #!/bin/sh
 
-sed -e 's/Build-Depends:/Build-Depends: libboost-python1.49-dev,/g' \
+sed -e 's/Build-Depends:/Build-Depends: libpython2.7-dev, libboost-python1.49-dev,/g' \
     -i control
