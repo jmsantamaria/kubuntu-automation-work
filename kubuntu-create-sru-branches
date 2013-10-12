@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+from launchpadlib.launchpad import Launchpad
+import subprocess
+import tempfile
+import shutil
+import re
+
+parser = argparse.ArgumentParser(description="Create branches for SRU packages")
+parser.add_argument("-r", "--release", required=True, help="Release name")
+parser.add_argument("-p", "--package", help="Package to branch")
+
+args = parser.parse_args()
+
+lp = Launchpad.login_with("kubuntu-automation", "production")
+ubuntu = lp.distributions["ubuntu"]
+lpseries = ubuntu.getSeries(name_or_version=args.release)
+kubuntu_packaging = lp.projects["kubuntu-packaging"]
+kubuntu_packagers = lp.people["kubuntu-packagers"]
+
+packaging_branches = kubuntu_packaging.getBranches()
+
+packages = []
+if not args.package:
+    f = open("kdesc-packages-" + args.release + ".txt", "r")
+    packagelist = f.readlines()
+    f.close()
+
+    for pkg in packagelist:
+        packages.append(pkg.strip())
+
+    if "kde4libs" in packages:
+        packages.remove("kde4libs")
+        packages.append("kdelibs")
+else:
+    packages.append(args.package)
+
+workdir = tempfile.mkdtemp()
+
+# get current dev branch
+for package in packages:
+
+    branch = "~kubuntu-packagers/kubuntu-packaging/" + package
+    branch_sru = "~kubuntu-packagers/kubuntu-packaging/" + package + "-" + args.release
+    branch_url = "lp:" + branch
+    branch_sru_url = "lp:" + branch_sru
+
+    # make sure the dev branch exists before continuing
+    assert lp.branches.getByUrl(url=branch_url)
+
+    # check if the branch already exists
+    lp_branch = lp.branches.getByUrl(url=branch_sru_url)
+
+    if not lp_branch:
+        os.chdir(workdir)
+        print("Branching %s ..." % branch_url)
+        subprocess.check_call(["bzr", "branch", branch_url])
+
+        os.chdir(workdir + "/" + package)
+        with open("debian/control", "r") as f:
+            control = f.read()
+
+        # Update Vcs link for new branch location
+        control = re.sub(branch, branch_sru, control)
+
+        with open("debian/control", "w") as f:
+            f.write(control)
+
+        subprocess.check_call(["bzr", "commit", "-m", "Update Vcs link for SRU branch location"])
+
+        print("Pushing %s ..." % branch_sru_url)
+        subprocess.check_call(["bzr", "push", branch_sru_url])
+
+# clean up
+shutil.rmtree(workdir)
