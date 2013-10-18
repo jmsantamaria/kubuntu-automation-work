@@ -43,7 +43,7 @@ workdir = tempfile.mkdtemp()
 for package in packages:
 
     branch = "~kubuntu-packagers/kubuntu-packaging/" + package
-    branch_sru = "~kubuntu-packagers/kubuntu-packaging/" + package + "-" + args.release
+    branch_sru = "~kubuntu-packagers/kubuntu-packaging/" + package + "-" + lpseries.version
     branch_url = "lp:" + branch
     branch_sru_url = "lp:" + branch_sru
 
