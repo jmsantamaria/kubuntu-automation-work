@@ -183,15 +183,6 @@ for package in packages:
 
     if sru:
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package) + '-' + distversion, "bzr"])
-        os.chdir("bzr")
-
-        if not sanitizeBranch(package):
-            print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
-            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-            moved.append((package, "bzr unclean or out of sync"))
-            continue
-
-        os.chdir(basedir + "/" + package)
 
         subprocess.check_call(["tar", "xJf", orig])
 
@@ -254,6 +245,12 @@ for package in packages:
                 continue
 
         os.chdir("bzr")
+
+        if not sanitizeBranch(package):
+            print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
+            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+            moved.append((package, "bzr unclean or out of sync"))
+            continue
     else:
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
         os.chdir("bzr")
