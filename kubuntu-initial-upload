@@ -125,10 +125,10 @@ def readPackages(filename):
 launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
 ubuntu = launchpad.distributions["ubuntu"]
 distversion = args.distversion
+series = ubuntu.getSeries(name_or_version=release)
 if args.distversion == None:
-    distversion = ubuntu.getSeries(name_or_version=release).version
+    distversion = series.version
 archive = ubuntu.main_archive
-series = ubuntu.current_series
 
 topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
                      '((\s+%(name_chars)s+)+)\;'
