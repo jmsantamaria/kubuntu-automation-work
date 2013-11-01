@@ -202,7 +202,7 @@ for package in packages:
             try:
                 subprocess.check_call(["pull-lp-source", "-d", package, release])
             except:
-                print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
+                print "==== Skipping %s, something wicked happened when pulling package from launchpad, moving to manual/" % (package,)
                 shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
                 moved.append((package, "something wicked happened when pulling package from launchpad"))
                 continue
