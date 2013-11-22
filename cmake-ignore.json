@@ -1,4 +1,5 @@
 {
+  "all": [ "CMake Warning (dev)", "// this is for Policy CMP0022 is not set: INTERFACE_LINK_LIBRARIES" ],
   "kde4libs": [ "FAM", "HUpnp", "HUPnP", "media-player-info", "ASPELL", "Aspell" ],
   "kate": [ "SharedMimeInfo" ],
   "kalzium": [ "Chemical mime data" ],

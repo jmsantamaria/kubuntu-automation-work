@@ -57,6 +57,11 @@ def get_log(build):
     return content
 
 def isCmakeDepIgnored(depLine, package):
+    if 'all' in cmakeIgnore:
+        for dep in cmakeIgnore['all']:
+            if depLine.startswith(dep):
+                return True
+
     if not package in cmakeIgnore:
         return False
 
