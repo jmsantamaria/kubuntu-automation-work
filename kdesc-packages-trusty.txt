@@ -57,7 +57,6 @@ kdesdk-strigi-analyzers
 kdesdk-thumbnailers
 kde-wallpapers
 kdewebdev
-kde-workspace
 kdf
 kdiamond
 kdnssd
