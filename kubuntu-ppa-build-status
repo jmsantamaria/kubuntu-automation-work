@@ -147,6 +147,8 @@ def get_cmake(log, package):
                 continue
             if re.search(r'CMake Warning at [^ :]+:\d+ \(find_package\)', line):
                 continue
+            if line.startswith("CMake Warning (dev)"):
+                continue
 
             if status == STATUS_SUCCESS:
                 status = STATUS_WARNING
