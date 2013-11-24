@@ -17,3 +17,4 @@ libnepomukwidgets-dev
 okular-dev
 libqmobipocket-dev
 libkomparediff2-dev
+kdepim-dev
