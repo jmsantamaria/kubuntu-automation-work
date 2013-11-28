@@ -27,5 +27,5 @@
   "kolourpaint": [ "PkgConfig" ],
   "palapeli": [ "qvoronoi" ],
   "parley": [ "PkgConfig" ],
-  "kopete": [ "XMMS" ]
+  "kopete": [ "Xmms" ]
 }
