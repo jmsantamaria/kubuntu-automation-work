@@ -70,6 +70,7 @@
                        ],
     "lokalize": [ "executable-not-elf-or-script" ],
     "krfb": [ "package-name-doesnt-match-sonames" ],
+    "kompare": [ "package-name-doesnt-match-sonames" ],
     "libkdcraw": [ "libkdcraw22: embedded-library" ],
     "python3-pykde4": [ "python3-pykde4: python-script-but-no-python-dep" ]
 }
