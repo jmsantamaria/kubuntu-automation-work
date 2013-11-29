@@ -16,3 +16,6 @@ Set up a cron job that generates the status page using kubuntu-ppa-build-status-
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
   and fill the necessary variables.
   CREDENTIALS is the user:pw part from the https apt ppa url
+
+to backport:
+ ./kubuntu-batch-backport -v 4.11.97 -f trusty -t saucy -V 13.10 -c ~/src/4.11.97/saucy/ -T unstable
