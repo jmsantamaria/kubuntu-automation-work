@@ -73,6 +73,6 @@
     "krfb": [ "package-name-doesnt-match-sonames" ],
     "kompare": [ "package-name-doesnt-match-sonames" ],
     "libkdcraw": [ "libkdcraw22: embedded-library" ],
-    "python3-pykde4": [ "python3-pykde4: python-script-but-no-python-dep" ],
+    "pykde4": [ "python3-pykde4: python-script-but-no-python-dep" ],
     "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ]
 }
