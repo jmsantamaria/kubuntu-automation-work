@@ -96,6 +96,7 @@ for package in packages:
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package) + '-' + lpseries.version, "bzr"])
         try:
             subprocess.check_call(["pull-ppa-source", "kubuntu-ppa/ppa", package, release])
+            ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
         except subprocess.CalledProcessError, e:
             if e.returncode == 2:
                 print >> sys.stderr, "=== Skipping " + package + ", package not found."
