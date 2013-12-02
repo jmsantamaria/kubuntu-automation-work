@@ -14,7 +14,7 @@ if lastDigit >= 80:
 else:
     stability = "stable"
 
-p = subprocess.Popen(["sftp", "-b", "-", "ftpmaster.kde.org:/home/ftpubuntu/%s/%s/src/" % (stability, version)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/%s/src/" % (stability, version)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 output, _ = p.communicate("ls")
 
 for line in output.splitlines():

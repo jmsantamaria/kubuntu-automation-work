@@ -36,7 +36,7 @@ else:
     stability = "stable"
 
 # fetch orig tarball
-remote = "ftpmaster.kde.org:/home/ftpubuntu/%s/calligra-%s/calligra-l10n/*tar*" % (stability, version)
+remote = "depot.kde.org:/home/ftpubuntu/%s/calligra-%s/calligra-l10n/*tar*" % (stability, version)
 subprocess.check_call(["rsync", "--progress", "-CvzapP", "--compress-level=9", "-e ssh", remote, "."])
 
 tars = glob.glob("calligra-l10n-*-%s.tar.xz" % (version))

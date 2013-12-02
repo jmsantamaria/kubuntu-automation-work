@@ -1,6 +1,6 @@
 Add following to your .ssh/config and make sure you have an ssh-agent running and the key unlocked
 
-Host ftpmaster.kde.org
+Host depot.kde.org
     User ftpubuntu
 
 ./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
