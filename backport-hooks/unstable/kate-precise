@@ -4,5 +4,5 @@ sed -e 's/python-kde4-dev (>= 4:4.9.80)/python-kde4-dev (>= 4:4.9)/g' \
     -i control
 
 # python lib path is not multiarched
-sed -e 's/$(DEB_HOST_MULTIARCH)\///' \
+sed -e 's/\$(DEB_HOST_MULTIARCH)\///' \
     -i debian/rules
