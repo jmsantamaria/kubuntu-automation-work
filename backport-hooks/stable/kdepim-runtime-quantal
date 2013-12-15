@@ -1,4 +1,0 @@
-#!/bin/sh
-
-sed -e 's/libqtwebkit-dev/libqtwebkit-dev, libxerces-c-dev/g' \
-    -i control

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+sed -e 's/boost1.54/boost1.53/g' \
+    -e 's/libboost-graph1.54-dev/libboost-graph1.53-dev/g' \
+    -e 's/libboost-graph1.54.0/libboost-graph1.53.0/g' \
+    -e 's/libboost-python1.54-dev/libboost-python1.53-dev/g' \
+    -e 's/libboost-thread1.54-dev/libboost-thread1.53-dev/g' \
+    -i control
+
+rm *.symbols

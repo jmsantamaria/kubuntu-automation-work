@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# in pkg-kde-tools
+sed -e '\#usr/bin/preparetips#d' \
+    -i rocs.install
