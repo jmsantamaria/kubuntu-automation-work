@@ -118,8 +118,17 @@ def upstreamName(package):
         return "attica"
     elif package == "kactivities-kf5" and args.kf5:
         return "kactivities"
+    elif package == "kwallet-framework" and args.kf5:
+        return "kwallet"
     else:
         return package
+
+#kactivities has a bzr branch name which doesn't match upstream in kf5
+def bzrBranchName(package):
+    if package == "kactivities-kf5" and args.kf5:
+        return "kactivities-kf5"
+    else:
+        return upstreamName(package)
 
 def readPackages(filename):
     f = open(filename, "r")
@@ -276,11 +285,7 @@ for package in packages:
             moved.append((package, "bzr unclean or out of sync"))
             continue
     else:
-        # very inelegant but the bzr branch can't match the upstream name for kactivities - jriddell 2014-03-03
-        if args.kf5 and package == "kactivities-kf5":
-            subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + "kactivities-kf5", "bzr"])
-        else:
-            subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + bzrBranchName(package), "bzr"])
         os.chdir("bzr")
 
         if not sanitizeBranch(package):
