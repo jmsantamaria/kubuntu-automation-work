@@ -293,12 +293,6 @@ f.close()
 if not os.path.isdir(args.cache + "/buildlogs"):
     os.mkdir(args.cache + "/buildlogs")
 
-import time
-ts = time.time()
-import datetime
-date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-
-
 print """
 <html>
 
@@ -326,9 +320,9 @@ print """
 <body>
 
 <h1 id="top">Kubuntu KDE %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
-
-<p>%s</p>
-
+"""
+print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+print """
 <table class="grid">
 
 <thead><tr>
@@ -481,8 +475,6 @@ print """
 
 </table>
 """
-
-print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 
 print """
 </body>
