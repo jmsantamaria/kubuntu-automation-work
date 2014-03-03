@@ -11,7 +11,7 @@ import tempfile
 import urllib
 import shutil
 
-parser = argparse.ArgumentParser(description="Upload new KDE SC version to the PPA.")
+parser = argparse.ArgumentParser(description="Upload new KDE SC or KF5 version to the PPA.")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-m", "--message", required=True, help="Changelog and commit message")
@@ -20,6 +20,8 @@ parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are 
 parser.add_argument("-y", "--distversion", help="Dist version number, e.g. 12.10")
 parser.add_argument("--nopush", action="store_true", help="Don't Push branches while preparing the packages")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
+parser.add_argument("--kf5", action="store_true", help="Packages are KDE Frameworks 5")
+parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
 
 args = parser.parse_args()
 
@@ -28,6 +30,9 @@ version = args.version
 changelogEntry = args.message
 sru = args.sru
 cwd = os.getcwd()
+epoch = "4:"
+if args.kf5:
+    epoch = ""
 
 def readAllFromFile(filename):
     f = open(filename, "r")
@@ -62,7 +67,8 @@ def sanitizeBranch(package):
     archiveTopline = firstLineMatch(topline, archiveChangelog)
     archiveEndline = firstLineMatch(endline, archiveChangelog)
 
-    if archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog:
+    if not args.kf5 and (archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog):
+        print "bzr does not match archive"
         return False
 
     return True
@@ -108,8 +114,23 @@ def extractDebianFile(package, extractfile):
 def upstreamName(package):
     if package == "kde4libs":
         return "kdelibs"
+    elif package == "attica-kf5" and args.kf5:
+        return "attica"
+    elif package == "kactivities-kf5" and args.kf5:
+        return "kactivities"
+    elif package == "kwallet-framework" and args.kf5:
+        return "kwallet"
     else:
         return package
+
+#kactivities has a bzr branch name which doesn't match upstream in kf5
+def bzrBranchName(package):
+    if package == "kactivities-kf5" and args.kf5:
+        return "kactivities-kf5"
+    if package == "kwallet-framework" and args.kf5:
+        return "kwallet-framework"
+    else:
+        return upstreamName(package)
 
 def readPackages(filename):
     f = open(filename, "r")
@@ -142,16 +163,21 @@ lastDigit = int(versionParts[-1])
 
 if lastDigit >= 80:
     stability = "unstable"
+elif args.kf5:   # Fix this once 5.0 comes out - jriddell 2014-03-03
+    stability = "unstable"
 else:
     stability = "stable"
 
 if args.packages:
     packages = args.packages.split(",")
+elif args.kf5:
+    packages = readPackages("kf5-packages-" + release + ".txt")
 else:
     packages = readPackages("kdesc-packages-" + release + ".txt")
 
     # move libraries to the front
     packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
+    packages.sort(key=lambda package: package.find("extra-cmake-modules") != -1 and "_" + package or package)
 
 if args.tmpdir:
     basedir = os.path.abspath(args.tmpdir)
@@ -174,12 +200,21 @@ moved = []
 for package in packages:
     os.mkdir(basedir + "/" + package)
     os.chdir(basedir + "/" + package)
+    if package == "extra-cmake-modules":
+        upstreamVersion = args.ecmversion
+    else:
+        upstreamVersion = version
 
     # fetch orig tarball
-    remote = "depot.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % (stability, version, upstreamName(package), version)
+    if args.kf5:
+        remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
+          (stability, version, upstreamName(package), upstreamVersion)
+    else:
+        remote = "depot.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % \
+          (stability, version, upstreamName(package), upstreamVersion)
     subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
-    orig = "%s_%s.orig.tar.xz" % (package, version)
-    os.rename("%s-%s.tar.xz" % (upstreamName(package), version), orig)
+    orig = "%s_%s.orig.tar.xz" % (package, upstreamVersion)
+    os.rename("%s-%s.tar.xz" % (upstreamName(package), upstreamVersion), orig)
 
     if sru:
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package) + '-' + distversion, "bzr"])
@@ -211,7 +246,7 @@ for package in packages:
         subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
         os.rename("%s-%s/debian" % (package, prevVersion), "./debian")
 
-        p = subprocess.Popen(["diff", "-Nurw", "%s-%s" % (package, prevVersion), "%s-%s" % (package, version)], stdout=subprocess.PIPE)
+        p = subprocess.Popen(["diff", "-Nurw", "%s-%s" % (package, prevVersion), "%s-%s" % (package, upstreamVersion)], stdout=subprocess.PIPE)
         diff, _ = p.communicate()
         p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         diffstat, _ = p.communicate(diff)
@@ -252,7 +287,7 @@ for package in packages:
             moved.append((package, "bzr unclean or out of sync"))
             continue
     else:
-        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package), "bzr"])
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + bzrBranchName(package), "bzr"])
         os.chdir("bzr")
 
         if not sanitizeBranch(package):
@@ -264,7 +299,7 @@ for package in packages:
     control = readAllFromFile("debian/control")
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
     for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
-        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= 4:%s)' % (builddep, version), control)
+        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
     f = open("debian/control", "w")
     f.write(control)
     f.close()
@@ -279,9 +314,9 @@ for package in packages:
     pkgChangelog = readAllFromFile("debian/changelog")
     # Don't run dch again if the message is already part of the current
     # changelog entry for this upstream version
-    pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, version), re.DOTALL)
+    pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, upstreamVersion), re.DOTALL)
     if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % changelogEntry, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
-        subprocess.check_call(["dch", "-v", "4:%s-%s" % (version, debianVersion), "-D", changelogRelease, changelogEntry])
+        subprocess.check_call(["dch", "-v", "%s%s-%s" % (epoch, upstreamVersion, debianVersion), "-D", changelogRelease, changelogEntry])
 
     try:
         subprocess.call(["debcommit", "-a"])
@@ -290,7 +325,7 @@ for package in packages:
             subprocess.check_call(["bzr", "push", ":parent"])
         subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
-        subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, version, debianVersion), uploaddir])
+        subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
     except subprocess.CalledProcessError, e:
         # package build failed, manual intervention necessary
         print "==== " + package + " build was interrupted, moving to manual/"
