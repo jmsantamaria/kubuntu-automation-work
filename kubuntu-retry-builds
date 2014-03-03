@@ -9,7 +9,8 @@ import sys
 
 parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
 parser.add_argument("-r", "--release", default=UbuntuDistroInfo().devel(), help="Release name (default: current development release)")
-parser.add_argument("--ppa", action="store_true", help="Check the PPA instead of the main archive.")
+parser.add_argument("--ppa", action="store_true", help="Check kubuntu-ninjas PPA instead of the main archive.")
+parser.add_argument("--experimental", action="store_true", help="Check kubuntu-ppa/experimental PPA instead of the main archive.")
 parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
 parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
 parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
@@ -18,6 +19,7 @@ args = parser.parse_args()
 
 release = args.release
 ppa = args.ppa
+experimental = args.experimental
 if args.proposed:
     pocket = "Proposed"
 else:
@@ -31,6 +33,8 @@ ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
 if ppa:
     archive = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
+elif experimental:
+    archive = lp.people["kubuntu-ppa"].getPPAByName(name="experimental")
 else:
     archive = ubuntu.main_archive
 
