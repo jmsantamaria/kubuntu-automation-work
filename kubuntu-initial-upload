@@ -127,6 +127,8 @@ def upstreamName(package):
 def bzrBranchName(package):
     if package == "kactivities-kf5" and args.kf5:
         return "kactivities-kf5"
+    if package == "kwallet-framework" and args.kf5:
+        return "kwallet-framework"
     else:
         return upstreamName(package)
 
