@@ -14,6 +14,7 @@ parser.add_argument("--experimental", action="store_true", help="Check kubuntu-p
 parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
 parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
 parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
+parser.add_argument("--kf5", action="store_true", help="Retry KDE Frameworks 5 packages.")
 
 args = parser.parse_args()
 
@@ -68,7 +69,10 @@ def can_retry(log, arch):
 
     return True
 
-f = open("kdesc-packages-"+release+"-unstable-backport.txt", "r")
+if args.kf5:
+    f = open("kf5-packages-"+release+".txt", "r")
+else:
+    f = open("kdesc-packages-"+release+"-unstable-backport.txt", "r")
 kdesc = f.readlines()
 f.close()
 

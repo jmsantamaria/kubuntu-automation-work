@@ -27,5 +27,8 @@
   "kolourpaint": [ "PkgConfig" ],
   "palapeli": [ "qvoronoi" ],
   "parley": [ "PkgConfig" ],
-  "kopete": [ "Xmms" ]
+  "kopete": [ "Xmms" ],
+  "karchive": [ "CMake Warning" ],
+  "kcoreaddons": [ "FAM" ],
+  "solid": [ "MediaPlayerInfo" ]
 }
