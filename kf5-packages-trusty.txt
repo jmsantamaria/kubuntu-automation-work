@@ -51,7 +51,7 @@ krunner
 kservice
 ktextwidgets
 kunitconversion
-kwallet-framework
+kwallet-kf5
 kwidgetsaddons
 kwindowsystem
 kxmlgui
