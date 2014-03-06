@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/libgphoto2-dev/libgphoto2-6-dev/g' \
+    -i control

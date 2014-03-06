@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/libindi-dev (>= 0.9.7)/libindi-dev (>= 0.9.6)/g' \
+    -i control
