@@ -18,3 +18,5 @@ okular-dev
 libqmobipocket-dev
 libkomparediff2-dev
 kdepim-dev
+libkfilemetadata-dev
+libastro-dev
