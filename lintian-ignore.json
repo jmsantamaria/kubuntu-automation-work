@@ -74,5 +74,6 @@
     "krfb": [ "package-name-doesnt-match-sonames" ],
     "kompare": [ "package-name-doesnt-match-sonames" ],
     "libkdcraw": [ "libkdcraw22: embedded-library" ],
-    "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ]
+    "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ],
+    "kppp": [ "non-standard-executable-perm usr/bin/kppp" ]
 }
