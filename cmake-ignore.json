@@ -30,5 +30,6 @@
   "kopete": [ "Xmms" ],
   "karchive": [ "CMake Warning" ],
   "kcoreaddons": [ "FAM" ],
-  "solid": [ "MediaPlayerInfo" ]
+  "solid": [ "MediaPlayerInfo" ],
+  "kget": [ "NepomukCore", "NepomukWidgets" ]
 }
