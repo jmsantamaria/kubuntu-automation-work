@@ -6,7 +6,7 @@
   "kdegames": [ "qvoronoi", "PyQt4", "PyKDE4", "SQLite", "Twisted" ],
   "printer-applet": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "ark": [ "qjson" ],
-  "kde-runtime": [ "Xine" ],
+  "kde-runtime": [ "Xine", "NepomukCore" ],
   "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
   "krdc": [ "freerdp" ],
   "kross-interpreters": [ "FALCON", "Ruby" ],
