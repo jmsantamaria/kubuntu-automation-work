@@ -62,7 +62,6 @@ kde-wallpapers
 kdewebdev
 kdf
 kdiamond
-kdnssd
 kfilemetadata
 kfloppy
 kfourinline
@@ -166,3 +165,4 @@ superkaramba
 svgpart
 sweeper
 umbrello
+zeroconf-slave
