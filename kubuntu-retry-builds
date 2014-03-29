@@ -72,7 +72,7 @@ def can_retry(log, arch):
 if args.kf5:
     f = open("kf5-packages-"+release+".txt", "r")
 else:
-    f = open("kdesc-packages-"+release+"-unstable-backport.txt", "r")
+    f = open("kdesc-packages-"+release+".txt", "r")
 kdesc = f.readlines()
 f.close()
 
