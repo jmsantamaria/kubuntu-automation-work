@@ -52,7 +52,7 @@ kservice
 ktexteditor
 ktextwidgets
 kunitconversion
-kwallet-kf5
+kwallet
 kwidgetsaddons
 kwindowsystem
 kxmlgui
