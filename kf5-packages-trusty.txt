@@ -20,7 +20,7 @@ kded
 kdesignerplugin
 kdesu
 kdewebkit
-kdnssd-framework
+kdnssd
 kdoctools
 kemoticons
 kf5umbrella
@@ -49,6 +49,7 @@ kpty
 kross
 krunner
 kservice
+ktexteditor
 ktextwidgets
 kunitconversion
 kwallet-kf5
