@@ -31,5 +31,6 @@
   "karchive": [ "CMake Warning" ],
   "kcoreaddons": [ "FAM" ],
   "solid": [ "MediaPlayerInfo" ],
-  "kget": [ "NepomukCore", "NepomukWidgets" ]
+  "kget": [ "NepomukCore", "NepomukWidgets" ],
+  "kwallet-kf5": [ "Gpgme", "QGpgme" ]
 }
