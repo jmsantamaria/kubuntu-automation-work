@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -e 's/Build-Depends:/Build-Depends: nepomuk-core-dev,/' \
+    -i control
