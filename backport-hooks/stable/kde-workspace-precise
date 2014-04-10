@@ -7,7 +7,6 @@ quilt push -a
 # install old randr stuff
 sed -e 's/freespacenotifier (>= ${source:Version})/freespacenotifier (>= ${source:Version}), kde-workspace-randr (>= ${source:Version})/' \
     -e 's/kde-base-artwork/kde-base-artwork, kde-workspace-randr/' \
-    -e 's/libxcb-sync-dev/libxcb-sync0-dev/' \
     -i control
 
 cp $hookdir/kdm.upstart.precise kdm.upstart

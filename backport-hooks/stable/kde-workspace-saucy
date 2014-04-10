@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# install old randr stuff
-sed -e 's/libxcb-sync-dev/libxcb-sync0-dev/' \
-    -i control
-
-cp $hookdir/kdm.upstart.precise kdm.upstart
