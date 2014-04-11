@@ -22,3 +22,4 @@ libkfilemetadata-dev
 libastro-dev
 baloo-dev
 libbaloowidgets-dev
+smokekde-dev
