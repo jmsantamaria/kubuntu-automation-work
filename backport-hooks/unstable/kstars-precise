@@ -2,3 +2,6 @@
 
 sed -e 's/libindi-dev (>= 0.9.7)/libindi-dev (>= 0.9.6)/g' \
     -i control
+
+sed -e 's/, astrometry.net//g' \
+    -i control
