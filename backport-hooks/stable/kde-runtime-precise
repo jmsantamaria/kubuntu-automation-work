@@ -9,3 +9,6 @@ sed -e '/^ libqapt-dev (>= 1.9.60), $/d' \
     -e '/^ language-selector-common, libqapt2-runtime$/d' \
     -e '/^, libkubuntu-dev$/d' \
     -i control
+
+sed -e '/sftp/d' -i kde-runtime.install
+sed -e '/sftp/d' -i kde-runtime-data.install
