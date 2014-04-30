@@ -10,3 +10,9 @@ cat << EOF >> kdepimlibs5-dev.install
 
 usr/lib/libgpgme++-pth.so
 EOF
+
+sed -e '/libaccounts-qt-dev,/d' \
+    -i control
+
+sed -e '/libsignon-qt-dev.*)/d' \
+    -i control
