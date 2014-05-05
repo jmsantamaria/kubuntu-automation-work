@@ -34,6 +34,16 @@ epoch = "4:"
 if args.kf5:
     epoch = ""
 
+kf5portingAids = ["kdelibs4support",
+                  "kfileaudiopreview",
+                  "khtml".
+                  "kjs",
+                  "kjsembed",
+                  "kmediaplayer",
+                  "kross",
+                  "krunner",
+                 ]
+
 def readAllFromFile(filename):
     f = open(filename, "r")
     result = f.read()
@@ -118,7 +128,7 @@ def upstreamName(package):
         return "attica"
     elif package == "kactivities-kf5" and args.kf5:
         return "kactivities"
-    elif package == "kwallet-framework" and args.kf5:
+    elif package == "kwallet-kf5" and args.kf5:
         return "kwallet"
     else:
         return package
@@ -127,8 +137,8 @@ def upstreamName(package):
 def bzrBranchName(package):
     if package == "kactivities-kf5" and args.kf5:
         return "kactivities-kf5"
-    if package == "kwallet-framework" and args.kf5:
-        return "kwallet-framework"
+    if package == "kwallet-kf5" and args.kf5:
+        return "kwallet-kf5"
     else:
         return upstreamName(package)
 
@@ -206,7 +216,10 @@ for package in packages:
         upstreamVersion = version
 
     # fetch orig tarball
-    if args.kf5:
+    if args.kf5 and upstreamName(package) in kf5portingAids:
+        remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/portingAids/%s/%s-%s.tar.xz" % \
+          (stability, version, upstreamName(package), upstreamVersion)
+    elif args.kf5:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
     else:
