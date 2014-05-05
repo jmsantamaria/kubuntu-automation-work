@@ -130,6 +130,8 @@ def upstreamName(package):
         return "kactivities"
     elif package == "kwallet-kf5" and args.kf5:
         return "kwallet"
+    elif package == "kdnssd-kf5" and args.kf5:
+        return "kdnssd"
     else:
         return package
 
@@ -217,7 +219,7 @@ for package in packages:
 
     # fetch orig tarball
     if args.kf5 and upstreamName(package) in kf5portingAids:
-        remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/portingAids/%s/%s-%s.tar.xz" % \
+        remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/portingAids/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
     elif args.kf5:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
