@@ -14,7 +14,7 @@ kconfigwidgets
 kcoreaddons
 kcrash
 kdbusaddons
-kde4support
+kdelibs4support
 kdeclarative
 kded
 kdesignerplugin
@@ -23,7 +23,6 @@ kdewebkit
 kdnssd-kf5
 kdoctools
 kemoticons
-kf5umbrella
 kfileaudiopreview
 kglobalaccel
 kguiaddons
