@@ -85,15 +85,9 @@ def sanitizeBranch(package):
 
 def extractDebianFile(package, extractfile):
     try:
-        source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Proposed", source_name=package)[0]
-    except:
-        try:
-            source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Updates", source_name=package)[0]
-        except:
-            try:
-                source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Release", source_name=package)[0]
-            except IndexError:
-                return True
+        source = archive.getPublishedSources(distro_series=series, exact_match=True, pocket="Release", source_name=package)[0]
+    except IndexError:
+        return True
 
     pkgFiles = []
     sourceUrls = source.sourceFileUrls()
@@ -163,12 +157,13 @@ if args.distversion == None:
     distversion = series.version
 archive = ubuntu.main_archive
 
-topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
-                     '((\s+%(name_chars)s+)+)\;'
-                     % {'name_chars': '[-+0-9a-z.]'},
-                     re.IGNORECASE)
-endline = re.compile('^ -- (.*) <(.*)>(  ?)((\w+\,\s*)?\d{1,2}\s+\w+\s+'
-                     '\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}(\s+\([^\\\(\)]\))?\s*)$')
+if not sru:
+    topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
+                         '((\s+%(name_chars)s+)+)\;'
+                         % {'name_chars': '[-+0-9a-z.]'},
+                         re.IGNORECASE)
+    endline = re.compile('^ -- (.*) <(.*)>(  ?)((\w+\,\s*)?\d{1,2}\s+\w+\s+'
+                         '\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}(\s+\([^\\\(\)]\))?\s*)$')
 
 versionParts = version.split(".")
 lastDigit = int(versionParts[-1])
@@ -232,21 +227,16 @@ for package in packages:
     os.rename("%s-%s.tar.xz" % (upstreamName(package), upstreamVersion), orig)
 
     if sru:
-        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + upstreamName(package) + '-' + distversion, "bzr"])
-
         subprocess.check_call(["tar", "xJf", orig])
 
         # fetch and extract previous version
         try:
             subprocess.check_call(["pull-lp-source", "-d", package, release + "-proposed"])
         except:
-            try:
+            try: 
                 subprocess.check_call(["pull-lp-source", "-d", package, release])
             except:
-                print "==== Skipping %s, something wicked happened when pulling package from launchpad, moving to manual/" % (package,)
-                shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
                 moved.append((package, "something wicked happened when pulling package from launchpad"))
-                continue
 
         dscname = glob.glob("%s_*.dsc" % (package,))[0]
         match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
@@ -294,13 +284,10 @@ for package in packages:
             if choice not in ("yes", "y", ""):
                 continue
 
-        os.chdir("bzr")
-
-        if not sanitizeBranch(package):
-            print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
-            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-            moved.append((package, "bzr unclean or out of sync"))
-            continue
+        if upstreamName(package) != package:
+            os.rename("%s-%s" % (upstreamName(package), version), "%s-%s" % (package, version))
+        os.rename("./debian", "%s-%s/debian" % (package, version))
+        os.chdir("%s-%s" % (package, version))
     else:
         subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/" + bzrBranchName(package), "bzr"])
         os.chdir("bzr")
@@ -321,11 +308,14 @@ for package in packages:
 
     debianVersion = "0ubuntu"
     if sru:
-        debianVersion += "0.1"
+        debianVersion += "0.1~ubuntu" + distversion + "~ppa1"
     else:
         debianVersion += "1"
 
-    changelogRelease = "UNRELEASED"
+    if sru:
+        changelogRelease = release
+    else:
+        changelogRelease = "UNRELEASED"
     pkgChangelog = readAllFromFile("debian/changelog")
     # Don't run dch again if the message is already part of the current
     # changelog entry for this upstream version
@@ -334,11 +324,14 @@ for package in packages:
         subprocess.check_call(["dch", "-v", "%s%s-%s" % (epoch, upstreamVersion, debianVersion), "-D", changelogRelease, changelogEntry])
 
     try:
-        subprocess.call(["debcommit", "-a"])
-        debianVersion += "~ubuntu" + distversion + "~ppa1"
-        if not args.nopush:
-            subprocess.check_call(["bzr", "push", ":parent"])
-        subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+        if sru:
+            subprocess.check_call(["debuild", "-S", "-nc"])
+        else:
+            subprocess.call(["debcommit", "-a"])
+            debianVersion += "~ubuntu" + distversion + "~ppa1"
+            if not args.nopush:
+                subprocess.check_call(["bzr", "push", ":parent"])
+            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
     except subprocess.CalledProcessError, e:
