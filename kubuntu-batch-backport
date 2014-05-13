@@ -28,7 +28,7 @@ printhelp() {
     echo "  -s --source <archive>             archive/ppa to pull the packages from [kubuntu-ninjas/ppa],"
     echo "                                    use 'archive' to pull from the primary archive"
     echo "  -T --type <type>                  release type [stable]"
-    echo "  -sa                               include usptream source (Default: no)"
+    echo "  -sa                               include upstream source (Default: no)"
     echo "  -h --help                         show this help and exit"
     exit 0
 
