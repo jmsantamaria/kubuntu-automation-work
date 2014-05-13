@@ -1,7 +1,7 @@
 #!/bin/bash
 
 script=$0
-urgency="low"
+urgency="medium"
 cachedir="$(pwd)/cache/backport"
 hookdir="$(pwd)/backport-hooks/"
 build=1
@@ -24,7 +24,7 @@ printhelp() {
     echo "  -c --cache <path>                 location where the packages will be prepared in [./cache/backport]"
     echo "  -b --hookdir <path>               location of the backport hooks [./backport-hooks]"
     echo "  -B --build <num>                  build number (~ppa<num>) [1]"
-    echo "  -u --urgency <urgency>            urgency to use in changelog [low]"
+    echo "  -u --urgency <urgency>            urgency to use in changelog [medium]"
     echo "  -s --source <archive>             archive/ppa to pull the packages from [kubuntu-ninjas/ppa],"
     echo "                                    use 'archive' to pull from the primary archive"
     echo "  -T --type <type>                  release type [stable]"
