@@ -8,7 +8,7 @@ import re
 import sys
 
 parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
-parser.add_argument("-r", "--release", default=UbuntuDistroInfo().devel(), help="Release name (default: current development release)")
+parser.add_argument("-r", "--release", default="trusty", help="Release name (default: current development release)")
 parser.add_argument("--ppa", action="store_true", help="Check kubuntu-ninjas PPA instead of the main archive.")
 parser.add_argument("--experimental", action="store_true", help="Check kubuntu-ppa/experimental PPA instead of the main archive.")
 parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
