@@ -32,5 +32,6 @@
   "kcoreaddons": [ "FAM" ],
   "solid": [ "MediaPlayerInfo" ],
   "kget": [ "NepomukCore", "NepomukWidgets" ],
-  "kwallet-kf5": [ "Gpgme", "QGpgme" ]
+  "kwallet-kf5": [ "Gpgme", "QGpgme" ],
+  "oxygen": [ "XCB_" ]
 }
