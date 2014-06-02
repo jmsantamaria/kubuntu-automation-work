@@ -17,6 +17,7 @@ parser.add_argument("-p", "--ppa", help="PPA to download the package from. Forma
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
+parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 args = parser.parse_args()
@@ -401,7 +402,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             # Lintian output is only generated on i386
-            if (arch == "i386"):
+            if (arch == "i386" and not args.nolintian):
                 try:
                     output, status = get_lintian(log, package)
                 except ValueError:
