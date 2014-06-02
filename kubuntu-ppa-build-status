@@ -81,13 +81,13 @@ def get_cmake(log, package):
     logLines = cmakeLog.splitlines()
     highlightLines = set()
 
-    if "The following OPTIONAL packages could NOT be located" in cmakeLog:
+    if ("The following OPTIONAL packages could NOT be located" in cmakeLog) or ("The following OPTIONAL packages have not been found" in cmakeLog):
         startMsg = False
         startLine = False
         numIgnored = 0
         numNotIgnored = 0
         for i, line in enumerate(logLines):
-            if not startMsg and "The following OPTIONAL packages could NOT be located" in line:
+            if not startMsg and (("The following OPTIONAL packages could NOT be located" in line) or ("The following OPTIONAL packages have not been found")):
                 startMsg = True
             elif startMsg and not startLine and "--------------------------------" in line:
                 startLine = True
