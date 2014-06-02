@@ -81,18 +81,23 @@ def get_cmake(log, package):
     logLines = cmakeLog.splitlines()
     highlightLines = set()
 
-    if ("The following OPTIONAL packages could NOT be located" in cmakeLog) or ("The following OPTIONAL packages have not been found" in cmakeLog):
+    if "The following OPTIONAL packages have not been found" in cmakeLog:
         startMsg = False
         startLine = False
         numIgnored = 0
         numNotIgnored = 0
+        # The missing optionals block is identified by
+        # - startMsg
+        #  - followed by an empty line (startline)
+        #    - followed by the actual content lines
+        #  - followed by an empty line (endline)
         for i, line in enumerate(logLines):
-            if not startMsg and (("The following OPTIONAL packages could NOT be located" in line) or ("The following OPTIONAL packages have not been found")):
+            if not startMsg and "The following OPTIONAL packages have not been found" in line:
                 startMsg = True
-            elif startMsg and not startLine and "--------------------------------" in line:
+            elif startMsg and not startLine and not line:
                 startLine = True
             elif startMsg and startLine:
-                if "--------------------------------" in line:
+                if not line:
                     break
                 match = re.search(r'^ *\* (.*)$', line)
                 if match:
@@ -104,8 +109,8 @@ def get_cmake(log, package):
                         highlightLines.add(i)
 
         if numIgnored == 0 and numNotIgnored == 0:
-            # how could this happen?!
-            status = STATUS_ERROR
+            print "Parsing of of the cmake log for %s failed as optional missing packages were detected but parsing of the actual packages failed" % package
+            sys.exit(1)
         elif numNotIgnored != 0:
             status = STATUS_WARNING
         else:
