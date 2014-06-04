@@ -33,5 +33,6 @@
   "solid": [ "MediaPlayerInfo" ],
   "kget": [ "NepomukCore", "NepomukWidgets" ],
   "kwallet-kf5": [ "Gpgme", "QGpgme" ],
-  "oxygen": [ "XCB_" ]
+  "oxygen": [ "XCB_" ],
+  "frameworkintegration": [ "OxygenFont" ]
 }
