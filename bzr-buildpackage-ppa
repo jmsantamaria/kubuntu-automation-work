@@ -8,9 +8,9 @@ import sys
 
 parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
 #parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
-parser.add_argument("-d", "--dist", default="trusty", help="Distribution name (default: current development release)")
+parser.add_argument("-d", "--dist", default="utopic", help="Distribution name (default: current development release)")
 parser.add_argument("-s", "--suffix", default=1, help="PPA version suffix, i.e. ~ppaX (default: 1)")
-parser.add_argument("-y", "--distversion", default="14.04", help="distro version number")
+parser.add_argument("-y", "--distversion", default="14.10", help="distro version number")
 parser.add_argument("options", nargs="*", help="debuild options")
 
 args = parser.parse_args()
