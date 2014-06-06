@@ -14,6 +14,7 @@ parser.add_argument("--experimental", action="store_true", help="Check kubuntu-p
 parser.add_argument("--nextppa", action="store_true", help="Check kubuntu-ppa/next PPA instead of the main archive.")
 parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
 parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
+parser.add_argument("--forcedepwait", action="store_true", help="Retry not only FTBFS package but DEPWAIT too.")
 parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
 parser.add_argument("--kf5", action="store_true", help="Retry KDE Frameworks 5 packages.")
 
@@ -73,12 +74,16 @@ def can_retry(log, arch):
 
     return True
 
-if args.kf5:
-    f = open("kf5-packages-"+release+".txt", "r")
-else:
-    f = open("kdesc-packages-"+release+".txt", "r")
-kdesc = f.readlines()
-f.close()
+try:
+    if args.kf5:
+        f = open("kf5-packages-"+release+".txt", "r")
+    else:
+        f = open("kdesc-packages-"+release+".txt", "r")
+    kdesc = f.readlines()
+    f.close()
+except IOError:
+    kdesc = '' # don't crash if there is no file to open
+
 
 kdesc = map(lambda line: line.strip("\r\n\t "), kdesc)
 kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
@@ -86,7 +91,7 @@ kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
 # move libraries to the front
 kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
-if args.all and args.ppa:
+if args.all and (args.ppa or args.nextppa or args.experimental) :
     packages_ = archive.getPublishedSources(distro_series=lpseries, status="Published")
     packages = set()
     for pkg in packages_:
@@ -104,7 +109,8 @@ for package in packages:
 
     for build in source.getBuilds():
         if build.buildstate != "Failed to build":
-            continue
+            if args.forcedepwait and build.buildstate != "Dependency wait":
+                continue
 
         arch = build.arch_tag
         log = get_log(build.build_log_url)
