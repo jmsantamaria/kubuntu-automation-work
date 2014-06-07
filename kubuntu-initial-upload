@@ -222,7 +222,13 @@ for package in packages:
     else:
         remote = "depot.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
-    subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
+    try:
+        subprocess.check_call(["rsync", "--progress", "-z", "--compress-level=9", "-e ssh", remote, "."])
+    except:
+        print "==== Skipping %s, failed to fetch tarball from depot.kde.org, moving to manual/" % (package)
+        shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+        moved.append((package, "failed to fetch tarball from depot"))
+        continue
     orig = "%s_%s.orig.tar.xz" % (package, upstreamVersion)
     os.rename("%s-%s.tar.xz" % (upstreamName(package), upstreamVersion), orig)
 
