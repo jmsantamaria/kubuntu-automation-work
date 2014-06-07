@@ -23,7 +23,6 @@ kdewebkit
 kdnssd-kf5
 kdoctools
 kemoticons
-kfileaudiopreview
 kglobalaccel
 kguiaddons
 khtml
