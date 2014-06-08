@@ -182,9 +182,9 @@ elif args.kf5:
 else:
     packages = readPackages("kdesc-packages-" + release + ".txt")
 
-    # move libraries to the front
-    packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
-    packages.sort(key=lambda package: package.find("extra-cmake-modules") != -1 and "_" + package or package)
+# move libraries to the front
+packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
+packages.sort(key=lambda package: package.find("extra-cmake-modules") != -1 and "_" + package or package)
 
 if args.tmpdir:
     basedir = os.path.abspath(args.tmpdir)
