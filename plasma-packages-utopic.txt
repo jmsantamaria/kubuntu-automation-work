@@ -1,11 +1,9 @@
-baloo
+baloo5
 breeze
-kde-baseapps
 kde-cli-tools
-kdeplasma-addons
-kfilemetadata
+kfilemetadata5
 khelpcenter
-khotkeys 
+khotkeys
 kinfocenter
 kio-extras
 kmenuedit
