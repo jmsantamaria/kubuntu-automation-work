@@ -81,6 +81,13 @@ def upstreamName(package):
         return package
 
 for package in packages:
+    archive = ubuntu.getArchive(name='primary')
+    archive_package = archive.getPublishedSources(source_name=package)
+    archive_version = archive_package[0].source_package_version
+    if version in archive_version:
+        print "=== Skipping %s because version %s is already in the archive" % (package, version)
+        continue
+
     try:
       os.mkdir(basedir + "/" + package)
     except OSError:
