@@ -332,8 +332,12 @@ for package in packages:
 
     control = readAllFromFile("debian/control")
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
-    for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
-        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+    if args.kf5:
+        for builddep in readPackages(cwd + "/kf5-dev-latest-" + release + ".txt"):
+                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+    else:
+        for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
+                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
     f = open("debian/control", "w")
     f.write(control)
     f.close()
