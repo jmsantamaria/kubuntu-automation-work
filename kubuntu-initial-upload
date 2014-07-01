@@ -335,6 +335,9 @@ for package in packages:
     if args.kf5:
         for builddep in readPackages(cwd + "/kf5-dev-latest-" + release + ".txt"):
                 control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+    elif args.plasma:
+        for builddep in readPackages(cwd + "/plasma-dev-latest-" + release + ".txt"):
+                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
     else:
         for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
                 control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
