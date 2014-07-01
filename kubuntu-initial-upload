@@ -178,8 +178,6 @@ lastDigit = int(versionParts[-1])
 
 if lastDigit >= 80:
     stability = "unstable"
-elif args.kf5:   # Fix this once 5.0 comes out - jriddell 2014-03-03
-    stability = "unstable"
 elif args.plasma:   # Fix this once 5.0 comes out - jriddell 2014-03-03
     stability = "unstable"
 else:
@@ -219,10 +217,11 @@ moved = []
 for package in packages:
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
-    archive_version = archive_package[0].source_package_version
-    if version in archive_version:
-        print "=== Skipping %s because version %s is already in the archive" % (package, version)
-        continue
+    if len(archive_package) > 0:
+        archive_version = archive_package[0].source_package_version
+        if version in archive_version:
+            print "=== Skipping %s because version %s is already in the archive" % (package, version)
+            continue
 
     os.mkdir(basedir + "/" + package)
     os.chdir(basedir + "/" + package)
@@ -321,7 +320,7 @@ for package in packages:
         os.rename("./debian", "%s-%s/debian" % (package, version))
         os.chdir("%s-%s" % (package, version))
     else:
-        subprocess.check_call(["bzr", "branch", bzrBranch + bzrBranchName(package), "bzr"])
+        subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
         os.chdir("bzr")
 
         if not sanitizeBranch(package):
@@ -334,13 +333,15 @@ for package in packages:
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
     if args.kf5:
         for builddep in readPackages(cwd + "/kf5-dev-latest-" + release + ".txt"):
-                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
     elif args.plasma:
         for builddep in readPackages(cwd + "/plasma-dev-latest-" + release + ".txt"):
-                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
     else:
         for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
-                control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
+    if 'ecmversion' in args:
+        control = re.sub(r'%s\s*\(>=.*?\)' % "extra-cmake-modules", '%s (>= %s%s)' % ("extra-cmake-modules", epoch, args.ecmversion), control)
     f = open("debian/control", "w")
     f.write(control)
     f.close()
