@@ -1,7 +1,7 @@
-baloo5
+baloo
 breeze
 kde-cli-tools
-kfilemetadata5
+kfilemetadata
 khelpcenter
 khotkeys
 kinfocenter
@@ -10,12 +10,16 @@ kmenuedit
 ksysguard
 kwin
 kwrited
-libkscreen2
+libkscreen
 libksysguard
+libmm-qt
+libnm-qt
 milou
 oxygen
 oxygen-fonts
 plasma-desktop
+plasma-nm
 plasma-workspace
+plasma-workspace-wallpapers
 powerdevil
 systemsettings
