@@ -3,8 +3,18 @@
 import argparse
 from distro_info import UbuntuDistroInfo
 import os.path
+import signal
 import subprocess
 import sys
+
+def sigint(signal, frame):
+    if orgChangelog:
+        f = open("debian/changelog", "w")
+        f.write(orgChangelog)
+        f.close()
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, sigint)
 
 parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
 #parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
