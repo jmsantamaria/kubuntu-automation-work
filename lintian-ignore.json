@@ -77,5 +77,6 @@
     "libkdcraw": [ "libkdcraw22: embedded-library" ],
     "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ],
     "kppp": [ "non-standard-executable-perm usr/bin/kppp" ],
-    "ksirk": [ "license-problem-non-free-RFC" ]
+    "ksirk": [ "license-problem-non-free-RFC" ],
+    "perlqt": [ "debug-file-with-no-debug-symbols" ]
 }
