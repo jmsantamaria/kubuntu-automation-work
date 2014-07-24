@@ -333,8 +333,8 @@ print """
 
 <body>
 
-<h1 id="top">Kubuntu KDE %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
-""" % (releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa)
+<h1 id="top">Kubuntu %s %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
+""" % (releaseString, releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa)
 print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 print """
 <table class="grid">
