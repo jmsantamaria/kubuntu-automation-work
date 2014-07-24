@@ -24,7 +24,8 @@ parser.add_argument("--kf5", action="store_true", help="Packages are KDE Framewo
 parser.add_argument("--plasma", action="store_true", help="Packages are KDE Plasma 5")
 parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
 parser.add_argument("-o", "--oxygenfontversion", help="oxygen-font version")
-parser.add_argument("-l", "--libkscreen2version", help="libkscreen2 version")
+parser.add_argument("-l", "--libkscreenversion", help="libkscreen version")
+parser.add_argument("-n", "--libnmversion", help="libnm-qt and libmm-qt version")
 
 args = parser.parse_args()
 
@@ -137,15 +138,6 @@ def upstreamName(package):
     else:
         return package
 
-#kactivities has a bzr branch name which doesn't match upstream in kf5
-def bzrBranchName(package):
-    if package == "kactivities-kf5" and args.kf5:
-        return "kactivities-kf5"
-    if package == "kwallet-kf5" and args.kf5:
-        return "kwallet-kf5"
-    else:
-        return upstreamName(package)
-
 def readPackages(filename):
     f = open(filename, "r")
     packages = f.readlines()
@@ -177,8 +169,6 @@ versionParts = version.split(".")
 lastDigit = int(versionParts[-1])
 
 if lastDigit >= 80:
-    stability = "unstable"
-elif args.plasma:   # Fix this once 5.0 comes out - jriddell 2014-03-03
     stability = "unstable"
 else:
     stability = "stable"
@@ -229,8 +219,10 @@ for package in packages:
         upstreamVersion = args.ecmversion
     elif package == "oxygen-font":
         upstreamVersion = args.oxygenfontversion
-    elif package == "libkscreen2":
-        upstreamVersion = args.libkscreen2version
+    elif package == "libkscreen":
+        upstreamVersion = args.libkscreenversion
+    elif package == "libmm-qt" or package == "libnm-qt":
+        upstreamVersion = args.libnmversion
     else:
         upstreamVersion = version
 
@@ -242,7 +234,7 @@ for package in packages:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
     elif args.plasma:
-        remote = "depot.kde.org:/home/ftpubuntu/%s/plasma/%s/src/%s-%s.tar.xz" % \
+        remote = "depot.kde.org:/home/ftpubuntu/%s/plasma/%s/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
     else:
         remote = "depot.kde.org:/home/ftpubuntu/%s/%s/src/%s-%s.tar.xz" % \

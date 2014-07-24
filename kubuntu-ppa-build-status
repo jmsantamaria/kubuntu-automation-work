@@ -18,12 +18,20 @@ parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
 parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
+parser.add_argument("-r", "--releasetype", help="Type [sc,kf5,plasma]", default="sc")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 args = parser.parse_args()
 
 release = args.dist
 version = args.version
+
+if args.releasetype == "sc":
+  releaseString = "KDE SC"
+elif args.releasetype == "kf5":
+  releaseString = "KF5"
+elif args.releasetype == "plasma":
+  releaseString = "Plasma"
 
 STATUS_SUCCESS = 0
 STATUS_WARNING = 1
@@ -303,7 +311,7 @@ print """
 <html>
 
 <head>
-  <title>Kubuntu KDE status</title>
+  <title>Kubuntu %s status</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="kubuntu-ppa-build-status.css" />
 
@@ -326,7 +334,7 @@ print """
 <body>
 
 <h1 id="top">Kubuntu KDE %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
-""" % (version, release, ppaParts[0], ppaParts[1], args.ppa)
+""" % (releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa)
 print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 print """
 <table class="grid">
