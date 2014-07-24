@@ -15,7 +15,7 @@
   "kdenetwork" : [ "XMMS", "msiLBC" ],
   "marble": [ "libshp", "QtMobility", "QtLocation", "liblocation" ],
   "smokeqt": [ "Qwt5 for Qt4" ],
-  "qtruby": [ "Qwt5 for Qt4" ],
+  "qtruby": [ "Qwt5" ],
   "perlqt": [ "Qwt5 for Qt4" ],
   "pykde4": [ "PolkitQt" ],
   "kajongg": [ "PythonLibrary" ],
