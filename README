@@ -19,3 +19,10 @@ Set up a cron job that generates the status page using kubuntu-ppa-build-status-
 
 to backport:
  ./kubuntu-batch-backport -v 4.11.97 -f trusty -t saucy -V 13.10 -c ~/src/4.11.97/saucy/ -T unstable
+
+
+Bugfix SC releases: no branches are needed, this command will take it
+out the archive, check if there's any changes, if there's only a few
+non-code changes it'll ask if you want to update or not and make
+packages ready for PPA upload
+ ./kubuntu-initial-upload -d trusty -v 4.13.3 -m "new upstream bugfix release" -y 14.04 -t ~/src/4.13.3 --sru
