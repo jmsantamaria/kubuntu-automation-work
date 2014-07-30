@@ -34,5 +34,6 @@
   "kget": [ "NepomukCore", "NepomukWidgets" ],
   "kwallet-kf5": [ "Gpgme", "QGpgme" ],
   "oxygen": [ "XCB_" ],
-  "frameworkintegration": [ "OxygenFont" ]
+  "frameworkintegration": [ "OxygenFont" ],
+  "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ]
 }
