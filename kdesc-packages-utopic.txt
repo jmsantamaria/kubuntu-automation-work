@@ -141,8 +141,6 @@ lokalize
 lskat
 marble
 mplayerthumbs
-nepomuk-core
-nepomuk-widgets
 okteta
 okular
 oxygen-icons
