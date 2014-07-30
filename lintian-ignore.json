@@ -78,5 +78,6 @@
     "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ],
     "kppp": [ "non-standard-executable-perm usr/bin/kppp", "debian-news-entry-has-unknown-version" ],
     "ksirk": [ "license-problem-non-free-RFC" ],
-    "perlqt": [ "debug-file-with-no-debug-symbols" ]
+    "perlqt": [ "debug-file-with-no-debug-symbols" ],
+    "kdeplasma-addons": [ "debug-file-with-no-debug-symbols" ]
 }
