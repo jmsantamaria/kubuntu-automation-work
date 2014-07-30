@@ -17,7 +17,7 @@
   "smokeqt": [ "Qwt5 for Qt4" ],
   "qtruby": [ "Qwt5" ],
   "perlqt": [ "Qwt5 for Qt4" ],
-  "pykde4": [ "PolkitQt" ],
+  "pykde4": [ "PolkitQt", "SharedDesktopOntologies", "Nepomuk" ],
   "kajongg": [ "PythonLibrary" ],
   "kdeadmin": [ "NepomukCore" ],
   "kgpg": [ "NepomukCore" ],
