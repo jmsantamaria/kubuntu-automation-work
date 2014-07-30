@@ -19,7 +19,6 @@ gwenview
 jovie
 juk
 kaccessible
-kactivities
 kajongg
 kalgebra
 kalzium
