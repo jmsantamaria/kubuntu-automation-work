@@ -62,7 +62,7 @@
     "print-manager": [ "package-name-doesnt-match-sonames",
                        "print-manager: shlib-without-versioned-soname",
                        "print-manager: postinst-must-call-ldconfig" ],
-    "rocs": [ "package-name-doesnt-match-sonames" ],
+    "rocs": [ "package-name-doesnt-match-sonames", "missing-field-in-dep5-copyright" ],
     "superkaramba": [ "non-dev-pkg-with-shlib-symlink", 
                       "superkaramba source: source-is-missing examples/globalMouse/xcursor.so" ],
     "kopete": [ "package-name-doesnt-match-sonames",
