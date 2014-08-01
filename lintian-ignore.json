@@ -76,7 +76,7 @@
     "krfb": [ "package-name-doesnt-match-sonames" ],
     "kompare": [ "package-name-doesnt-match-sonames" ],
     "libkdcraw": [ "libkdcraw22: embedded-library" ],
-    "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc" ],
+    "kdepimlibs": [ "kdepimlibs5-dev: missing-dependency-on-libc", "shared-lib-without-dependency-information" ],
     "kppp": [ "non-standard-executable-perm usr/bin/kppp", "debian-news-entry-has-unknown-version" ],
     "ksirk": [ "license-problem-non-free-RFC" ],
     "perlqt": [ "debug-file-with-no-debug-symbols" ],
