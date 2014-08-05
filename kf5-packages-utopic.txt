@@ -30,14 +30,14 @@ kitemmodels
 knewstuff
 kpty
 kinit
-kwallet
+kwallet-kf5
 kitemviews
 ktextwidgets
-attica
+attica-kf5
 kglobalaccel
 kcmutils
 kunitconversion
-kdnssd
+kdnssd-kf5
 kdesignerplugin
 kemoticons
 kcompletion
@@ -48,5 +48,5 @@ frameworkintegration
 kded
 kcodecs
 kwindowsystem
-kactivities
+kactivities-kf5
 kimageformats

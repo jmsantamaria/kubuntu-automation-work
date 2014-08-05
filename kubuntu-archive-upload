@@ -87,6 +87,14 @@ def parseChangelogVersions(path):
 def upstreamName(package):
     if package == "kde4libs":
         return "kdelibs"
+    elif package == "kwallet-kf5":
+        return "kwallet"
+    elif package == "attica-kf5":
+        return "attica"
+    elif package == "kactivities-kf5":
+        return "kactivities"
+    elif package == "kdnssd-kf5":
+        return "kdnssd"
     else:
         return package
 
