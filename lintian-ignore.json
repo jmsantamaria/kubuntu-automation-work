@@ -84,5 +84,6 @@
     "kdeplasma-addons": [ "debug-file-with-no-debug-symbols" ],
     "kdeclarative": [ "symbols-declares-dependency-on-other-package" ],
     "khtml": [ "shared-lib-without-dependency-information" ],
-    "krunner": [ "symbols-declares-dependency-on-other-package" ]
+    "krunner": [ "symbols-declares-dependency-on-other-package" ],
+    "libkf5solid5": [ "symbols-declares-dependency-on-other-package" ]
 }
