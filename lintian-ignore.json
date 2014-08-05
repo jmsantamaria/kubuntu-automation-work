@@ -82,5 +82,6 @@
     "ksirk": [ "license-problem-non-free-RFC" ],
     "perlqt": [ "debug-file-with-no-debug-symbols" ],
     "kdeplasma-addons": [ "debug-file-with-no-debug-symbols" ],
-    "kdeclarative": [ "symbols-declares-dependency-on-other-package" ]
+    "kdeclarative": [ "symbols-declares-dependency-on-other-package" ],
+    "khtml": [ "shared-lib-without-dependency-information" ]
 }
