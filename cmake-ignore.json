@@ -32,7 +32,7 @@
   "kcoreaddons": [ "FAM" ],
   "solid": [ "MediaPlayerInfo" ],
   "kget": [ "NepomukCore", "NepomukWidgets" ],
-  "kwallet-kf5": [ "Gpgme", "QGpgme" ],
+  "kwallet-kf5": [ "Gpgme", "QGpgme", "KF5Gpgmepp" ],
   "oxygen": [ "XCB_" ],
   "frameworkintegration": [ "OxygenFont" ],
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ]
