@@ -105,12 +105,12 @@ for package in packages:
     os.chdir(basedir + "/" + package)
 
     if args.kf5:
-        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-next/next-staging", package, release])
+        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/next-staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-next-packaging/" + upstreamName(package), "bzr"])
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging-next/" + upstreamName(package), "bzr"])
         os.chdir("bzr")
-    if not args.sru:
+    elif not args.sru:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
