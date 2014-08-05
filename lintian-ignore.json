@@ -83,5 +83,6 @@
     "perlqt": [ "debug-file-with-no-debug-symbols" ],
     "kdeplasma-addons": [ "debug-file-with-no-debug-symbols" ],
     "kdeclarative": [ "symbols-declares-dependency-on-other-package" ],
-    "khtml": [ "shared-lib-without-dependency-information" ]
+    "khtml": [ "shared-lib-without-dependency-information" ],
+    "krunner": [ "symbols-declares-dependency-on-other-package" ]
 }
