@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser(description="Upload new KDE SC version to the m
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
 parser.add_argument("-t", "--tmpdir", help="Temporary dir where the packages are prepared")
+parser.add_argument("--kf5", action="store_true", help="Upload KF5")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
 parser.add_argument("--nopush", action="store_true", help="don't push branches immediately")
 
@@ -28,13 +29,22 @@ else:
 lp = Launchpad.login_anonymously("kubuntu-archive-upload", "production")
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
-if not args.sru:
+if args.kf5:
+    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="next-staging")
+elif not args.sru:
     ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
 else:
     ppa = lp.people["kubuntu-ppa"].getPPAByName(name="ppa")
 
 if args.packages:
     packages = args.packages.split(",")
+elif args.kf5:
+    f = open("kf5-packages-" + release + ".txt", "r")
+    packages = f.readlines()
+    f.close()
+
+    packages = map(lambda line: line.strip("\r\n\t "), packages)
+    packages = filter(lambda line: line and not line.startswith("#"), packages)
 else:
     f = open("kdesc-packages-" + release + ".txt", "r")
     packages = f.readlines()
@@ -94,6 +104,12 @@ for package in packages:
       print basedir + "/" + package + " exists"
     os.chdir(basedir + "/" + package)
 
+    if args.kf5:
+        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-next/next-staging", package, release])
+        ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
+
+        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-next-packaging/" + upstreamName(package), "bzr"])
+        os.chdir("bzr")
     if not args.sru:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
