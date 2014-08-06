@@ -116,8 +116,9 @@ for package in packages:
         log = get_log(build.build_log_url)
 
         if args.force or can_retry(log, arch):
-            print "Retrying %s (%s)" % (source.source_package_name, arch)
-            build.retry()
+            if build.can_be_retried:
+                print "Retrying %s (%s)" % (source.source_package_name, arch)
+                build.retry()
         else:
             print "Can't retry: %s (%s)" % (source.source_package_name, arch)
 

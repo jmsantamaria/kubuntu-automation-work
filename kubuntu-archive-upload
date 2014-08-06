@@ -134,7 +134,11 @@ for package in packages:
                 continue
             else:
                 raise e
-        os.chdir(glob.glob("%s-%s*" % (package, version))[0])
+        try:
+            os.chdir(glob.glob("%s-%s*" % (package, version))[0])
+        except:
+            print "=== Skipping " + package + " because it doesn't match our version"
+            continue
 
     versions = parseChangelogVersions("debian/changelog")
     if version not in versions[0]:
