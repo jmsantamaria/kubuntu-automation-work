@@ -3,14 +3,17 @@ Add following to your .ssh/config and make sure you have an ssh-agent running an
 Host depot.kde.org
     User ftpubuntu
 
-./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
+Update package list, e.g.:
+ ./kf5-package-names 5.1.0 > kf5-packages-utopic.txt
+or
+ ./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
 and check the output
 - qyoto and kimono need to be removed from the list as we don't build the mono
   bindings
 
-export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
+ export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
 
-./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
+ ./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
