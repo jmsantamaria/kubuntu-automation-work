@@ -54,3 +54,4 @@ libkf5webkit-dev
 libkf5widgetsaddons-dev
 libkf5windowsystem-dev
 libkf5xmlgui-dev
+kgendesignerplugin
