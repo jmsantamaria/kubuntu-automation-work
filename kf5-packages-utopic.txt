@@ -50,3 +50,10 @@ kcodecs
 kwindowsystem
 kactivities-kf5
 kimageformats
+kjs
+kmediaplayer
+kjsembed
+kross
+krunner
+khtml
+kdelibs4support
