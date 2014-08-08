@@ -1,0 +1,7 @@
+#!/bin/sh
+
+sed -e 's/RUBY_CONFIG_INCLUDE_DIR :/#RUBY_CONFIG_INCLUDE_DIR :/' \
+    -e 's/CMAKE_FLAGS :/#CMAKE_FLAGS :/' \
+    -e 's/override_dh_auto_configure:/#override_dh_auto_configure:/' \
+    -e 's/\$(overridden_command) -- \$(CMAKE_FLAGS)/#\$(overridden_command)\ -- \$(CMAKE_FLAGS)/' \
+-i rules 

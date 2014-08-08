@@ -1,0 +1,11 @@
+#!/bin/sh
+
+sed -e 's/libboost1.55/libboost1.54/g' \
+    -e 's/libboost-graph1.55-dev/libboost-graph1.54-dev/g' \
+    -e 's/libboost-graph1.55.0/libboost-graph1.54.0/g' \
+    -e 's/libboost-python1.55-dev/libboost-python1.54-dev/g' \
+    -e 's/libboost-thread1.55-dev/libboost-thread1.54-dev/g' \
+    -e 's/kde-sc-dev-latest (>= 4:4.12)/kde-sc-dev-latest (>= 4:4.11)/g' \
+    -i control
+
+rm *.symbols
