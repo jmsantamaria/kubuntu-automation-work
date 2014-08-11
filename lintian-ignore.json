@@ -87,9 +87,9 @@
     "krunner": [ "symbols-declares-dependency-on-other-package" ],
     "solid": [ "symbols-declares-dependency-on-other-package" ],
     "kfilemetadata-kf5": [ "symbols-declares-dependency-on-other-package" ],
-    "khelpcenter": [ "desktop-entry-lacks-main-category", "postinst-must-call-ldconfig" ],
-    "kde-cli-tools": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
-    "kmenuedit": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
-    "ksysguard": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
-    "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ]
+    "khelpcenter": [ "desktop-entry-lacks-main-category", "postinst-must-call-ldconfig", "package-name-doesnt-match-sonames", "shlib-without-versioned-soname" ],
+    "kde-cli-tools": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
+    "kmenuedit": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
+    "ksysguard": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
+    "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ]
 }
