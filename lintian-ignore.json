@@ -95,5 +95,6 @@
     "plasma-desktop": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "powerdevil": [ "package-name-doesnt-match-sonames" ],
     "systemsettings": [ "package-name-doesnt-match-sonames" ],
-    "plasma-nm": [ "package-name-doesnt-match-sonames", "script-not-executable", "unusual-interpreter", "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ]
+    "plasma-nm": [ "package-name-doesnt-match-sonames", "script-not-executable", "unusual-interpreter", "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
+    "plasma-workspace": [ "pkg-has-shlibs-control-file-but-no-actual-shared-libs", "shlib-without-versioned-soname", "script-not-executable", "package-name-doesnt-match-sonames"]
 }
