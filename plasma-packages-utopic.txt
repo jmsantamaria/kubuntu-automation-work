@@ -1,7 +1,7 @@
-baloo
+baloo-kf5
 breeze
 kde-cli-tools
-kfilemetadata
+kfilemetadata-kf5
 khelpcenter
 khotkeys
 kinfocenter

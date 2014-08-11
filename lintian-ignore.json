@@ -85,5 +85,6 @@
     "kdeclarative": [ "symbols-declares-dependency-on-other-package" ],
     "khtml": [ "shared-lib-without-dependency-information" ],
     "krunner": [ "symbols-declares-dependency-on-other-package" ],
-    "solid": [ "symbols-declares-dependency-on-other-package" ]
+    "solid": [ "symbols-declares-dependency-on-other-package" ],
+    "kfilemetadata-kf5": [ "symbols-declares-dependency-on-other-package" ]
 }
