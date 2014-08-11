@@ -89,4 +89,5 @@
     "kfilemetadata-kf5": [ "symbols-declares-dependency-on-other-package" ],
     "khelpcenter": [ "desktop-entry-lacks-main-category" ],
     "kde-cli-tools": [ "package-name-doesnt-match-sonames" ]
+    "kmenuedit": [ "package-name-doesnt-match-sonames" ]
 }
