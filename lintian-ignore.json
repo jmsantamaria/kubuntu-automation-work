@@ -93,5 +93,6 @@
     "ksysguard": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "plasma-desktop": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
-    "powerdevil": [ "package-name-doesnt-match-soname" ]
+    "powerdevil": [ "package-name-doesnt-match-sonames" ],
+    "systemsettings": [ "package-name-doesnt-match-sonames" ]
 }
