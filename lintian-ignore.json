@@ -87,7 +87,9 @@
     "krunner": [ "symbols-declares-dependency-on-other-package" ],
     "solid": [ "symbols-declares-dependency-on-other-package" ],
     "kfilemetadata-kf5": [ "symbols-declares-dependency-on-other-package" ],
-    "khelpcenter": [ "desktop-entry-lacks-main-category" ],
-    "kde-cli-tools": [ "package-name-doesnt-match-sonames" ]
-    "kmenuedit": [ "package-name-doesnt-match-sonames" ]
+    "khelpcenter": [ "desktop-entry-lacks-main-category", "postinst-must-call-ldconfig" ],
+    "kde-cli-tools": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
+    "kmenuedit": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
+    "ksysguard": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ]
+    "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ]
 }
