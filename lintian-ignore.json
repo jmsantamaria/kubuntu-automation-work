@@ -91,5 +91,6 @@
     "kde-cli-tools": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "kmenuedit": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "ksysguard": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
-    "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ]
+    "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
+    "plasma-desktop": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ]
 }
