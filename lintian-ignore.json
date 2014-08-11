@@ -94,5 +94,6 @@
     "kwin": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "plasma-desktop": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig", "shlib-without-versioned-soname" ],
     "powerdevil": [ "package-name-doesnt-match-sonames" ],
-    "systemsettings": [ "package-name-doesnt-match-sonames" ]
+    "systemsettings": [ "package-name-doesnt-match-sonames" ],
+    "plasma-nm": [ "package-name-doesnt-match-sonames", "script-not-executable", "unusual-interpreter", "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ]
 }
