@@ -36,5 +36,6 @@
   "oxygen": [ "XCB_" ],
   "frameworkintegration": [ "OxygenFont" ],
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ],
-  "sonnet": [ "ASPELL" ]
+  "sonnet": [ "ASPELL" ],
+  "plasma-workspace": [ "Prison" ] // 1.2 not due a release until october
 }
