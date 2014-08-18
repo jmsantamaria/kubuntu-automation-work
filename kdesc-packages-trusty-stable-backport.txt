@@ -101,7 +101,6 @@ krdc
 kremotecontrol
 kreversi
 krfb
-kross-interpreters
 kruler
 ksaneplugin
 kscd
