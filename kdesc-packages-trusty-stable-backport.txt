@@ -110,7 +110,6 @@ ksnakeduel
 ksnapshot
 kspaceduel
 ksquares
-kstars
 ksudoku
 ksystemlog
 kteatime
