@@ -149,7 +149,6 @@ picmi
 poxml
 print-manager
 pykde4
-qtruby
 rocs
 step
 superkaramba
