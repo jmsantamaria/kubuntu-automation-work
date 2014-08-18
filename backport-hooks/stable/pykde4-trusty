@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sed -e 's/python-qt4 (>= 4.11)/python-qt4 (>= 4.10)/g' \
+    -i control
+

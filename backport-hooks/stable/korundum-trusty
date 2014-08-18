@@ -1,0 +1,21 @@
+#!/bin/sh
+
+sed -e 's/RUBY_CONFIG_INCLUDE_DIR :/#RUBY_CONFIG_INCLUDE_DIR :/' \
+    -e '/  -DRUBY_CONFIG_INCLUDE_DIR=$(RUBY_CONFIG_INCLUDE_DIR) \\/d' \
+-i rules 
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/khtml.so#usr/lib/ruby/vendor_ruby/\*/\*/khtml.so#" \
+    -e "s#usr/lib/\*/ruby/vendor_ruby/\*/kio.so#usr/lib/ruby/vendor_ruby/\*/\*/kio.so#" \
+    -e "s#usr/lib/\*/ruby/vendor_ruby/\*/korundum4.so#usr/lib/ruby/vendor_ruby/\*/\*/korundum4.so#" \
+    -e "s#usr/lib/\*/ruby/vendor_ruby/\*/ktexteditor.so#usr/lib/ruby/vendor_ruby/\*/\*/ktexteditor.so#" \
+    -e "s#usr/lib/\*/ruby/vendor_ruby/\*/solid.so#usr/lib/ruby/vendor_ruby/\*/\*/solid.so#" \
+-i ruby-kde4.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/akonadi.so#usr/lib/ruby/vendor_ruby/\*/\*/akonadi.so#" \
+-i ruby-akonadi.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/okular.so#usr/lib/ruby/vendor_ruby/\*/\*/okular.so#" \
+-i ruby-okular.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/plasma_applet.so#usr/lib/ruby/vendor_ruby/\*/\*/plasma_applet.so#" \
+-i ruby-plasma.install

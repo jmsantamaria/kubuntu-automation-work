@@ -1,0 +1,25 @@
+#!/bin/sh
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qscintilla.so#usr/lib/ruby/vendor_ruby/\*/\*/qscintilla.so#" \
+-i ruby-qscintilla2.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qtruby4.so#usr/lib/ruby/vendor_ruby/\*/\*/qtruby4.so#" \
+-i ruby-qt4.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qtdeclarative.so#usr/lib/ruby/vendor_ruby/\*/\*/qtdeclarative.so#" \
+-i ruby-qt4-declarative.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/phonon.so#usr/lib/ruby/vendor_ruby/\*/\*/phonon.so#" \
+-i ruby-phonon.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qtscript.so#usr/lib/ruby/vendor_ruby/\*/\*/qtscript.so#" \
+-i ruby-qt4-script.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qttest.so#usr/lib/ruby/vendor_ruby/\*/\*/qttest.so#" \
+-i ruby-qt4-test.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qtuitools.so#usr/lib/ruby/vendor_ruby/\*/\*/qtuitools.so#" \
+-i ruby-qt4-uitools.install
+
+sed -e "s#usr/lib/\*/ruby/vendor_ruby/\*/qtwebkit.so#usr/lib/ruby/vendor_ruby/\*/\*/qtwebkit.so#" \
+-i ruby-qt4-webkit.install
