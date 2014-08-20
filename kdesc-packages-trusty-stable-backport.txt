@@ -142,7 +142,6 @@ oxygen-icons
 pairs
 palapeli
 parley
-k
 perlqt
 picmi
 poxml
