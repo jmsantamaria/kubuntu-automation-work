@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+
+import argparse
+import os
+import re
+
+from lib.utils import *
+
+parser = argparse.ArgumentParser(description="Things!")
+parser.add_argument("--dist", required=True, help="Distribution name")
+parser.add_argument("--version", required=True, help="Upstream version")
+parser.add_argument("--kf5", action="store_true", help="Packages are KDE Frameworks 5")
+parser.add_argument("--plasma", action="store_true", help="Packages are KDE Plasma 5")
+parser.add_argument("--ecmversion", help="extra-cmake-modules version")
+
+args = parser.parse_args()
+
+cwd = os.path.dirname(os.path.abspath(__file__))
+epoch = "4:"
+if args.kf5:
+    epoch = ""
+
+control = readAllFromFile('debian/control')
+
+# bump buil-dep versions for packages that were in kde-sc-dev-latest
+if args.kf5:
+    for builddep in readPackages(cwd + "/kf5-dev-latest-" + args.dist + ".txt"):
+        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, args.version), control)
+elif args.plasma:
+    for builddep in readPackages(cwd + "/plasma-dev-latest-" + args.dist + ".txt"):
+        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, args.version), control)
+else:
+    for builddep in readPackages(cwd + "/kdesc-dev-latest-" + args.dist + ".txt"):
+        control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, args.version), control)
+
+if args.ecmversion:
+    control = re.sub(r'%s\s*\(>=.*?\)' % "extra-cmake-modules", '%s (>= %s%s)' % ("extra-cmake-modules", epoch, args.ecmversion), control)
+
+f = open("debian/control", "w")
+f.write(control)
+f.close()

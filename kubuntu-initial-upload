@@ -11,6 +11,8 @@ import tempfile
 import urllib
 import shutil
 
+from lib.utils import *
+
 parser = argparse.ArgumentParser(description="Upload new KDE SC or KF5 version to the PPA.")
 parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
@@ -52,12 +54,6 @@ if args.kf5 or args.plasma:
     bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging-next/"
 else:
     bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/"
-
-def readAllFromFile(filename):
-    f = open(filename, "r")
-    result = f.read()
-    f.close()
-    return result
 
 def firstLineMatch(expression, lines):
     for line in lines:
@@ -137,16 +133,6 @@ def upstreamName(package):
         return "kdnssd"
     else:
         return package
-
-def readPackages(filename):
-    f = open(filename, "r")
-    packages = f.readlines()
-    f.close()
-
-    packages = map(lambda line: line.strip("\r\n\t "), packages)
-    packages = filter(lambda line: line and not line.startswith("#"), packages)
-
-    return packages
 
 
 launchpad = Launchpad.login_anonymously("kubuntu-initial-upload", "production")
@@ -321,22 +307,18 @@ for package in packages:
             moved.append((package, "bzr unclean or out of sync"))
             continue
 
-    control = readAllFromFile("debian/control")
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
+    bumpVersionArgs = [cwd + "/kubuntu-bump-versions",
+                       "--dist", release,
+                       "--version", upstreamVersion]
     if args.kf5:
-        for builddep in readPackages(cwd + "/kf5-dev-latest-" + release + ".txt"):
-            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
-    elif args.plasma:
-        for builddep in readPackages(cwd + "/plasma-dev-latest-" + release + ".txt"):
-            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
-    else:
-        for builddep in readPackages(cwd + "/kdesc-dev-latest-" + release + ".txt"):
-            control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, upstreamVersion), control)
-    if 'ecmversion' in args:
-        control = re.sub(r'%s\s*\(>=.*?\)' % "extra-cmake-modules", '%s (>= %s%s)' % ("extra-cmake-modules", epoch, args.ecmversion), control)
-    f = open("debian/control", "w")
-    f.write(control)
-    f.close()
+        bumpVersionArgs += ["--kf5"]
+    if args.plasma:
+        bumpVersionArgs += ["--plasma"]
+    if args.ecmversion:
+        bumpVersionArgs += ["--ecmversion", args.ecmversion]
+    print (bumpVersionArgs)
+    subprocess.check_call(bumpVersionArgs)
 
     debianVersion = "0ubuntu"
     if sru:
