@@ -1,16 +1,32 @@
 #!/bin/sh
 
 sed -e 's/boost1.54/boost1.48/g' \
+    -e 's/boost1.55/boost1.48/g' \
     -e 's/libboost-graph1.54-dev/libboost-graph1.48-dev/g' \
     -e 's/libboost-graph1.54.0/libboost-graph1.48.0/g' \
     -e 's/libboost-python1.54-dev/libboost-python1.48-dev/g' \
     -e 's/libboost-thread1.54-dev/libboost-thread1.48-dev/g' \
+    -e 's/libboost-thread1.55-dev/libboost-thread1.48-dev/g' \
+    -e 's/libboost-system1.55-dev/libboost-system1.48-dev/g' \
+    -e 's/libboost-program-options1.55-dev/libboost-program-options1.48-dev/g' \
     -e 's/libtiff5-dev/libtiff4-dev/g' \
     -e 's/libpython2.7-dev/python2.7-dev/g' \
     -e 's/ libwayland-dev,//g' \
     -e 's/libboost-dev/libboost1.48-dev/g' \
     -e 's/libboost-graph-dev/libboost-graph1.48-dev/g' \
+    -e 's/libboost-filesystem-dev/libboost-filesystem1.48-dev/g' \
+    -e 's/libboost-system-dev/libboost-system1.48-dev/g' \
+    -e 's/libboost-thread-dev/libboost-thread1.48-dev/g' \
+    -e 's/libboost-python-dev/libboost-python1.48-dev/g' \
     -e 's/libgphoto2-6-dev/libgphoto2-2-dev/g' \
+    -e 's/libgphoto2-dev/libgphoto2-2-dev/g' \
+    -e 's/libgcrypt20-dev/libgcrypt11-dev/g' \
+    -e '/ libaccounts-qt-dev,/d' \
+    -e '/ libsignon-qt-dev,/d' \
+    -e 's/libxbase64-dev/libxbase2.0-dev/g' \
+    -e 's/libyaml-cpp0.3-dev/libyaml-cpp-dev/g' \
+    -e 's/ruby,/ruby1.9.1,/g' \
+    -e 's/ruby-dev/ruby1.9.1-dev/g' \
     -i control
 
 # we don't need those - gcc 4.6 causes too much diff

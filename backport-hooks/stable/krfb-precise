@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sed -e '/libktpcommoninternalsprivate-dev,/d' \
+    -i control
+

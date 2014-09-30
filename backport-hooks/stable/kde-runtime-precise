@@ -1,14 +1,17 @@
 #!/bin/sh
 
 # remove the langpack installation patch, language-selector works in precise
-quilt pop -a
-sed -e '/kubuntu_langpack_install.diff/d' -i patches/series
-quilt push -a
+(cd ..; quilt pop -a)
+sed -e '/kubuntu_langpack_install.diff/d' \
+    -e '/kubuntu_disable-gpg-backend.diff/d' \
+    -i patches/series
+(cd ..; quilt push -a)
 # with this we don't need to depend on qapt and language-selector-common anymore
 sed -e '/^ libqapt-dev (>= 1.9.60), $/d' \
     -e '/^ language-selector-common, libqapt2-runtime$/d' \
     -e '/^, libkubuntu-dev$/d' \
+    -e '/language-selector-common/d' \
+    -e '/libqapt2-runtime/d' \
+    -e '/libkubuntu-dev/d' \
+    -e 's/libssh-dev (>= 0.4.0)/libssh-dev (>= 0.6.0)/g' \
     -i control
-
-sed -e '/sftp/d' -i kde-runtime.install
-sed -e '/sftp/d' -i kde-runtime-data.install
