@@ -1,0 +1,73 @@
+#!/usr/bin/python
+
+# Script to be run in git branch of debian/ packaging,
+# it adds a ppa version number to the changelog
+# then downloads the .orig
+# then builds the source package ready for upload to the PPA using git-buildpackage
+# Jonathan Riddell 2014-10-01
+# may be copied under GNU GPL version 2 or later
+
+import argparse
+from distro_info import UbuntuDistroInfo
+import os.path
+import signal
+import subprocess
+import sys
+
+def sigint(signal, frame):
+    if orgChangelog:
+        f = open("debian/changelog", "w")
+        f.write(orgChangelog)
+        f.close()
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, sigint)
+
+parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
+#parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
+parser.add_argument("-d", "--dist", default="utopic", help="Distribution name (default: current development release)")
+parser.add_argument("-s", "--suffix", default=1, help="PPA version suffix, i.e. ~ppaX (default: 1)")
+parser.add_argument("-y", "--distversion", default="14.10", help="distro version number")
+parser.add_argument("options", nargs="*", help="debuild options")
+
+args = parser.parse_args()
+
+if not os.path.exists("debian/changelog"):
+    print >> sys.stderr, "Error: Not a Debian package."
+    sys.exit(1)
+
+f = open("debian/changelog", "r")
+lines = f.readlines()
+f.close()
+
+if not "UNRELEASED" in lines[0]:
+    print >> sys.stderr, "Error: Distribution is not \"UNRELEASED\"."
+    sys.exit(1)
+
+if "ppa" in lines[0]:
+    print >> sys.stderr, "Error: Version contains \"ppa\"."
+    sys.exit(1)
+
+orgChangelog = "".join(lines)
+
+lines[0] = lines[0].replace("UNRELEASED", args.dist, 1)
+lines[0] = lines[0].replace(")", "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix) + ")", 1)
+
+f = open("debian/changelog", "w")
+f.write("".join(lines))
+f.close()
+
+subprocess.call(["uscan", "--download-current-version"])
+
+application = ["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"]
+if args.suffix > 1:
+    application += ["-sd"]
+application += args.options
+print "calling: " + str(application)
+subprocess.call(application)
+
+f = open("debian/changelog", "w")
+f.write(orgChangelog)
+f.close()
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
