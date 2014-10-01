@@ -25,9 +25,6 @@ parser.add_argument("--sru", action="store_true", help="Do a Stable Release Uplo
 parser.add_argument("--kf5", action="store_true", help="Packages are KDE Frameworks 5")
 parser.add_argument("--plasma", action="store_true", help="Packages are KDE Plasma 5")
 parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
-parser.add_argument("-o", "--oxygenfontversion", help="oxygen-font version")
-parser.add_argument("-l", "--libkscreenversion", help="libkscreen version")
-parser.add_argument("-n", "--libnmversion", help="libnm-qt and libmm-qt version")
 
 args = parser.parse_args()
 
@@ -50,8 +47,12 @@ kf5portingAids = ["kdelibs4support",
                   "krunner",
                  ]
 
-if args.kf5 or args.plasma:
-    bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging-next/"
+plasmaPackagesWithoutEpoch = ["baloo-kf5", "kfilemetadata-kf5", "libkscreen", "libnm-qt", "libmm-qt"]
+
+if args.kf5:
+    bzrBranch = "debian:frameworks/"
+elif args.plasma:
+    bzrBranch = "debian:plasma/"
 else:
     bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/"
 
@@ -131,6 +132,10 @@ def upstreamName(package):
         return "kwallet"
     elif package == "kdnssd-kf5" and args.kf5:
         return "kdnssd"
+    elif package == "baloo-kf5" and args.plasma:
+        return "baloo"
+    elif package == "kfilemetadata-kf5" and args.plasma:
+        return "kfilemetadata"
     else:
         return package
 
@@ -191,6 +196,13 @@ except OSError:
 moved = []
 
 for package in packages:
+
+    # check if it's a plasma package without an epoch
+    changelogEpoch = epoch
+    if args.plasma:
+       changelogEpoch = "" if package in plasmaPackagesWithoutEpoch else epoch
+       print "setting epoch to %s for %s" % (changelogEpoch, package)
+
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
     if len(archive_package) > 0:
@@ -203,12 +215,6 @@ for package in packages:
     os.chdir(basedir + "/" + package)
     if package == "extra-cmake-modules":
         upstreamVersion = args.ecmversion
-    elif package == "oxygen-font":
-        upstreamVersion = args.oxygenfontversion
-    elif package == "libkscreen":
-        upstreamVersion = args.libkscreenversion
-    elif package == "libmm-qt" or package == "libnm-qt":
-        upstreamVersion = args.libnmversion
     else:
         upstreamVersion = version
 
@@ -297,14 +303,19 @@ for package in packages:
             os.rename("%s-%s" % (upstreamName(package), version), "%s-%s" % (package, version))
         os.rename("./debian", "%s-%s/debian" % (package, version))
         os.chdir("%s-%s" % (package, version))
-    else:
-        subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
-        os.chdir("bzr")
+    else: #not sru
+        if args.kf5 or args.plasma:
+            subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
+            os.chdir("git")
+            subprocess.check_call(["git", "checkout", "kubuntu_utopic_next"])
+        else:
+            subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
+            os.chdir("bzr")
 
         if not sanitizeBranch(package):
-            print "==== Skipping %s, bzr branch has unexpected content, moving to manual/" % (package,)
+            print "==== Skipping %s, git/bzr branch has unexpected content, moving to manual/" % (package,)
             shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-            moved.append((package, "bzr unclean or out of sync"))
+            moved.append((package, "git/bzr unclean or out of sync"))
             continue
 
     # bump buil-dep versions for packages that were in kde-sc-dev-latest
@@ -335,7 +346,7 @@ for package in packages:
     # changelog entry for this upstream version
     pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, upstreamVersion), re.DOTALL)
     if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % changelogEntry, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
-        subprocess.check_call(["dch", "-v", "%s%s-%s" % (epoch, upstreamVersion, debianVersion), "-D", changelogRelease, changelogEntry])
+        subprocess.check_call(["dch", "-v", "%s%s-%s" % (changelogEpoch, upstreamVersion, debianVersion), "-D", changelogRelease, changelogEntry])
 
     try:
         if sru:
@@ -344,8 +355,12 @@ for package in packages:
             subprocess.call(["debcommit", "-a"])
             debianVersion += "~ubuntu" + distversion + "~ppa1"
             if not args.nopush:
-                subprocess.check_call(["bzr", "push", ":parent"])
-            subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+                if args.kf5 or args.plasma:
+                    subprocess.check_call(["git", "push"])
+                    subprocess.check_call(["./git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+                else:
+                    subprocess.check_call(["bzr", "push", ":parent"])
+                    subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
     except subprocess.CalledProcessError, e:

@@ -19,3 +19,5 @@ plasma-desktop-dev
 plasma-workspace-dev
 powerdevil-dev
 systemsettings-dev
+libkf5networkmanagerqt-dev
+libkf5modemmanagerqt-dev
