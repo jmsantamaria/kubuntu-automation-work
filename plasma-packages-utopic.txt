@@ -1,6 +1,7 @@
 baloo-kf5
 breeze
 kde-cli-tools
+kdeplasma-addons
 kfilemetadata-kf5
 khelpcenter
 khotkeys
@@ -8,6 +9,7 @@ kinfocenter
 kio-extras
 kmenuedit
 ksysguard
+kwayland
 kwin
 kwrited
 libkscreen
