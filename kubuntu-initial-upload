@@ -307,7 +307,7 @@ for package in packages:
         if args.kf5 or args.plasma:
             subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
             os.chdir("git")
-            subprocess.check_call(["git", "checkout", "kubuntu_utopic_next"])
+            subprocess.check_call(["git", "checkout", "kubuntu_%s_next" % (release)])
         else:
             subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
             os.chdir("bzr")
@@ -357,7 +357,7 @@ for package in packages:
             if not args.nopush:
                 if args.kf5 or args.plasma:
                     subprocess.check_call(["git", "push"])
-                    subprocess.check_call(["./git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+                    subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
                 else:
                     subprocess.check_call(["bzr", "push", ":parent"])
                     subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
