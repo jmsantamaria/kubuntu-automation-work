@@ -163,6 +163,8 @@ def get_cmake(log, package):
                 continue
             if line.startswith("CMake Warning (dev)"):
                 continue
+            if line.startswith("CMake Warning:"):
+                continue
 
             if status == STATUS_SUCCESS:
                 status = STATUS_WARNING
