@@ -37,5 +37,6 @@
   "frameworkintegration": [ "OxygenFont" ],
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ],
   "sonnet": [ "ASPELL" ],
-  "plasma-workspace": [ "Prison" ]
+  "plasma-workspace": [ "Prison" ],
+  "libkscreen": [ "XCB_XINPUT" ]
 }
