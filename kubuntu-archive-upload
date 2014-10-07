@@ -116,8 +116,9 @@ for package in packages:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/next-staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["bzr", "branch", "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging-next/" + upstreamName(package), "bzr"])
-        os.chdir("bzr")
+        subprocess.check_call(["git", "clone", "debian:frameworks/" + upstreamName(package), "git"])
+        os.chdir("git")
+        subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_next"])
     elif not args.sru:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
@@ -165,13 +166,22 @@ for package in packages:
         sys.exit(1)
 
     if not args.sru:
-        subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
+        if args.kf5:
+            subprocess.check_call(["git", "commit", "-a", "-m", "Release to " + release + "."])
+        else:
+            subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         try:
-          subprocess.check_call(["bzr", "tag", packageVersion])
+            if args.kf5:
+                subprocess.check_call(["git", "tag", "-m", "packageVersion", "-s", packageVersion])
+            else:
+                subprocess.check_call(["bzr", "tag", packageVersion])
         except:
           print "already tagged"
 
-        subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
+        if args.kf5:
+            subprocess.check_call(["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"])
+        else:
+            subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
     else:
         subprocess.check_call(["debuild", "-S", "-nc"])
 
@@ -206,9 +216,14 @@ for package in packages:
         except IndexError, e:
           print "IndexOutOfRange" 
         if not args.nopush:
-            os.chdir("bzr")
-            subprocess.check_call(["bzr", "push", ":parent"])
-            os.chdir("..")
+            if args.kf5:
+                os.chdir("git")
+                subprocess.check_call(["git", "push"])
+                os.chdir("..")
+            else:
+                os.chdir("bzr")
+                subprocess.check_call(["bzr", "push", ":parent"])
+                os.chdir("..")
 
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
 
