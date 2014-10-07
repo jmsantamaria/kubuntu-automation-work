@@ -59,7 +59,8 @@ f.close()
 
 subprocess.call(["uscan", "--download-current-version"])
 
-application = ["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"]
+#application = ["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"]
+application = ["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-export-dir=../build-area", "--git-tarball-dir=../build-area", "--git-overlay", "-S"]
 if args.suffix > 1:
     application += ["-sd"]
 application += args.options

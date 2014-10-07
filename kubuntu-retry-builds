@@ -24,10 +24,10 @@ release = args.release
 ppa = args.ppa
 experimental = args.experimental
 nextppa = args.nextppa
-if not args.ppa and not args.experimental and not args.nextppa args.proposed:
-    pocket = "Proposed" # proposed is where builds are done now in the archive
-else:
+if args.ppa or args.experimental or args.nextppa or args.proposed or args.kf5:
     pocket = "Release"
+else:
+    pocket = "Proposed" # proposed is where builds are done now in the archive
 
 apt_pkg.init()
 
@@ -91,7 +91,7 @@ kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
 # move libraries to the front
 kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
-if args.all and (args.ppa or args.nextppa or args.experimental) :
+if args.all and (args.ppa or args.nextppa or args.experimental or args.kf5) :
     packages_ = archive.getPublishedSources(distro_series=lpseries, status="Published")
     packages = set()
     for pkg in packages_:
