@@ -367,6 +367,8 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
 
     for build in source.getBuilds():
         arch = build.arch_tag
+        if arch == "armhf":
+            continue
         builds[package][arch] = {}
 
         builds[package][arch]["logfile"] = build.build_log_url
