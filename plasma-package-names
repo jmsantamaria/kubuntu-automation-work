@@ -23,6 +23,9 @@ for line in output.splitlines():
         name = match.group(1)
         if name == "baloo":
             print "baloo-kf5"
+        elif name == "breeze":
+            print "breeze"
+            print "breeze-qt4"
         elif name == "kfilemetadata":
             print "kfilemetadata-kf5"
         else:
