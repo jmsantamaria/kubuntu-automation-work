@@ -17,6 +17,7 @@ parser.add_argument("--force", action="store_true", help="Retry every package wi
 parser.add_argument("--forcedepwait", action="store_true", help="Retry not only FTBFS package but DEPWAIT too.")
 parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
 parser.add_argument("--kf5", action="store_true", help="Retry KDE Frameworks 5 packages.")
+parser.add_argument("--plasma", action="store_true", help="Retry Plasma 5 packages.")
 
 args = parser.parse_args()
 
@@ -24,7 +25,7 @@ release = args.release
 ppa = args.ppa
 experimental = args.experimental
 nextppa = args.nextppa
-if args.ppa or args.experimental or args.nextppa or args.proposed or args.kf5:
+if args.ppa or args.experimental or args.nextppa or args.proposed or args.kf5 or args.plasma:
     pocket = "Release"
 else:
     pocket = "Proposed" # proposed is where builds are done now in the archive
@@ -77,6 +78,8 @@ def can_retry(log, arch):
 try:
     if args.kf5:
         f = open("kf5-packages-"+release+".txt", "r")
+    elif args.plasma:
+        f = open("plasma-packages-"+release+".txt", "r")
     else:
         f = open("kdesc-packages-"+release+".txt", "r")
     kdesc = f.readlines()
@@ -91,7 +94,7 @@ kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
 # move libraries to the front
 kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
-if args.all and (args.ppa or args.nextppa or args.experimental or args.kf5) :
+if args.all and (args.ppa or args.nextppa or args.experimental or args.kf5 or args.plasma) :
     packages_ = archive.getPublishedSources(distro_series=lpseries, status="Published")
     packages = set()
     for pkg in packages_:

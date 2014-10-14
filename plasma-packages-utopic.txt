@@ -19,6 +19,7 @@ libmm-qt
 libnm-qt
 milou
 oxygen
+oxygen-qt4
 oxygen-fonts
 plasma-desktop
 plasma-nm

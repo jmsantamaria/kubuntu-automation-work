@@ -26,6 +26,9 @@ for line in output.splitlines():
         elif name == "breeze":
             print "breeze"
             print "breeze-qt4"
+        elif name == "oxygen":
+            print "oxygen"
+            print "oxygen-qt4"
         elif name == "kfilemetadata":
             print "kfilemetadata-kf5"
         else:
