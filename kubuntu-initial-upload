@@ -134,6 +134,10 @@ def upstreamName(package):
         return "kdnssd"
     elif package == "baloo-kf5" and args.plasma:
         return "baloo"
+    elif package == "breeze-qt4" and args.plasma:
+        return "breeze"
+    elif package == "oxygen-qt4" and args.plasma:
+        return "oxygen"
     elif package == "kfilemetadata-kf5" and args.plasma:
         return "kfilemetadata"
     else:
