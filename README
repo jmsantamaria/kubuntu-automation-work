@@ -31,3 +31,8 @@ out the archive, check if there's any changes, if there's only a few
 non-code changes it'll ask if you want to update or not and make
 packages ready for PPA upload
  ./kubuntu-initial-upload -d trusty -v 4.13.3 -m "new upstream bugfix release" -y 14.04 -t ~/src/4.13.3 --sru
+
+TODO:
+ make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
+ make kubuntu-initial-upload do the right thing with extra-cmake-modules in frameworks
+ make kubuntu-ppa-build-status do the right thing with extra-cmake-modules in frameworks
