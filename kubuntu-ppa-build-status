@@ -414,7 +414,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             # Lintian output is only generated on i386
-            if (arch == "i386" and not args.nolintian):
+            if (arch == "amd64" and not args.nolintian):
                 try:
                     output, status = get_lintian(log, package)
                 except ValueError:
