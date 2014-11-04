@@ -311,7 +311,7 @@ for package in packages:
         if args.kf5 or args.plasma:
             subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
             os.chdir("git")
-            subprocess.check_call(["git", "checkout", "kubuntu_%s_next" % (release)])
+            subprocess.check_call(["git", "checkout", "kubuntu_%s_archive" % (release)])
         else:
             subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
             os.chdir("bzr")

@@ -399,7 +399,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             try:
                 output, status = get_list_missing(log)
             except ValueError:
-                if (arch == "i386") and not (("--list-missing" in log) or ("--fail-missing" in log)):
+                if (arch == "amd64") and not (("--list-missing" in log) or ("--fail-missing" in log)):
                     status = STATUS_WARNING
                     output = "No list-missing in build log."
                 else:
