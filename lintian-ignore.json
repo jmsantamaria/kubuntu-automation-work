@@ -99,5 +99,6 @@
     "plasma-nm": [ "package-name-doesnt-match-sonames", "script-not-executable", "unusual-interpreter", "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
     "plasma-workspace": [ "pkg-has-shlibs-control-file-but-no-actual-shared-libs", "shlib-without-versioned-soname", "script-not-executable", "package-name-doesnt-match-sonames"],
     "kate": [ "shared-lib-without-dependency-information", "debug-file-with-no-debug-symbols" ],
-    "kinit": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ]
+    "kinit": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
+    "kded": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ]
 }
