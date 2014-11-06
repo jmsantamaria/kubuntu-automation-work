@@ -222,13 +222,16 @@ for package in packages:
     else:
         upstreamVersion = version
 
+    import re
+    splitVersion = re.split("\.", version)
+    versionOnDepot = splitVersion[0] + "." + splitVersion[1]
     # fetch orig tarball
     if args.kf5 and upstreamName(package) in kf5portingAids:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/portingAids/%s-%s.tar.xz" % \
-          (stability, version, upstreamName(package), upstreamVersion)
+          (stability, versionOnDepot, upstreamName(package), upstreamVersion)
     elif args.kf5:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
-          (stability, version, upstreamName(package), upstreamVersion)
+          (stability, versionOnDepot, upstreamName(package), upstreamVersion)
     elif args.plasma:
         remote = "depot.kde.org:/home/ftpubuntu/%s/plasma/%s/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
