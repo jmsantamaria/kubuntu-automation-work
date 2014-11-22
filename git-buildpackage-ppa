@@ -41,7 +41,6 @@ if "ppa" in lines[0]:
 subprocess.call(["uscan", "--download-current-version", "--destdir=../build-area"])
 version = subprocess.check_output(["dpkg-parsechangelog", "--show-field", "Version"]).strip()
 version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
-print version
 
 application = ["git-buildpackage",
                 "--git-export-dir=../build-area",
@@ -51,11 +50,10 @@ application = ["git-buildpackage",
                 "--git-ignore-branch",
                 "--git-ignore-new",
                 "--git-prebuild=dch -b -v " + version + " PPA build; dch -D " + args.dist + " -r PPA build", "-S"]
-print " ".join(application)
 if args.suffix > 1:
     application += ["-sd"]
 application += args.options
-print "calling: " + str(application)
+print "calling: " + " ".join(application)
 subprocess.call(application)
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
