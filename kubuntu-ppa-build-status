@@ -499,6 +499,15 @@ print """
 </table>
 """
 
+print "<p>Not in PPA: "
+fileName = "kde" + args.releasetype + "-packages-" + args.dist + ".txt"
+with open(fileName) as f:
+    sources = f.readlines()
+for source in sources:
+    if source not in builds:
+        print source + ", "
+print "</p>"
+
 print """
 </body>
 </html>
