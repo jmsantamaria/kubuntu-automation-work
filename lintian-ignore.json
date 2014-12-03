@@ -24,6 +24,7 @@
              "missing-dependency-on-libc",
              "no-human-maintainers" ],
     "kde4libs": [ "script-not-executable usr/share/kde4/apps/kconf_update/kcookiescfg.pl" ],
+    "kdewebdev": [ "package-name-doesnt-match-sonames" ],
     "kdepim-runtime": [ "image-file-in-usr-lib",
                         "package-name-doesnt-match-sonames",
                         "executable-not-elf-or-script" ],
