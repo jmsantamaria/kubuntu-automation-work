@@ -8,6 +8,7 @@
   "ark": [ "qjson" ],
   "kde-runtime": [ "Xine", "NepomukCore" ],
   "kdeadmin": [ "PyQt4", "PyKDE4", "PyCups", "system-config-printer" ],
+  "kdeartwork": [ "KDE4Workspace" ],
   "krdc": [ "freerdp" ],
   "kross-interpreters": [ "FALCON", "Ruby", "JNI" ],
   "kdewebdev": [ "Ruby" ],
