@@ -387,6 +387,10 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
 
+            if version not in packageVersion:
+                builds[package][arch]["status"] = STATUS_ERROR
+                builds[package][arch]["message"] = "Version incorrect"
+
             output, status = get_symbols(log)
             if status == STATUS_ERROR:
                 msg = "Missing symbols"
