@@ -15,6 +15,7 @@ parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
 parser.add_argument("-t", "--tmpdir", help="Temporary dir where the packages are prepared")
 parser.add_argument("--kf5", action="store_true", help="Upload KF5")
+parser.add_argument("--plasma", action="store_true", help="Upload Plasma")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
 parser.add_argument("--nopush", action="store_true", help="don't push branches immediately")
 
@@ -29,7 +30,8 @@ else:
 lp = Launchpad.login_anonymously("kubuntu-archive-upload", "production")
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
-if args.kf5:
+if args.kf5 or args.plasma:
+#    ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
     ppa = lp.people["kubuntu-ppa"].getPPAByName(name="next-staging")
 elif not args.sru:
     ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
@@ -40,6 +42,13 @@ if args.packages:
     packages = args.packages.split(",")
 elif args.kf5:
     f = open("kf5-packages-" + release + ".txt", "r")
+    packages = f.readlines()
+    f.close()
+
+    packages = map(lambda line: line.strip("\r\n\t "), packages)
+    packages = filter(lambda line: line and not line.startswith("#"), packages)
+elif args.plasma:
+    f = open("plasma-packages-" + release + ".txt", "r")
     packages = f.readlines()
     f.close()
 
@@ -95,6 +104,10 @@ def upstreamName(package):
         return "kactivities"
     elif package == "kdnssd-kf5":
         return "kdnssd"
+    elif package == "baloo-kf5":
+        return "baloo"
+    elif package == "kfilemetadata-kf5":
+        return "kfilemetadata"
     else:
         return package
 
@@ -113,12 +126,21 @@ for package in packages:
     os.chdir(basedir + "/" + package)
 
     if args.kf5:
+#        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/next-staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
         subprocess.check_call(["git", "clone", "debian:frameworks/" + upstreamName(package), "git"])
         os.chdir("git")
-        subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_next"])
+        subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
+    elif args.plasma:
+#        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
+        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/next-staging", package, release])
+        ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
+
+        subprocess.check_call(["git", "clone", "debian:plasma/" + upstreamName(package), "git"])
+        os.chdir("git")
+        subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     elif not args.sru:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
@@ -166,19 +188,19 @@ for package in packages:
         sys.exit(1)
 
     if not args.sru:
-        if args.kf5:
+        if args.kf5 or args.plasma:
             subprocess.check_call(["git", "commit", "-a", "-m", "Release to " + release + "."])
         else:
             subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         try:
-            if args.kf5:
+            if args.kf5 or args.plasma:
                 subprocess.check_call(["git", "tag", "-m", "packageVersion", "-s", packageVersion])
             else:
                 subprocess.check_call(["bzr", "tag", packageVersion])
         except:
           print "already tagged"
 
-        if args.kf5:
+        if args.kf5 or args.plasma:
             subprocess.check_call(["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"])
         else:
             subprocess.check_call(["bzr-buildpackage", "-S", "--", "-nc", "-us", "-uc"])
@@ -216,7 +238,7 @@ for package in packages:
         except IndexError, e:
           print "IndexOutOfRange" 
         if not args.nopush:
-            if args.kf5:
+            if args.kf5 or args.plasma:
                 os.chdir("git")
                 subprocess.check_call(["git", "push"])
                 os.chdir("..")

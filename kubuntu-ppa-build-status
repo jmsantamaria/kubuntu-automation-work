@@ -18,7 +18,7 @@ parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
 parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
-parser.add_argument("-r", "--releasetype", help="Type [sc,kf5,plasma]", default="sc")
+parser.add_argument("-r", "--releasetype", help="Type [applications,sc,kf5,plasma]", default="applications")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 args = parser.parse_args()
@@ -28,6 +28,8 @@ version = args.version
 
 if args.releasetype == "sc":
   releaseString = "KDE SC"
+elif args.releasetype == "applications":
+  releaseString = "KDE Applications"
 elif args.releasetype == "kf5":
   releaseString = "KF5"
 elif args.releasetype == "plasma":
@@ -309,6 +311,7 @@ f.close()
 if not os.path.isdir(args.cache + "/buildlogs"):
     os.mkdir(args.cache + "/buildlogs")
 
+archive = ubuntu.main_archive
 print """
 <html>
 
@@ -356,8 +359,6 @@ builds = {}
 for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"):
     package = source.source_package_name
     packageVersion = source.source_package_version
-    if not (packageVersion.startswith("4:" + version) or packageVersion.startswith(version)):
-        continue
 
     if package in builds:
         print "Error multiple versions of the same package %s" % package
@@ -479,7 +480,7 @@ for package in sorted(builds.iterkeys()):
         if len(message) > 150:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
-        print '<tr class="%s"><td class="status%d"><span title="%s">%s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, build["weblink"], arch)
+        print '<tr class="%s"><td class="status%d"><span title="%s">%s - %s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, cgi.escape(build["version"]), build["weblink"], arch)
         if build["logfile"]:
             print '<td><a href="%s">logfile</a></td>' % (build["logfile"],)
         else:
