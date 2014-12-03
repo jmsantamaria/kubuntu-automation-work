@@ -504,6 +504,7 @@ fileName = "kde" + args.releasetype + "-packages-" + args.dist + ".txt"
 with open(fileName) as f:
     sources = f.readlines()
 for source in sources:
+    source = source.rstrip()
     if source not in builds:
         print source + ", "
 print "</p>"
