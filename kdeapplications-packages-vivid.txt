@@ -112,7 +112,6 @@ ktimer
 ktouch
 ktuberling
 kturtle
-ktux
 kubrick
 kuser
 kwalletmanager
