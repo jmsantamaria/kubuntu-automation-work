@@ -102,5 +102,6 @@
     "kate": [ "shared-lib-without-dependency-information", "debug-file-with-no-debug-symbols" ],
     "kinit": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
     "kded": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
-    "oxygen-icons": [ "description-is-pkg-name" ]
+    "oxygen-icons": [ "description-is-pkg-name" ],
+    "konsole": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ]
 }
