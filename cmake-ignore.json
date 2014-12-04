@@ -32,7 +32,7 @@
   "karchive": [ "CMake Warning" ],
   "kcoreaddons": [ "FAM" ],
   "solid": [ "MediaPlayerInfo" ],
-  "kget": [ "NepomukCore", "NepomukWidgets" ],
+    "kget": [ "NepomukCore", "NepomukWidgets", "KDE4Workspace" ],
   "kwallet-kf5": [ "Gpgme", "QGpgme", "KF5Gpgmepp" ],
   "oxygen": [ "XCB_" ],
   "frameworkintegration": [ "OxygenFont" ],
