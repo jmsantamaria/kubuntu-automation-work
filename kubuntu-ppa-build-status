@@ -18,7 +18,7 @@ parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
 parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
-parser.add_argument("-r", "--releasetype", help="Type [applications,sc,kf5,plasma]", default="applications")
+parser.add_argument("-r", "--releasetype", help="Type [applications,kdesc,kf5,plasma]", default="applications")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 args = parser.parse_args()
@@ -26,7 +26,7 @@ args = parser.parse_args()
 release = args.dist
 version = args.version
 
-if args.releasetype == "sc":
+if args.releasetype == "kdesc":
   releaseString = "KDE SC"
 elif args.releasetype == "applications":
   releaseString = "KDE Applications"
@@ -35,6 +35,10 @@ elif args.releasetype == "kf5":
 elif args.releasetype == "plasma":
   releaseString = "Plasma"
 
+fileName = args.releasetype + "-packages-" + args.dist + ".txt"
+with open(fileName) as f:
+    sources = f.readlines()
+  
 STATUS_SUCCESS = 0
 STATUS_WARNING = 1
 STATUS_ERROR = 2
@@ -364,6 +368,9 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
         print "Error multiple versions of the same package %s" % package
         sys.exit(1)
 
+    if package not in sources:
+        break
+
     builds[package] = {}
 
     for build in source.getBuilds():
@@ -500,9 +507,6 @@ print """
 """
 
 print "<p>Not in PPA: "
-fileName = "kde" + args.releasetype + "-packages-" + args.dist + ".txt"
-with open(fileName) as f:
-    sources = f.readlines()
 for source in sources:
     source = source.rstrip()
     if source not in builds:
