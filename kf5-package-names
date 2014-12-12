@@ -21,8 +21,10 @@ else:
 p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/" % (stability, version)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 output, _ = p.communicate("ls *xz")
 
+print "extra-cmake-modules"
+
 for line in output.splitlines():
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
+    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + '\.\d' + r'\.tar\.', line)
     if match:
         name = match.group(1)
         if name == "kwallet":
@@ -40,7 +42,7 @@ p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/frame
 output, _ = p.communicate("ls *xz")
 
 for line in output.splitlines():
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
+    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + '\.\d' + r'\.tar\.', line)
     if match:
         name = match.group(1)
         if name == "kwallet":
