@@ -9,10 +9,8 @@ import sys
 
 parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
 parser.add_argument("-r", "--release", default="vivid", help="Release name (default: current development release)")
-parser.add_argument("--ppa", action="store_true", help="Check kubuntu-ninjas PPA instead of the main archive.")
-parser.add_argument("--experimental", action="store_true", help="Check kubuntu-ppa/experimental PPA instead of the main archive.")
-parser.add_argument("--nextppa", action="store_true", help="Check kubuntu-ppa/next PPA instead of the main archive.")
-parser.add_argument("--proposed", action="store_true", help="Check the proposed pocket instead of release.")
+parser.add_argument("--ppa", default=None, help="Check kubuntu-ninjas PPA instead of the main archive.")
+parser.add_argument("--ppaname", default=None, help="Check kubuntu-ninjas PPA instead of the main archive.")
 parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
 parser.add_argument("--forcedepwait", action="store_true", help="Retry not only FTBFS package but DEPWAIT too.")
 parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
@@ -23,12 +21,10 @@ args = parser.parse_args()
 
 release = args.release
 ppa = args.ppa
-experimental = args.experimental
-nextppa = args.nextppa
-if args.ppa or args.experimental or args.nextppa or args.proposed or args.kf5 or args.plasma:
+ppaname = args.ppaname
+pocket = "Proposed" # proposed is where builds are done now in the archive
+if args.ppa != None:
     pocket = "Release"
-else:
-    pocket = "Proposed" # proposed is where builds are done now in the archive
 
 apt_pkg.init()
 
@@ -36,12 +32,11 @@ lp = Launchpad.login_with("kubuntu-retry-builds", "production")
 
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
-if ppa:
-    archive = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
-elif experimental:
-    archive = lp.people["kubuntu-ppa"].getPPAByName(name="experimental")
-elif nextppa:
-    archive = lp.people["kubuntu-ppa"].getPPAByName(name="next")
+if ppa != None:
+    if ppaname == None:
+        print "must specify a --ppa-name"
+        exit
+    archive = lp.people[ppa].getPPAByName(name=ppaname)
 else:
     archive = ubuntu.main_archive
 
