@@ -18,7 +18,7 @@ parser.add_argument("-d", "--dist", required=True, help="Distribution name")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
 parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
-parser.add_argument("-r", "--releasetype", help="Type [applications,kdesc,kf5,plasma]", default="applications")
+parser.add_argument("-r", "--releasetype", help="Type [kdeapplications,kdesc,kf5,plasma]", default="kdeapplications")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 args = parser.parse_args()
@@ -28,7 +28,7 @@ version = args.version
 
 if args.releasetype == "kdesc":
   releaseString = "KDE SC"
-elif args.releasetype == "applications":
+elif args.releasetype == "kdeapplications":
   releaseString = "KDE Applications"
 elif args.releasetype == "kf5":
   releaseString = "KF5"
