@@ -21,10 +21,8 @@ parser.add_argument("-p", "--packages", help="Override the list packages to uplo
 parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
 parser.add_argument("-y", "--distversion", help="Dist version number, e.g. 12.10")
 parser.add_argument("--nopush", action="store_true", help="Don't Push branches while preparing the packages")
+parser.add_argument("-r", "--releasetype", help="Type [kdeapplications,kdesc,kf5,plasma]", default="kdeapplications")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
-parser.add_argument("--kf5", action="store_true", help="Packages are KDE Frameworks 5")
-parser.add_argument("--plasma", action="store_true", help="Packages are KDE Plasma 5")
-parser.add_argument("--kdeapplications", action="store_true", help="Packages are KDE Applications")
 parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
 
 args = parser.parse_args()
@@ -35,6 +33,7 @@ changelogEntry = args.message
 sru = args.sru
 cwd = os.getcwd()
 epoch = "4:"
+releaseType = args.releasetype
 if args.kf5:
     epoch = ""
 
@@ -50,11 +49,11 @@ kf5portingAids = ["kdelibs4support",
 
 plasmaPackagesWithoutEpoch = ["baloo-kf5", "kfilemetadata-kf5", "libkscreen", "libnm-qt", "libmm-qt", "kwayland"]
 
-if args.kf5:
+if releaseType == "kf5":
     bzrBranch = "debian:frameworks/"
-elif args.plasma:
+elif releaseType == "plasma":
     bzrBranch = "debian:plasma/"
-elif args.kdeapplications:
+elif releaseType == "kdeapplications":
     bzrBranch = "debian:kde-applications/"
 else:
     bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/"
@@ -173,11 +172,11 @@ else:
 
 if args.packages:
     packages = args.packages.split(",")
-elif args.kf5:
+elif releaseType == "kf5":
     packages = readPackages("kf5-packages-" + release + ".txt")
-elif args.plasma:
+elif releaseType == "plasma":
     packages = readPackages("plasma-packages-" + release + ".txt")
-elif args.kdeapplications:
+elif releaseType == "kdeapplications":
     packages = readPackages("kdeapplications-packages-" + release + ".txt")
 else:
     packages = readPackages("kdesc-packages-" + release + ".txt")
@@ -231,16 +230,16 @@ for package in packages:
     splitVersion = re.split("\.", version)
     versionOnDepot = splitVersion[0] + "." + splitVersion[1]
     # fetch orig tarball
-    if args.kf5 and upstreamName(package) in kf5portingAids:
+    if releaseType == "kf5" and upstreamName(package) in kf5portingAids:
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/portingAids/%s-%s.tar.xz" % \
           (stability, versionOnDepot, upstreamName(package), upstreamVersion)
-    elif args.kf5:
+    elif releaseType == "kf5":
         remote = "depot.kde.org:/home/ftpubuntu/%s/frameworks/%s/%s-%s.tar.xz" % \
           (stability, versionOnDepot, upstreamName(package), upstreamVersion)
-    elif args.plasma:
+    elif releaseType == "plasma":
         remote = "depot.kde.org:/home/ftpubuntu/%s/plasma/%s/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
-    elif args.kdeapplications:
+    elif releaseType == "kdeapplications":
         remote = "depot.kde.org:/home/ftpubuntu/%s/applications/%s/src/%s-%s.tar.xz" % \
           (stability, version, upstreamName(package), upstreamVersion)
     else:
@@ -319,7 +318,7 @@ for package in packages:
         os.rename("./debian", "%s-%s/debian" % (package, version))
         os.chdir("%s-%s" % (package, version))
     else: #not sru
-        if args.kf5 or args.plasma or args.kdeapplications:
+        if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
             subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
             os.chdir("git")
             subprocess.check_call(["git", "checkout", "kubuntu_%s_archive" % (release)])
@@ -337,11 +336,11 @@ for package in packages:
     bumpVersionArgs = [cwd + "/kubuntu-bump-versions",
                        "--dist", release,
                        "--version", upstreamVersion]
-    if args.kf5:
+    if releaseType == "kf5":
         bumpVersionArgs += ["--kf5"]
-    if args.plasma:
+    if releaseType == "plasma":
         bumpVersionArgs += ["--plasma"]
-    if args.kdeapplications:
+    if releaseType == "kdeapplications":
         bumpVersionArgs += ["--kdeapplications"]
     if args.ecmversion:
         bumpVersionArgs += ["--ecmversion", args.ecmversion]
@@ -372,7 +371,7 @@ for package in packages:
             subprocess.call(["debcommit", "-a"])
             debianVersion += "~ubuntu" + distversion + "~ppa1"
             if not args.nopush:
-                if args.kf5 or args.plasma or args.kdeapplications:
+                if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
                     subprocess.check_call(["git", "push"])
                     subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
                 else:
