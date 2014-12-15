@@ -116,7 +116,7 @@ for package in packages:
                 continue
 
         if args.force or can_retry(log, arch):
-            if build.can_be_retried:
+            if build.can_be_retried and arch != "armhf":
                 print "Retrying %s (%s)" % (source.source_package_name, arch)
                 build.retry()
         else:
