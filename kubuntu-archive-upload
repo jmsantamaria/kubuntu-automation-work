@@ -189,7 +189,7 @@ for package in packages:
 
     if not args.sru:
         if args.kf5 or args.plasma:
-            subprocess.check_call(["git", "commit", "-a", "-m", "Release to " + release + "."])
+            subprocess.check_call(["git", "commit", "-a", "-m", "NOCI Release to " + release + "."])
         else:
             subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         try:
