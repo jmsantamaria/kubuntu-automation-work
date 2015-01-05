@@ -34,7 +34,7 @@ sru = args.sru
 cwd = os.getcwd()
 epoch = "4:"
 releaseType = args.releasetype
-if args.kf5:
+if releaseType == "kf5":
     epoch = ""
 
 kf5portingAids = ["kdelibs4support",
@@ -85,7 +85,7 @@ def sanitizeBranch(package):
     archiveTopline = firstLineMatch(topline, archiveChangelog)
     archiveEndline = firstLineMatch(endline, archiveChangelog)
 
-    if not args.kf5 and (archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog):
+    if not releaseType == "kf5" and (archiveTopline not in bzrChangelog or archiveEndline not in bzrChangelog):
         print "bzr does not match archive"
         return False
 
@@ -126,21 +126,21 @@ def extractDebianFile(package, extractfile):
 def upstreamName(package):
     if package == "kde4libs":
         return "kdelibs"
-    elif package == "attica-kf5" and args.kf5:
+    elif package == "attica-kf5":
         return "attica"
-    elif package == "kactivities-kf5" and args.kf5:
+    elif package == "kactivities-kf5":
         return "kactivities"
-    elif package == "kwallet-kf5" and args.kf5:
+    elif package == "kwallet-kf5":
         return "kwallet"
-    elif package == "kdnssd-kf5" and args.kf5:
+    elif package == "kdnssd-kf5":
         return "kdnssd"
-    elif package == "baloo-kf5" and args.plasma:
+    elif package == "baloo-kf5":
         return "baloo"
-    elif package == "breeze-qt4" and args.plasma:
+    elif package == "breeze-qt4":
         return "breeze"
-    elif package == "oxygen-qt4" and args.plasma:
+    elif package == "oxygen-qt4":
         return "oxygen"
-    elif package == "kfilemetadata-kf5" and args.plasma:
+    elif package == "kfilemetadata-kf5":
         return "kfilemetadata"
     else:
         return package
@@ -207,7 +207,7 @@ for package in packages:
 
     # check if it's a plasma package without an epoch
     changelogEpoch = epoch
-    if args.plasma:
+    if releaseType == "plasma":
        changelogEpoch = "" if package in plasmaPackagesWithoutEpoch else epoch
        print "setting epoch to %s for %s" % (changelogEpoch, package)
 
