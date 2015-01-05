@@ -203,7 +203,7 @@ for package in packages:
 
     if not args.sru:
         if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
-            subprocess.check_call(["git", "commit", "-a", "-m", "NOCI Release to " + release + "."])
+            subprocess.check_call(["git", "commit", "-a", "-m", "NOCI\n Release to " + release + "."])
         else:
             subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         try:
