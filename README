@@ -15,6 +15,7 @@ and check the output
 
 Ensure previous changelogs are all set to released (assuming you want a new changelog entry) then:
 
+** For frameworks click build now at http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/
  ./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
