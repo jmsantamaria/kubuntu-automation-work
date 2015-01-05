@@ -10,18 +10,8 @@
 import argparse
 from distro_info import UbuntuDistroInfo
 import os.path
-import signal
 import subprocess
 import sys
-
-def sigint(signal, frame):
-    if orgChangelog:
-        f = open("debian/changelog", "w")
-        f.write(orgChangelog)
-        f.close()
-    sys.exit(1)
-
-signal.signal(signal.SIGINT, sigint)
 
 parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
 #parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
@@ -48,26 +38,22 @@ if "ppa" in lines[0]:
     print >> sys.stderr, "Error: Version contains \"ppa\"."
     sys.exit(1)
 
-orgChangelog = "".join(lines)
+subprocess.call(["uscan", "--download-current-version", "--destdir=../build-area"])
+version = subprocess.check_output(["dpkg-parsechangelog", "--show-field", "Version"]).strip()
+version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
 
-lines[0] = lines[0].replace("UNRELEASED", args.dist, 1)
-lines[0] = lines[0].replace(")", "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix) + ")", 1)
-
-f = open("debian/changelog", "w")
-f.write("".join(lines))
-f.close()
-
-subprocess.call(["uscan", "--download-current-version"])
-
-application = ["git-buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"]
+application = ["git-buildpackage",
+                "--git-export-dir=../build-area",
+                "--git-tarball-dir=../build-area",
+                "--git-no-create-orig",
+                "--git-overlay",
+                "--git-ignore-branch",
+                "--git-ignore-new",
+                "--git-prebuild=dch -b -v " + version + " PPA build; dch -D " + args.dist + " -r PPA build", "-S"]
 if args.suffix > 1:
     application += ["-sd"]
 application += args.options
-print "calling: " + str(application)
+print "calling: " + " ".join(application)
 subprocess.call(application)
-
-f = open("debian/changelog", "w")
-f.write(orgChangelog)
-f.close()
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
