@@ -38,6 +38,9 @@ if "ppa" in lines[0]:
     print >> sys.stderr, "Error: Version contains \"ppa\"."
     sys.exit(1)
 
+if not os.path.exists('../build-area/'):
+    os.makedirs('../build-area/')
+
 subprocess.call(["uscan", "--download-current-version", "--destdir=../build-area"])
 version = subprocess.check_output(["dpkg-parsechangelog", "--show-field", "Version"]).strip()
 version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
