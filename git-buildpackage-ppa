@@ -12,6 +12,7 @@ from distro_info import UbuntuDistroInfo
 import os.path
 import subprocess
 import sys
+from debian import changelog
 
 parser = argparse.ArgumentParser(description="Build source packages for PPAs.")
 #parser.add_argument("-d", "--dist", default=UbuntuDistroInfo().devel(), help="Distribution name (default: current development release)")
@@ -41,8 +42,21 @@ if "ppa" in lines[0]:
 if not os.path.exists('../build-area/'):
     os.makedirs('../build-area/')
 
+d = changelog.Changelog(open('debian/changelog'))
+name = d.get_package()
+version = d.get_version().upstream_version
+tarname = "%s_%s.orig.tar.xz" % (name, version)
+
+subprocess.call(["apt-get", "source", ("%s" % name)])
 subprocess.call(["uscan", "--download-current-version", "--destdir=../build-area"])
-version = subprocess.check_output(["dpkg-parsechangelog", "--show-field", "Version"]).strip()
+
+if os.path.isfile("../%s" % tarname) and not os.path.isfile("../build-area/%s" % tarname):
+    os.symlink("../%s" % tarname, "../build-area/%s" % tarname)
+
+if not os.path.isfile("../build-area/%s" % tarname):
+    print "Didn't manage to find %s anywhere in an appropriate version, put one in build-area, kthxbai" % tarname
+    sys.exit(1)
+
 version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
 
 application = ["git-buildpackage",
