@@ -36,8 +36,11 @@ non-code changes it'll ask if you want to update or not and make
 packages ready for PPA upload
  ./kubuntu-initial-upload -d trusty -v 4.13.3 -m "new upstream bugfix release" -y 14.04 -t ~/src/4.13.3 --sru
 
-When builds fail retry either e.g.:
+When builds fail retry e.g.:
  ./kubuntu-retry-builds --kf5 --ppa=kubuntu-ppa --ppaname=next-staging --force
+
+and retry in the main archive with:
+ ubuntu-build --batch --retry `cat kf5-packages-vivid.txt`
 
 TODO:
  make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
