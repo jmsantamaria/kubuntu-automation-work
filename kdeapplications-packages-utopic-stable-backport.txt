@@ -122,7 +122,6 @@ ktimer
 kgamma
 libkexiv2
 kiriki
-cantor
 kig
 kbounce
 ksirk
