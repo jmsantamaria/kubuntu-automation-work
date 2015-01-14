@@ -39,5 +39,6 @@
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ],
   "sonnet": [ "ASPELL" ],
   "plasma-workspace": [ "Prison" ],
-  "libkscreen": [ "XCB_XINPUT" ]
+  "libkscreen": [ "XCB_XINPUT" ],
+  "kcm-touchpad": [ "XCB_XINPUT" ]
 }
