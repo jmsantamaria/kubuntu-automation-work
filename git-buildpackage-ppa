@@ -57,6 +57,7 @@ if not os.path.isfile("../build-area/%s" % tarname):
     print "Didn't manage to find %s anywhere in an appropriate version, put one in build-area, kthxbai" % tarname
     sys.exit(1)
 
+version = str(d.get_version())
 version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
 
 application = ["git-buildpackage",
