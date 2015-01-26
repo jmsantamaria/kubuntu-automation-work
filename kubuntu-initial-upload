@@ -47,7 +47,7 @@ kf5portingAids = ["kdelibs4support",
                   "krunner",
                  ]
 
-plasmaPackagesWithoutEpoch = ["baloo-kf5", "kfilemetadata-kf5", "libkscreen", "libnm-qt", "libmm-qt"]
+plasmaPackagesWithoutEpoch = ["baloo-kf5", "kfilemetadata-kf5", "libmm-qt"]
 
 if releaseType == "kf5":
     bzrBranch = "debian:frameworks/"
