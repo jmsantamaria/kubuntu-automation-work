@@ -291,6 +291,7 @@ else:
 
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
+archindep = lpseries.nominatedarchindep.architecture_tag
 
 if args.ppa:
     if len(args.ppa.split(":")) > 1:
@@ -412,7 +413,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             try:
                 output, status = get_list_missing(log)
             except ValueError:
-                if (arch == "amd64") and not (("--list-missing" in log) or ("--fail-missing" in log)):
+                if (arch == archindep) and not (("--list-missing" in log) or ("--fail-missing" in log)):
                     status = STATUS_WARNING
                     output = "No list-missing in build log."
                 else:
@@ -427,7 +428,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             # Lintian output is only generated on i386
-            if (arch == "amd64" and not args.nolintian):
+            if (arch == archindep and not args.nolintian):
                 try:
                     output, status = get_lintian(log, package)
                 except ValueError:
