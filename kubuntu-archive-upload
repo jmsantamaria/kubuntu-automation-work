@@ -21,6 +21,9 @@ parser.add_argument("--nopush", action="store_true", help="don't push branches i
 args = parser.parse_args()
 releaseType = args.releasetype
 
+# git base url for pkg-kde on moszumanska:
+debian_git = "git+ssh://git.debian.org/git/pkg-kde/"
+
 version = args.version
 if not args.sru:
     release = UbuntuDistroInfo().devel()
@@ -116,7 +119,7 @@ for package in packages:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["git", "clone", "debian:frameworks/" + upstreamName(package), "git"])
+        subprocess.check_call(["git", "clone", debian_git + "frameworks/" + upstreamName(package), "git"])
         os.chdir("git")
         subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     elif releaseType == "plasma":
@@ -124,14 +127,14 @@ for package in packages:
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["git", "clone", "debian:plasma/" + upstreamName(package), "git"])
+        subprocess.check_call(["git", "clone", debian_git + "plasma/" + upstreamName(package), "git"])
         os.chdir("git")
         subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     elif releaseType == "kdeapplications":
         subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["git", "clone", "debian:kde-applications/" + upstreamName(package), "git"])
+        subprocess.check_call(["git", "clone", debian_git + "kde-applications/" + upstreamName(package), "git"])
         os.chdir("git")
         subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     elif not args.sru:
