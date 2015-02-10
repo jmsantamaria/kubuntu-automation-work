@@ -36,6 +36,7 @@ libkf5mediaplayer-dev
 libkf5newstuff-dev
 libkf5notifications-dev
 libkf5notifyconfig-dev
+libkf5package-dev
 libkf5parts-dev
 libkf5plotting-dev
 libkf5pty-dev
