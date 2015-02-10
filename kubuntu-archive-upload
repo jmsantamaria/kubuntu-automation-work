@@ -40,29 +40,8 @@ else:
 
 if args.packages:
     packages = args.packages.split(",")
-elif releaseType == "kf5":
-    f = open("kf5-packages-" + release + ".txt", "r")
-    packages = f.readlines()
-    f.close()
-
-    packages = map(lambda line: line.strip("\r\n\t "), packages)
-    packages = filter(lambda line: line and not line.startswith("#"), packages)
-elif releaseType == "plasma":
-    f = open("plasma-packages-" + release + ".txt", "r")
-    packages = f.readlines()
-    f.close()
-
-    packages = map(lambda line: line.strip("\r\n\t "), packages)
-    packages = filter(lambda line: line and not line.startswith("#"), packages)
-elif releaseType == "kdeapplications":
-    f = open("kdeapplications-packages-" + release + ".txt", "r")
-    packages = f.readlines()
-    f.close()
-
-    packages = map(lambda line: line.strip("\r\n\t "), packages)
-    packages = filter(lambda line: line and not line.startswith("#"), packages)
 else:
-    f = open("kdesc-packages-" + release + ".txt", "r")
+    f = open(releaseType + "-packages-" + release + ".txt", "r")
     packages = f.readlines()
     f.close()
 
