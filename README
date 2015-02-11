@@ -40,7 +40,7 @@ When builds fail retry e.g.:
  ./kubuntu-retry-builds --kf5 --ppa=kubuntu-ppa --ppaname=next-staging --force
 
 and retry in the main archive with:
- ubuntu-build --batch --retry `cat kf5-packages-vivid.txt`
+ while true; sleep 1200; ubuntu-build --batch --retry `cat kf5-packages-vivid.txt`; done
 
 TODO:
  make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
