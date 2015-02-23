@@ -38,7 +38,6 @@
   "frameworkintegration": [ "OxygenFont" ],
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ],
   "sonnet": [ "ASPELL" ],
-  "plasma-workspace": [ "Prison" ],
   "libkscreen": [ "XCB_XINPUT" ],
   "kcm-touchpad": [ "XCB_XINPUT" ],
   "oxygen-qt4": [ "KDE4Workspace" ]
