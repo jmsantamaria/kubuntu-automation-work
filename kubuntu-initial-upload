@@ -24,6 +24,7 @@ parser.add_argument("--nopush", action="store_true", help="Don't Push branches w
 parser.add_argument("-r", "--releasetype", help="Type [kdeapplications,kdesc,kf5,plasma]", default="kdeapplications")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
 parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
+parser.add_argument("-b", "--branch", help="branch to merge [stable|unstable]", default="stable")
 
 args = parser.parse_args()
 
@@ -34,6 +35,7 @@ sru = args.sru
 cwd = os.getcwd()
 epoch = "4:"
 releaseType = args.releasetype
+branch = args.branch
 if releaseType == "kf5":
     epoch = ""
 
@@ -322,6 +324,10 @@ for package in packages:
             subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
             os.chdir("git")
             subprocess.check_call(["git", "checkout", "kubuntu_%s_archive" % (release)])
+            try:
+                subprocess.check_call(["git", "merge", "origin/kubuntu_%s" % (branch)])
+            except:
+                print "could not merge kubuntu_%s in %s" % (branch, package)
         else:
             subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
             os.chdir("bzr")
