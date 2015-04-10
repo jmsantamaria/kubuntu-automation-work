@@ -51,12 +51,15 @@ kf5portingAids = ["kdelibs4support",
 
 plasmaPackagesWithoutEpoch = ["baloo-kf5", "kfilemetadata-kf5", "libmm-qt"]
 
+# git base url for pkg-kde on moszumanska:
+debian_git = "git+ssh://git.debian.org/git/pkg-kde/"
+
 if releaseType == "kf5":
-    bzrBranch = "debian:frameworks/"
+    bzrBranch = debian_git + "frameworks/"
 elif releaseType == "plasma":
-    bzrBranch = "debian:plasma/"
+    bzrBranch = debian_git + "plasma/"
 elif releaseType == "kdeapplications":
-    bzrBranch = "debian:kde-applications/"
+    bzrBranch = debian_git + "kde-applications/"
 else:
     bzrBranch = "bzr+ssh://bazaar.launchpad.net/~kubuntu-packagers/kubuntu-packaging/"
 
