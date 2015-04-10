@@ -327,7 +327,10 @@ for package in packages:
             try:
                 subprocess.check_call(["git", "merge", "origin/kubuntu_%s" % (branch)])
             except:
-                print "could not merge kubuntu_%s in %s" % (branch, package)
+                print "==== Skipping %s: could not merge kubuntu_%s" % (package, branch)
+                shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+                moved.append((package, "git merge failed"))
+                continue
         else:
             subprocess.check_call(["bzr", "branch", bzrBranch + upstreamName(package), "bzr"])
             os.chdir("bzr")
