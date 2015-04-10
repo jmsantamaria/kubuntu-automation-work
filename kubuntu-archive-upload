@@ -10,6 +10,8 @@ import subprocess
 import sys
 import tempfile
 
+from lib.utils import *
+
 parser = argparse.ArgumentParser(description="Upload new KDE SC version to the main archive.")
 parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-p", "--packages", help="Override the list packages to upload (comma separated)")
