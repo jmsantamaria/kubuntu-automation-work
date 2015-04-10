@@ -1,0 +1,11 @@
+{
+    "kde4libs": "kdelibs",
+    "attica-kf5": "attica",
+    "kactivities-kf5": "kactivities",
+    "kwallet-kf5": "kwallet",
+    "kdnssd-kf5": "kdnssd",
+    "baloo-kf5": "baloo",
+    "breeze-qt4": "breeze",
+    "oxygen-qt4": "oxygen",
+    "kfilemetadata-kf5": "kfilemetadata"
+}

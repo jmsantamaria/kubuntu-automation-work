@@ -13,3 +13,8 @@ def readPackages(filename):
     packages = filter(lambda line: line and not line.startswith("#"), packages)
 
     return packages
+
+def upstreamName(package):
+    with open("upstream-names.json") as upstreamfile:
+        pkgmap = json.load(upstreamfile)
+        return pkgmap[package]

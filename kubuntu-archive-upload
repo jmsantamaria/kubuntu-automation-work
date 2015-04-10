@@ -82,24 +82,6 @@ def parseChangelogVersions(path):
             versions.append(match.group(2))
     return versions
 
-def upstreamName(package):
-    if package == "kde4libs":
-        return "kdelibs"
-    elif package == "kwallet-kf5":
-        return "kwallet"
-    elif package == "attica-kf5":
-        return "attica"
-    elif package == "kactivities-kf5":
-        return "kactivities"
-    elif package == "kdnssd-kf5":
-        return "kdnssd"
-    elif package == "baloo-kf5":
-        return "baloo"
-    elif package == "kfilemetadata-kf5":
-        return "kfilemetadata"
-    else:
-        return package
-
 for package in packages:
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
