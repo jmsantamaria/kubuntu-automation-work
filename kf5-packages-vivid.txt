@@ -48,6 +48,7 @@ kcompletion
 kitemviews
 kplotting
 networkmanager-qt
+modemmanager-qt
 kparts
 ktexteditor
 kcodecs
