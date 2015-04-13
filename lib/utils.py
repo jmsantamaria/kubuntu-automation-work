@@ -1,3 +1,5 @@
+import json
+
 def readAllFromFile(filename):
     f = open(filename, "r")
     result = f.read()
@@ -17,4 +19,7 @@ def readPackages(filename):
 def upstreamName(package):
     with open("upstream-names.json") as upstreamfile:
         pkgmap = json.load(upstreamfile)
-        return pkgmap[package]
+        if package in pkgmap:
+          return pkgmap[package]
+        else:
+          return package
