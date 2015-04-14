@@ -174,7 +174,7 @@ for package in packages:
             subprocess.check_call(["bzr", "commit", "-m", "Release to " + release + "."])
         try:
             if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
-                #subprocess.check_call(["git-buildpackage", "--git-ignore-branch", "--git-tag-only", "--git-debian-tag='ubuntu/%(version)s'"])
+                #subprocess.check_call(["git-buildpackage", "--git-ignore-branch", "--git-tag-only", "--git-debian-tag='ubuntu/%(version)s'", "--git-debian-tag-msg='%(pkg)s Ubuntu release %(version)s'"])
                 # don't tag until we know what tags are actually accepted by
                 # pkg-kde
                 pass
