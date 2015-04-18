@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 version = sys.argv[1]
+balooversion = sys.argv[2]
 
 versionParts = version.split(".")
 lastDigit = int(versionParts[-1])
@@ -34,4 +35,20 @@ for line in output.splitlines():
         else:
             print match.group(1)
 
+    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(balooversion) + r'\.tar\.', line)
+    if match:
+        name = match.group(1)
+        if name == "baloo":
+            print "baloo-kf5"
+        elif name == "breeze":
+            print "breeze"
+            print "breeze-qt4"
+        elif name == "oxygen":
+            print "oxygen"
+            print "oxygen-qt4"
+        elif name == "kfilemetadata":
+            print "kfilemetadata-kf5"
+        else:
+            print match.group(1)
+            
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
