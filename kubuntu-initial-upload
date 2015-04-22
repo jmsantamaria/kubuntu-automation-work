@@ -303,7 +303,7 @@ for package in packages:
         if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
             subprocess.check_call(["git", "clone", bzrBranch + upstreamName(package), "git"])
             os.chdir("git")
-            subprocess.check_call(["git", "checkout", "kubuntu_%s_archive" % (release)])
+            subprocess.check_call(["git", "checkout", "kubuntu_%s_backports" % (release)])
             try:
                 subprocess.check_call(["git", "merge", "origin/kubuntu_%s" % (branch)])
             except:
