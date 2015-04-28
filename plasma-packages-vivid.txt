@@ -1,6 +1,4 @@
 baloo-kf5
-bluedevil
-bluez-qt
 breeze
 breeze-qt4
 kde-cli-tools
