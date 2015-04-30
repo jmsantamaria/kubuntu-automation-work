@@ -47,9 +47,13 @@ kdeedu-data
 kdegraphics-mobipocket
 kdegraphics-strigi-analyzer
 kdegraphics-thumbnailers
+kdelibs
 kdenetwork-filesharing
 kdenetwork-strigi-analyzers
 kdenlive
+kdepim
+kdepimlibs
+kdepim-runtime
 kde-runtime
 kdesdk-kioslaves
 kdesdk-strigi-analyzers
@@ -126,7 +130,6 @@ ktp-send-file
 ktp-text-ui
 ktuberling
 kturtle
-ktux
 kubrick
 kuser
 kwalletmanager
