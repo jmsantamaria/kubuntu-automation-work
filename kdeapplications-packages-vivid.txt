@@ -47,6 +47,7 @@ kdeedu-data
 kdegraphics-mobipocket
 kdegraphics-strigi-analyzer
 kdegraphics-thumbnailers
+kde-l10n
 kdelibs
 kdenetwork-filesharing
 kdenetwork-strigi-analyzers

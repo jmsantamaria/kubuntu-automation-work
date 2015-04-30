@@ -37,3 +37,4 @@ for line in output.splitlines():
             pass
         else:
             print match.group(1)
+print "kde-l10n"
