@@ -17,7 +17,7 @@ def readPackages(filename):
     return packages
 
 def upstreamName(package):
-    with open("upstream-names.json") as upstreamfile:
+    with open("/home/jr/src/kubuntu-automation/kubuntu-automation/upstream-names.json") as upstreamfile:
         pkgmap = json.load(upstreamfile)
         if package in pkgmap:
           return pkgmap[package]
