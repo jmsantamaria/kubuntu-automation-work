@@ -32,7 +32,7 @@
   "karchive": [ "CMake Warning" ],
   "kcoreaddons": [ "FAM" ],
   "solid": [ "MediaPlayerInfo" ],
-    "kget": [ "NepomukCore", "NepomukWidgets", "KDE4Workspace" ],
+  "kget": [ "NepomukCore", "NepomukWidgets", "KDE4Workspace" ],
   "kwallet-kf5": [ "Gpgme", "QGpgme", "KF5Gpgmepp" ],
   "oxygen": [ "XCB_" ],
   "frameworkintegration": [ "OxygenFont" ],
@@ -40,5 +40,6 @@
   "sonnet": [ "ASPELL" ],
   "libkscreen": [ "XCB_XINPUT" ],
   "kcm-touchpad": [ "XCB_XINPUT" ],
-  "oxygen-qt4": [ "KDE4Workspace" ]
+  "oxygen-qt4": [ "KDE4Workspace" ],
+  "knewstuff": [ "unusual-interpreter", "script-not-executable" ]
 }
