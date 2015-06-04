@@ -396,7 +396,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
 
-            if version not in packageVersion:
+            if version not in packageVersion and (package != "baloo-kf5" or package != "kfilemetadata-kf5"):
                 builds[package][arch]["status"] = STATUS_ERROR
                 builds[package][arch]["message"] = "Version incorrect"
 
