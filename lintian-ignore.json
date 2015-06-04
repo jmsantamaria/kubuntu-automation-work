@@ -105,5 +105,6 @@
     "kded": [ "shlib-without-versioned-soname", "postinst-must-call-ldconfig" ],
     "oxygen-icons": [ "description-is-pkg-name" ],
     "konsole": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
-    "kget": [ "source-is-missing" ]
+    "kget": [ "source-is-missing" ],
+    "plasma-mediacenter": [ "package-name-doesnt-match-sonames" ]
 }
