@@ -23,7 +23,7 @@ parser.add_argument("-y", "--distversion", help="Dist version number, e.g. 12.10
 parser.add_argument("--nopush", action="store_true", help="Don't Push branches while preparing the packages")
 parser.add_argument("-r", "--releasetype", help="Type [kdeapplications,kdesc,kf5,plasma]", default="kdeapplications")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
-parser.add_argument("-e", "--ecmversion", help="extra-cmake-modules version")
+parser.add_argument("-e", "--balooversion", help="baloo version")
 parser.add_argument("-b", "--branch", help="branch to merge [stable|unstable]", default="stable")
 
 args = parser.parse_args()
@@ -203,8 +203,8 @@ for package in packages:
 
     os.mkdir(basedir + "/" + package)
     os.chdir(basedir + "/" + package)
-    if package == "extra-cmake-modules":
-        upstreamVersion = args.ecmversion
+    if package == "baloo-kf5" or package == "kfilemetadata-kf5":
+        upstreamVersion = args.balooversion
     else:
         upstreamVersion = version
 
@@ -331,8 +331,8 @@ for package in packages:
         bumpVersionArgs += ["--plasma"]
     if releaseType == "kdeapplications":
         bumpVersionArgs += ["--kdeapplications"]
-    if args.ecmversion:
-        bumpVersionArgs += ["--ecmversion", args.ecmversion]
+    if args.balooversion:
+        bumpVersionArgs += ["--balooversion", args.balooversion]
     print (bumpVersionArgs)
     subprocess.check_call(bumpVersionArgs)
 

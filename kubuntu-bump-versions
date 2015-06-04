@@ -12,7 +12,7 @@ parser.add_argument("--version", required=True, help="Upstream version")
 parser.add_argument("--kf5", action="store_true", help="Packages are KDE Frameworks 5")
 parser.add_argument("--plasma", action="store_true", help="Packages are KDE Plasma 5")
 parser.add_argument("--kdeapplications", action="store_true", help="Packages are KDE Applications")
-parser.add_argument("--ecmversion", help="extra-cmake-modules version")
+parser.add_argument("--balooversion", help="baloo version")
 
 args = parser.parse_args()
 
@@ -41,8 +41,8 @@ else:
     for builddep in readPackages(cwd + "/kdesc-dev-latest-" + args.dist + ".txt"):
         control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s)' % (builddep, epoch, args.version), control)
 
-if args.ecmversion:
-    control = re.sub(r'%s\s*\(>=.*?\)' % "extra-cmake-modules", '%s (>= %s%s)' % ("extra-cmake-modules", epoch, args.ecmversion), control)
+if args.balooversion:
+    control = re.sub(r'%s\s*\(>=.*?\)' % "kfilemetadata", '%s (>= %s%s)' % ("kfilemetadata", epoch, args.balooversion), control)
 
 f = open("debian/control", "w")
 f.write(control)

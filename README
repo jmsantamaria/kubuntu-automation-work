@@ -40,12 +40,10 @@ When builds fail retry e.g.:
  ./kubuntu-retry-builds --kf5 --ppa=kubuntu-ppa --ppaname=next-staging --force
 
 and retry in the main archive with:
- while true; do ubuntu-build --batch --retry `cat kf5-packages-vivid.txt`; echo ====; sleep 1200; done
+ while true; do ubuntu-build --batch --retry `cat kf5-packages-wily.txt`; echo ====; sleep 1200; done
 
 Once it's built and tested copy it to another PPA with e.g.:
  for asdf in `cat plasma-packages-vivid.txt`; do echo ${asdf}; ~/src/ubuntu-archive/ubuntu-archive-tools/copy-package -b -s vivid -p kubuntu-ppa --ppa-name=next-staging --to-ppa=kubuntu-ppa --to-ppa-name=beta ${asdf} -y; done
-
-Or use kubuntu-archive-upload to get it uploaded to ubuntu archive
 
 TODO:
  make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
