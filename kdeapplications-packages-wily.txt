@@ -38,6 +38,7 @@ kcalc
 kcharselect
 kcolorchooser
 kcron
+kde4libs
 kdeartwork
 kde-baseapps
 kde-base-artwork
@@ -48,7 +49,6 @@ kdegraphics-mobipocket
 kdegraphics-strigi-analyzer
 kdegraphics-thumbnailers
 kde-l10n
-kdelibs
 kdenetwork-filesharing
 kdenetwork-strigi-analyzers
 kdenlive

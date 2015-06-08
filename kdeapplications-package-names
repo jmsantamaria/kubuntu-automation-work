@@ -37,6 +37,8 @@ for line in output.splitlines():
         name = match.group(1)
         if name == "ktux":
             pass
+        if name == "kdelibs":
+            print "kde4libs"
         else:
             print match.group(1)
 print "kde-l10n"
