@@ -6,20 +6,22 @@ Host depot.kde.org
 Update package list, e.g.:
  ./kf5-package-names 5.1.0 > kf5-packages-utopic.txt
 or
- ./kdesc-package-names 4.9.2 > kdesc-packages-quantal.txt
-and check the output
-- qyoto and kimono need to be removed from the list as we don't build the mono
-  bindings
+ ./plasma-package-names 5.3.0 | sort > plasma-packages-utopic.txt
+or
+ ./kdeapplications-package-names 15.04.2 4.14.9 | sort > kdeapplications-packages-wily.txt
 
  export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
 
 Ensure previous changelogs are all set to released (assuming you want a new changelog entry) then:
 
-For frameworks click build now at http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/
+For frameworks/plasma/applications pause CI:
+ click build now at http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/
 
-For a new feature release (not bugfix) merge in kubuntu_unstable
+For a new feature release (not bugfix) merge in kubuntu_unstable using harald's script at
+ https://github.com/apachelogger/kubuntu-repo-merge
 
-./kubuntu-initial-upload -d raring -v 4.9.90 -m "New upstream beta release" -y 13.04 -t ~/src/4.9.90
+or manually
+ ./kubuntu-initial-upload -d wily -v 5.3.1 -m "New upstream release" -y 15.10 -t ~/src/plasma -r plasma -e 5.9.1 -b stable
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
@@ -47,5 +49,5 @@ Once it's built and tested copy it to another PPA with e.g.:
 
 TODO:
  make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
- make kubuntu-initial-upload do the right thing with extra-cmake-modules in frameworks
+ make kubuntu-initial-upload move stuff to upload
  make kubuntu-ppa-build-status do the right thing with extra-cmake-modules in frameworks

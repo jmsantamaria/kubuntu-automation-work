@@ -37,7 +37,7 @@ ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
 if releaseType == "kf5" or releaseType == "plasma":
 #    ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
-    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="staging")
+    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="next-staging")
 elif not args.sru:
     ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
 else:
@@ -85,6 +85,7 @@ def parseChangelogVersions(path):
     return versions
 
 for package in packages:
+    print "package: " + package
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
     archive_version = archive_package[0].source_package_version
@@ -108,7 +109,7 @@ for package in packages:
         subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     elif releaseType == "plasma":
 #        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ninjas/ppa", package, release])
-        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/staging", package, release])
+        subprocess.check_call(["pull-ppa-source", "-d", "kubuntu-ppa/next-staging", package, release])
         ninjasDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
         subprocess.check_call(["git", "clone", debian_git + "plasma/" + upstreamName(package), "git"])

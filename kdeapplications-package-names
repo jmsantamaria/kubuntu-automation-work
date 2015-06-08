@@ -8,7 +8,7 @@ try:
   version = sys.argv[1]
   pimversion = sys.argv[2]
 except IndexError:
-  print "Usage: kdeapplications-package-names [version]"
+  print "Usage: kdeapplications-package-names [version] [pimversion]"
   sys.exit(1);
 
 versionParts = version.split(".")
@@ -27,6 +27,8 @@ for line in output.splitlines():
     if match:
         name = match.group(1)
         if name == "ktux":
+            pass
+        if name == "libkdegames":
             pass
         else:
             print match.group(1)
