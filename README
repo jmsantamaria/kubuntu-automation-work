@@ -41,6 +41,9 @@ packages ready for PPA upload
 When builds fail retry e.g.:
  ./kubuntu-retry-builds --kf5 --ppa=kubuntu-ppa --ppaname=next-staging --force
 
+Update symbols by downloading buildlogs and running:
+ pkgkde-symbolshelper batchpatch -v 4:4.14.9 -c amd64,i386 buildlog_ubuntu-wily-*
+
 and retry in the main archive with:
  while true; do ubuntu-build --batch --retry `cat kf5-packages-wily.txt`; echo ====; sleep 1200; done
 
