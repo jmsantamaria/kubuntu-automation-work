@@ -28,8 +28,6 @@ for line in output.splitlines():
         name = match.group(1)
         if name == "ktux":
             pass
-        if name == "libkdegames":
-            pass
         else:
             print match.group(1)
     match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(pimversion) + r'\.tar\.', line)

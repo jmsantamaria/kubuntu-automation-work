@@ -35,9 +35,9 @@ else:
 lp = Launchpad.login_anonymously("kubuntu-archive-upload", "production")
 ubuntu = lp.distributions["ubuntu"]
 lpseries = ubuntu.getSeries(name_or_version=release)
-if releaseType == "kf5" or releaseType == "plasma":
+if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
 #    ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
-    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="next-staging")
+    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="next-stage2")
 elif not args.sru:
     ppa = lp.people["kubuntu-ninjas"].getPPAByName(name="ppa")
 else:

@@ -131,7 +131,6 @@ ktp-send-file
 ktp-text-ui
 ktuberling
 kturtle
-ktux
 kubrick
 kuser
 kwalletmanager
@@ -140,6 +139,7 @@ libkcddb
 libkcompactdisc
 libkdcraw
 libkdeedu
+libkdegames
 libkeduvocdocument
 libkexiv2
 libkface

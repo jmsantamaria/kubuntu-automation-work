@@ -51,6 +51,7 @@ Once it's built and tested copy it to another PPA with e.g.:
  for asdf in `cat plasma-packages-vivid.txt`; do echo ${asdf}; ~/src/ubuntu-archive/ubuntu-archive-tools/copy-package -b -s vivid -p kubuntu-ppa --ppa-name=next-staging --to-ppa=kubuntu-ppa --to-ppa-name=beta ${asdf} -y; done
 
 TODO:
- make kubuntu-initial-upload act nice on new frameworks paths on depot, stable/frameworks/5.4 not 5.4.0
- make kubuntu-initial-upload move stuff to upload
- make kubuntu-ppa-build-status do the right thing with extra-cmake-modules in frameworks
+ make kubuntu-initial-upload move stuff to upload instead of breaking and moving to manual
+ check over build-dep versions for differently versioned applications bits (kdepim, kdelibs)
+ make -r releasetype arguments consistent
+ 
