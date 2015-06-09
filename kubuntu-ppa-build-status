@@ -21,6 +21,9 @@ parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintia
 parser.add_argument("-r", "--releasetype", help="Type [kdeapplications,kdesc,kf5,plasma]", default="kdeapplications")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
+#packages we know use a different version than the rest of the release
+differentVersion = ["baloo-kf5", "kfilemetadata-kf5", "kdepimlibs", "kdepim", "kdepim-runtime", "kde4libs"]
+
 args = parser.parse_args()
 
 release = args.dist
@@ -396,7 +399,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["status"] = STATUS_SUCCESS
             builds[package][arch]["message"] = ""
 
-            if version not in packageVersion and (package != "baloo-kf5" or package != "kfilemetadata-kf5"):
+            if version not in packageVersion and (package not in differentVersion):
                 builds[package][arch]["status"] = STATUS_ERROR
                 builds[package][arch]["message"] = "Version incorrect"
 
