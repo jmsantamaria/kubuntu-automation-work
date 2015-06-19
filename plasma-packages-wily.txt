@@ -1,4 +1,6 @@
 baloo-kf5
+bluedevil
+bluez-qt
 breeze
 breeze-qt4
 kde-cli-tools
@@ -34,4 +36,3 @@ polkit-kde-agent-1
 powerdevil
 sddm-kcm
 systemsettings
-user-manager

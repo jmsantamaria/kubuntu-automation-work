@@ -6,9 +6,8 @@ import sys
 
 try:
   version = sys.argv[1]
-  pimversion = sys.argv[2]
 except IndexError:
-  print "Usage: kdeapplications-package-names [version] [pimversion]"
+  print "Usage: kdeapplications-package-names [version]"
   sys.exit(1);
 
 versionParts = version.split(".")
@@ -23,14 +22,7 @@ p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/appli
 output, _ = p.communicate("ls *xz")
 
 for line in output.splitlines():
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
-    if match:
-        name = match.group(1)
-        if name == "ktux":
-            pass
-        else:
-            print match.group(1)
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(pimversion) + r'\.tar\.', line)
+    match = re.search(r'([a-zA-Z0-9\-]+)-.*\.tar\.', line)
     if match:
         name = match.group(1)
         if name == "ktux":

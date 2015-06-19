@@ -4,8 +4,11 @@ import re
 import subprocess
 import sys
 
-version = sys.argv[1]
-balooversion = sys.argv[2]
+try:
+  version = sys.argv[1]
+except IndexError:
+  print "Usage: plasma-package-names [version]"
+  sys.exit(1);
 
 versionParts = version.split(".")
 lastDigit = int(versionParts[-1])
@@ -19,7 +22,7 @@ p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/plasm
 output, _ = p.communicate("ls")
 
 for line in output.splitlines():
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(version) + r'\.tar\.', line)
+    match = re.search(r'([a-zA-Z0-9\-]+)-.*\.tar\.', line)
     if match:
         name = match.group(1)
         if name == "baloo":
@@ -35,20 +38,5 @@ for line in output.splitlines():
         else:
             print match.group(1)
 
-    match = re.search(r'([a-zA-Z0-9\-]+)-' + re.escape(balooversion) + r'\.tar\.', line)
-    if match:
-        name = match.group(1)
-        if name == "baloo":
-            print "baloo-kf5"
-        elif name == "breeze":
-            print "breeze"
-            print "breeze-qt4"
-        elif name == "oxygen":
-            print "oxygen"
-            print "oxygen-qt4"
-        elif name == "kfilemetadata":
-            print "kfilemetadata-kf5"
-        else:
-            print match.group(1)
             
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
