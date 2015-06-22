@@ -27,7 +27,9 @@ for line in output.splitlines():
         name = match.group(1)
         if name == "ktux":
             pass
-        if name == "kdelibs":
+        elif name == "kde-workspace":
+            pass
+        elif name == "kdelibs":
             print "kde4libs"
         else:
             print match.group(1)
