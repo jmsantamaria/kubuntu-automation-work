@@ -52,7 +52,7 @@ if args.version:
     else:
         stability = "stable"
 else:
-    p = subprocess.Popen(["ssh", "depot.kde.org", "ls /home/ftpubuntu/%s/%s/" % ("stable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["ssh", "depot.kde.org", "ls %s/%s/" % ("stable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     outputstable, _ = p.communicate()
     stable = outputstable.split()
     stableList = []
@@ -60,7 +60,7 @@ else:
         stableList.append(string.decode('utf-8'))
     stableList.sort(key=LooseVersion)
     stableVersion = stableList[-1:][0]
-    p = subprocess.Popen(["ssh", "depot.kde.org", "ls /home/ftpubuntu/%s/%s/" % ("unstable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["ssh", "depot.kde.org", "ls %s/%s/" % ("unstable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     outputunstable, _ = p.communicate()
     unstable = outputunstable.split()
     unstableList = []
@@ -77,7 +77,7 @@ else:
     print("got version " + version + " " + stability)
 
 def listPackages(subdir=""):
-    p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/%s/%s/%s" % (stability, releaseType, version, subdir)],
+    p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:%s/%s/%s/%s" % (stability, releaseType, version, subdir)],
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     output, _ = p.communicate(bytes("ls *xz", 'utf-8'))
     packageList = []

@@ -4,11 +4,7 @@ Host depot.kde.org
     User ftpubuntu
 
 Update package list, e.g.:
- ./kf5-package-names 5.1.0 > kf5-packages-utopic.txt
-or
- ./plasma-package-names 5.3.0 | sort > plasma-packages-utopic.txt
-or
- ./kdeapplications-package-names 15.04.2 4.14.9 | sort > kdeapplications-packages-wily.txt
+ ./package-name-list -d wily -r plasma
 
  export PATH=`pwd`:$PATH # bzr-buildpackage-ppa has to be in PATH
 
