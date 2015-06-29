@@ -1,0 +1,48 @@
+#!/bin/sh
+
+if [ -z "$KUBUNTU_PPA_BUILD_STATUS_CONFIG" ]; then
+    KUBUNTU_PPA_BUILD_STATUS_CONFIG=./kubuntu-ppa-build-status-cron.conf
+fi
+
+if [ ! -e "$KUBUNTU_PPA_BUILD_STATUS_CONFIG" ]; then
+    echo "config file missing. Not set up yet?"
+    exit 1
+fi
+
+. $KUBUNTU_PPA_BUILD_STATUS_CONFIG
+
+WORKDIR=`pwd`
+
+[ -e $CACHEDIR ] || mkdir -p $CACHEDIR
+[ -e $STATUSDIR ] || mkdir -p $STATUSDIR
+
+if [ ! -w $CACHEDIR ]; then
+    echo "$CACHEDIR not writable! Cannot continue"
+    exit 2
+elif [ ! -w $STATUSDIR ]; then
+    echo "$STATUSDIR not writable! Cannot continue"
+    exit 3
+fi
+
+if [ -n "$KUBUNTU_PPA_BUILD_STATUS_LIGHTWEIGHT" ]; then
+    cd $CACHEDIR
+    rm -f $FILE
+    if test "$PPA" = "kubuntu-ninjas/ppa"; then
+        wget https://$CREDENTIALS@private-ppa.launchpad.net/kubuntu-ninjas/ppa/ubuntu/dists/$RELEASE/$FILE
+    else
+        wget http://ppa.launchpad.net/$PPA/ubuntu/dists/$RELEASE/$FILE
+    fi
+    # check if we need to do something
+    # FIXME: this doesn't work for build failures...
+    if [ -e $FILE.old ]; then
+        if [ ! "`stat --format=%Y $FILE`" -gt "`stat --format=%Y $FILE.old`" ]; then
+            exit 0
+        fi
+    fi
+    mv $FILE $FILE.old
+    cd $WORKDIR
+fi
+
+# regenerate status page
+./ppa-build-status -r $RELEASE_TYPE -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS -p $PPA --cache $CACHEDIR > $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new 2>&1
+mv $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html
