@@ -1,0 +1,524 @@
+#!/usr/bin/python
+
+import argparse
+import cgi
+import datetime
+import gzip
+import json
+from launchpadlib.launchpad import Launchpad
+import os
+import re
+import sys
+import time
+import lazr
+
+parser = argparse.ArgumentParser(description="Generate a build status report.")
+parser.add_argument("-p", "--ppa", help="PPA to download the package from. Format: <user>/<ppa name>")
+parser.add_argument("-d", "--dist", required=True, help="Distribution name")
+parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
+parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
+parser.add_argument("-r", "--releasetype", help="Type [applications,frameworks,plasma]", default="applications")
+parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
+
+#packages we know use a different version than the rest of the release
+differentVersion = ["baloo-kf5", "kfilemetadata-kf5", "kdepimlibs", "kdepim", "kdepim-runtime", "kde4libs"]
+
+args = parser.parse_args()
+
+release = args.dist
+version = args.version
+
+if args.releasetype == "applications":
+  releaseString = "KDE Applications"
+elif args.releasetype == "frameworks":
+  releaseString = "Frameworks"
+elif args.releasetype == "plasma":
+  releaseString = "Plasma"
+
+fileName = "package-name-lists" + args.releasetype + "-" + args.dist
+with open(fileName) as f:
+    sources = f.readlines()
+  
+STATUS_SUCCESS = 0
+STATUS_WARNING = 1
+STATUS_ERROR = 2
+STATUS_BUILDING = -1
+STATUS_WAITING = -2
+
+def get_log(build):
+    buildId = int(build.self_link[build.self_link.rfind("/") + 1:])
+    cacheFilename = args.cache + "/buildlogs/" + str(buildId) + ".gz"
+
+    if os.path.isfile(cacheFilename):
+        f = gzip.GzipFile(cacheFilename, "r")
+        content = f.read()
+        f.close()
+        return content
+
+    url = build.build_log_url
+    # hack to get build log for private PPAs
+    url = url.replace("https://launchpad.net/", "https://api.launchpad.net/1.0/")
+    try:
+        content = lp._browser.get(url)
+    except:
+        time.sleep(5)
+        content = lp._browser.get(url)
+
+    if build.buildstate == "Successfully built":
+        f = gzip.GzipFile(cacheFilename, "w")
+        f.write(content)
+        f.close()
+
+    return content
+
+def isCmakeDepIgnored(depLine, package):
+    if 'all' in cmakeIgnore:
+        for dep in cmakeIgnore['all']:
+            if depLine.startswith(dep):
+                return True
+
+    if not package in cmakeIgnore:
+        return False
+
+    for dep in cmakeIgnore[package]:
+        if depLine.startswith(dep):
+            return True
+
+    return False
+
+def get_cmake(log, package):
+    try:
+        start = log.index("\ndh_auto_configure") + 1
+    except ValueError:
+        start = log.index("\n   dh_auto_configure") + 1
+    end = log.rindex("\n", 0, log.index("dh_auto_build")) - 1
+    cmakeLog = log[start:end]
+    logLines = cmakeLog.splitlines()
+    highlightLines = set()
+
+    if "The following OPTIONAL packages have not been found" in cmakeLog:
+        startMsg = False
+        startLine = False
+        numIgnored = 0
+        numNotIgnored = 0
+        # The missing optionals block is identified by
+        # - startMsg
+        #  - followed by an empty line (startline)
+        #    - followed by the actual content lines
+        #  - followed by an empty line (endline)
+        for i, line in enumerate(logLines):
+            if not startMsg and "The following OPTIONAL packages have not been found" in line:
+                startMsg = True
+            elif startMsg and not startLine and not line:
+                startLine = True
+            elif startMsg and startLine:
+                if not line:
+                    break
+                match = re.search(r'^ *\* (.*)$', line)
+                if match:
+                    ignore = isCmakeDepIgnored(match.group(1), package)
+                    if ignore:
+                        numIgnored += 1
+                    else:
+                        numNotIgnored += 1
+                        highlightLines.add(i)
+
+        if numIgnored == 0 and numNotIgnored == 0:
+            print "Parsing of of the cmake log for %s failed as optional missing packages were detected but parsing of the actual packages failed" % package
+            sys.exit(1)
+        elif numNotIgnored != 0:
+            status = STATUS_WARNING
+        else:
+            status = STATUS_SUCCESS
+    elif "All external packages have been found" in cmakeLog:
+        status = STATUS_SUCCESS
+    elif ("Could NOT find" in cmakeLog) or ("Could not find a package configuration file provided by" in cmakeLog):
+        numIgnored = 0
+        numNotIgnored = 0
+        for i, line in enumerate(logLines):
+            pos = line.find("Could NOT find")
+            if pos != -1:
+                pos += 15
+            else:
+                pos = line.find("Could not find a package configuration file provided by \"")
+                if pos != -1:
+                    pos += 57
+                else:
+                    continue
+            ignore = isCmakeDepIgnored(line[pos:], package)
+            if ignore:
+                numIgnored += 1
+            else:
+                numNotIgnored += 1
+                highlightLines.add(i)
+        if numIgnored == 0 and numNotIgnored == 0:
+            # how could this happen?!
+            status = STATUS_ERROR
+        elif numNotIgnored != 0:
+            status = STATUS_WARNING
+        else:
+            status = STATUS_SUCCESS
+    else:
+        status = STATUS_SUCCESS
+
+    for i, line in enumerate(logLines):
+        if "CMake Warning" in line:
+            if "CMake Warning at /usr/share/kde4/apps/cmake/modules/MacroOptionalFindPackage.cmake" in line:
+                continue
+            if re.search(r'CMake Warning at [^ :]+:\d+ \(find_package\)', line):
+                continue
+            if line.startswith("CMake Warning (dev)"):
+                continue
+            if line.startswith("CMake Warning:"):
+                continue
+
+            if status == STATUS_SUCCESS:
+                status = STATUS_WARNING
+            highlightLines.add(i)
+
+    for i, line in enumerate(logLines):
+        line = cgi.escape(line)
+        if i in highlightLines:
+            line = "<b>" + line + "</b>"
+        logLines[i] = line
+
+    return ("\n".join(logLines), status)
+
+def get_symbols(log):
+    if "dpkg-gensymbols: warning: some symbols or patterns disappeared in the symbols file" in log:
+        status = STATUS_ERROR
+    elif "dpkg-gensymbols: warning: some new symbols appeared in the symbols file" in log:
+        status = STATUS_WARNING
+    else:
+        status = STATUS_SUCCESS
+
+    return ("", status)
+
+def get_list_missing(log):
+    start = log.index("=== Start list-missing") + 22
+    end = log.index("=== End list-missing")
+    output = log[start:end].strip("\r\n\t ")
+    if output:
+        status = STATUS_ERROR
+    else:
+        status = STATUS_SUCCESS
+
+    return (output, status)
+
+def is_lintian_warning_ignored(line, package):
+
+    if 'all' in lintianIgnore:
+        for warning in lintianIgnore['all']:
+            if line.find(warning) >= 0:
+                return True
+
+    if not package in lintianIgnore:
+        return False
+
+    for warning in lintianIgnore[package]:
+        if line.find(warning) >= 0:
+            return True
+
+    return False
+
+def get_lintian(log, package):
+    start = log.index("=== Start lintian") + 17
+    end = log.index("=== End lintian")
+    result = log[start:end].splitlines()
+    status = STATUS_SUCCESS
+    output = []
+    for line in result:
+        if line.startswith("warning") or line.startswith("make"):
+            continue # warnings unrelated to the actual lintian output
+        if (line.startswith('E:') or line.startswith('W:')) and not is_lintian_warning_ignored(line, package):
+            status = STATUS_WARNING
+            output.append("<b>" + line + "</b>")
+        else:
+            output.append(line)
+
+    return ("\n".join(output), status)
+
+def get_dh_list_missing(log):
+    output = []
+    if "exists in debian/tmp but is not installed to anywhere" in log:
+        logLines = log.splitlines()
+        for line in logLines:
+            match = re.search(r'dh_install: (.*) exists in debian/tmp but is not installed to anywhere', line)
+            if match:
+                output.append(match.group(1))
+
+    if not output:
+        status = STATUS_SUCCESS
+    else:
+        status = STATUS_ERROR
+
+    return ("\n".join(output), status)
+
+def get_depwait(log):
+    output = []
+    unsatisfied = False
+    for line in log.splitlines():
+        if re.search('Unable to locate package', line):
+            output.append(re.sub('E: Unable to locate package ', '', line))
+
+        if re.search('has no installation candidate', line):
+            l = re.sub(".*?'", '', line, count=1)
+            l = re.sub("'.*", '', l)
+            output.append(l)
+
+        if unsatisfied:
+            pkgname = True
+            for res in re.split('\(|\)', line):
+                if pkgname:
+                    # package name
+                    output.append(res)
+                    pkgname = False
+                else:
+                    versionlist = res.split(' ')
+                    output.append(" >= " + versionlist[len(versionlist) - 1] + " ")
+                    pkgname = True
+            break
+        if re.match('After installing, the following source dependencies are still unsatisfied:', line):
+            unsatisfied = True
+
+    return "\n".join(output)
+
+
+if args.credentials:
+    lp = Launchpad.login_with("kubuntu-ppa-build-status", "production", args.cache, credentials_file=args.credentials)
+else:
+    lp = Launchpad.login_with("kubuntu-ppa-build-status", "production", args.cache)
+
+ubuntu = lp.distributions["ubuntu"]
+lpseries = ubuntu.getSeries(name_or_version=release)
+archindep = lpseries.nominatedarchindep.architecture_tag
+
+if args.ppa:
+    if len(args.ppa.split(":")) > 1:
+        args.ppa = args.ppa.split(":")[1]
+    ppaParts = args.ppa.split("/")
+    if len(ppaParts) != 2:
+        parser.print_help()
+        sys.exit(1)
+else:
+    ppaParts = ["kubuntu-ninjas", "ppa"]
+    args.ppa = "kubuntu-ninjas/ppa"
+ppa = lp.people[ppaParts[0]].getPPAByName(name=ppaParts[1])
+
+f = open("cmake-ignore.json", "r")
+cmakeIgnore = json.load(f)
+f.close()
+
+f = open("lintian-ignore.json", "r")
+lintianIgnore = json.load(f)
+f.close()
+
+if not os.path.isdir(args.cache + "/buildlogs"):
+    os.mkdir(args.cache + "/buildlogs")
+
+archive = ubuntu.main_archive
+print """
+<html>
+
+<head>
+  <title>Kubuntu %s status</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="kubuntu-ppa-build-status.css" />
+
+<script type="text/javascript">
+<!--
+    function toggleVisibility(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+
+       return false;
+    }
+//-->
+</script>
+
+</head>
+
+<body>
+
+<h1 id="top">Kubuntu %s %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
+""" % (releaseString, releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa)
+print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+print """
+<table class="grid">
+
+<thead><tr>
+  <th>Package</th>
+  <th>Arch</th>
+  <th>Log</th>
+  <th>Status messages</th>
+  </tr></thead>
+
+  <tbody>
+"""
+
+builds = {}
+
+for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"):
+    package = source.source_package_name
+    packageVersion = source.source_package_version
+
+    if package in builds:
+        print "Error multiple versions of the same package %s" % package
+        sys.exit(1)
+
+    # we only care about packages listed in the foo-packages-vivid.txt file
+    if package + '\n' not in sources:
+        continue
+
+    builds[package] = {}
+
+    for build in source.getBuilds():
+        arch = build.arch_tag
+        if arch == "armhf":
+            continue
+        builds[package][arch] = {}
+
+        builds[package][arch]["logfile"] = build.build_log_url
+        builds[package][arch]["weblink"] = build.web_link
+        builds[package][arch]["version"] = packageVersion
+
+        if build.buildstate == "Successfully built":
+            try:
+                log = get_log(build)
+            except:
+                builds[package][arch]["status"] = STATUS_WARNING
+                builds[package][arch]["message"] = "Failed to fetch build log\n"
+                continue
+
+            builds[package][arch]["status"] = STATUS_SUCCESS
+            builds[package][arch]["message"] = ""
+
+            if version not in packageVersion and (package not in differentVersion):
+                builds[package][arch]["status"] = STATUS_ERROR
+                builds[package][arch]["message"] = "Version incorrect"
+
+            output, status = get_symbols(log)
+            if status == STATUS_ERROR:
+                msg = "Missing symbols"
+            elif status == STATUS_WARNING:
+                msg = "New symbols"
+
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>symbol files:</h3>\n<div style=\"font-weight: bold;\">" + msg + "</div>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            try:
+                output, status = get_list_missing(log)
+            except ValueError:
+                if (arch == archindep) and not (("--list-missing" in log) or ("--fail-missing" in log)):
+                    status = STATUS_WARNING
+                    output = "No list-missing in build log."
+                else:
+                    status = STATUS_SUCCESS
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            output, status = get_dh_list_missing(log)
+            if status != STATUS_SUCCESS:
+                builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            # Lintian output is only generated on i386
+            if (arch == archindep and not args.nolintian):
+                try:
+                    output, status = get_lintian(log, package)
+                except ValueError:
+                    status = STATUS_WARNING
+                    output = "No lintian output in build log."
+                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
+                builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+
+            try:
+                output, status = get_cmake(log, package)
+                builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
+            except ValueError:
+                status = STATUS_WARNING
+                builds[package][arch]["message"] = "error while fetching cmake log"
+            builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
+        elif build.buildstate == "Needs building":
+            builds[package][arch]["status"] = STATUS_WAITING
+            builds[package][arch]["message"] = build.buildstate
+        elif build.buildstate == "Dependency wait":
+            builds[package][arch]["status"] = STATUS_WAITING
+            try:
+                builds[package][arch]["message"] = build.buildstate + ": " + get_depwait(get_log(build))
+            except (AttributeError, lazr.restfulclient.errors.RestfulError):
+                builds[package][arch]["message"] = build.buildstate
+        elif build.buildstate == "Currently building" or build.buildstate == "Uploading build":
+            builds[package][arch]["status"] = STATUS_BUILDING
+            builds[package][arch]["message"] = build.buildstate
+        elif build.buildstate == "Failed to build":
+            try:
+                log = get_log(build)
+                if log.find("kde-sc-dev-latest : Breaks:") != -1:
+                    builds[package][arch]["status"] = STATUS_WAITING
+                    builds[package][arch]["message"] = "Dependency wait"
+                else:
+                    builds[package][arch]["status"] = STATUS_ERROR
+                    builds[package][arch]["message"] = build.buildstate
+            except:
+                # fetching the log fails when launchpad fails the build for
+                # internal reasons
+                builds[package][arch]["status"] = STATUS_ERROR
+                builds[package][arch]["message"] = build.buildstate
+        else:
+            builds[package][arch]["status"] = STATUS_ERROR
+            builds[package][arch]["message"] = build.buildstate
+
+
+odd = True
+i = 1
+
+for package in sorted(builds.iterkeys()):
+    for arch in builds[package]:
+        build = builds[package][arch]
+
+        if odd:
+            trclass = "odd"
+            odd = False
+        else:
+            trclass = "even"
+            odd = True
+
+        message = build["message"]
+        if len(message) > 150:
+            message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
+
+        print '<tr class="%s"><td class="status%d"><span title="%s">%s - %s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, cgi.escape(build["version"]), build["weblink"], arch)
+        if build["logfile"]:
+            print '<td><a href="%s">logfile</a></td>' % (build["logfile"],)
+        else:
+            print '<td>&nbsp;</td>'
+        print '<td>%s</td></tr>\n' % (message,)
+
+        i += 1
+
+print """
+</tbody>
+
+</table>
+"""
+
+print "<p>Not in PPA: "
+for source in sources:
+    source = source.rstrip()
+    if source not in builds:
+        print source + ", "
+print "</p>"
+
+print """
+</body>
+</html>
+"""
+
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;
