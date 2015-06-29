@@ -1,4 +1,5 @@
 import json
+import os
 
 def readAllFromFile(filename):
     f = open(filename, "r")
@@ -17,7 +18,8 @@ def readPackages(filename):
     return packages
 
 def upstreamName(package):
-    with open("/home/jr/src/kubuntu-automation/kubuntu-automation/upstream-names.json") as upstreamfile:
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    with open(cwd + "/../upstream-names.json") as upstreamfile:
         pkgmap = json.load(upstreamfile)
         if package in pkgmap:
           return pkgmap[package]
