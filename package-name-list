@@ -20,6 +20,7 @@ packagesRenamedFromUpstram = {"kwallet": "kwallet-kf5",
                               "kdelibs": "kde4libs",
                               "baloo": "baloo-kf5",
                               "kfilemetadata": "kfilemetadata-kf5",
+                              "bluedevil": None, # until ubuntu gets bluez5 :(
                              }
 
 parser = argparse.ArgumentParser(description="Update package name list used by kubuntu-initial-upload.")
