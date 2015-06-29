@@ -36,7 +36,7 @@ elif args.releasetype == "frameworks":
 elif args.releasetype == "plasma":
   releaseString = "Plasma"
 
-fileName = "package-name-lists" + args.releasetype + "-" + args.dist
+fileName = "package-name-lists/" + args.releasetype + "-" + args.dist
 with open(fileName) as f:
     sources = f.readlines()
   
