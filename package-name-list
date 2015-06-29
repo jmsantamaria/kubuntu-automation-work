@@ -1,0 +1,114 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+
+# a script to make the list of package names which is then used by kubuntu-initial-upload
+# Copyright Jonathan Riddell 2015, may be copied under the GPL version 2 or later
+
+import argparse
+import re
+import subprocess
+import sys
+from distutils.version import LooseVersion
+
+packagesRenamedFromUpstram = {"kwallet": "kwallet-kf5",
+                              "kdnssd": "kdnssd-kf5",
+                              "kactivities": "kactivities-kf5",
+                              "attica": "attica-kf5",
+                              "ktux": None,
+                              "kde-workspace": None,
+                              "bluez-qt": None,
+                              "kdelibs": "kde4libs",
+                              "baloo": "baloo-kf5",
+                              "breeze": "breeze\nbreeze-qt4",
+                              "oxygen": "oxygen\noxygen-qt4",
+                              "kfilemetadata": "kfilemetadata-kf5",
+                             }
+
+parser = argparse.ArgumentParser(description="Update package name list used by kubuntu-initial-upload.")
+parser.add_argument("-d", "--dist", help="Distribution name", default="wily")
+parser.add_argument("-r", "--releasetype", help="KDE Release Type [frameworks,plasma,applications]", default="frameworks")
+parser.add_argument("-v", "--version", help="Version [latest]", required=False)
+args = parser.parse_args()
+
+def quit():
+    print("Usage: package-name-list [Distribution name] [Release Type]")
+    sys.exit(1)
+
+if len(sys.argv) < 2:
+    quit()
+
+try:
+    dist = args.dist
+    releaseType = args.releasetype
+except IndexError:
+    quit()
+
+if args.version:
+    version = args.version
+    versionParts = version.split(".")
+    lastDigit = int(versionParts[-1])
+    if lastDigit >= 80:
+        stability = "unstable"
+    else:
+        stability = "stable"
+else:
+    p = subprocess.Popen(["ssh", "depot.kde.org", "ls /home/ftpubuntu/%s/%s/" % ("stable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    outputstable, _ = p.communicate()
+    stable = outputstable.split()
+    stableList = []
+    for string in stable:
+        stableList.append(string.decode('utf-8'))
+    stableList.sort(key=LooseVersion)
+    stableVersion = stableList[-1:][0]
+    p = subprocess.Popen(["ssh", "depot.kde.org", "ls /home/ftpubuntu/%s/%s/" % ("unstable", releaseType)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    outputunstable, _ = p.communicate()
+    unstable = outputunstable.split()
+    unstableList = []
+    for string in unstable:
+        unstableList.append(string.decode('utf-8'))
+    unstableList.sort(key=LooseVersion)
+    unstableVersion = unstableList[-1:][0]
+    if stableVersion > unstableVersion:
+        stability = "stable"
+        version = stableVersion
+    if unstableVersion > stableVersion:
+        stability = "unstable"
+        version = unstableVersion
+    print("got version " + version + " " + stability)
+
+def listPackages(subdir=""):
+    p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:/home/ftpubuntu/%s/%s/%s/%s" % (stability, releaseType, version, subdir)],
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    output, _ = p.communicate(bytes("ls *xz", 'utf-8'))
+    packageList = []
+
+    for line in output.splitlines():
+        line = line.decode('utf-8')
+        match = re.search(r'([a-zA-Z0-9\-]+)-' + '[\d.]*' + r'\.tar\.', line)
+        if match:
+            package = match.group(1)
+            if package in packagesRenamedFromUpstram.keys():
+                package = packagesRenamedFromUpstram[package]
+            if package:
+                packageList.append(package)
+    return packageList
+
+if releaseType == "frameworks" or releaseType == "plasma":
+    packages = listPackages()
+if releaseType == "frameworks":
+    packages = packages + listPackages("portingAids")
+if releaseType == "applications":
+    packages = listPackages("src")
+
+packages.sort()
+
+if releaseType == "applications":
+    packages.append("kde-l10n")
+
+outFile = "package-name-lists/" + releaseType + "-" + dist + "-packages"
+f = open(outFile, 'w')
+for package in packages:
+    f.write(str(package) + "\n")
+print("write " + outFile)
+print("bzr diff " + outFile)
+p = subprocess.Popen(["bzr", "diff", outFile])
