@@ -19,8 +19,6 @@ packagesRenamedFromUpstram = {"kwallet": "kwallet-kf5",
                               "bluez-qt": None,
                               "kdelibs": "kde4libs",
                               "baloo": "baloo-kf5",
-                              "breeze": "breeze\nbreeze-qt4",
-                              "oxygen": "oxygen\noxygen-qt4",
                               "kfilemetadata": "kfilemetadata-kf5",
                              }
 

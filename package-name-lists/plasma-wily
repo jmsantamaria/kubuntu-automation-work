@@ -1,7 +1,6 @@
 baloo-kf5
 bluedevil
 breeze
-breeze-qt4
 kde-cli-tools
 kde-gtk-config
 kdecoration
@@ -23,7 +22,6 @@ libksysguard
 milou
 muon
 oxygen
-oxygen-qt4
 oxygen-fonts
 plasma-desktop
 plasma-mediacenter
