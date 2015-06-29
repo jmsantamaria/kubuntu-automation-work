@@ -302,55 +302,47 @@ for package in packages:
     # bump build-dep versions for packages that were in kde-sc-dev-latest
     bumpVersionArgs = [cwd + "/bump-build-dep-versions",
                        "--dist", release,
-                       "--version", upstreamVersion]
-    if releaseType == "kf5":
-        bumpVersionArgs += ["--kf5"]
-    if releaseType == "plasma":
-        bumpVersionArgs += ["--plasma"]
-    if releaseType == "kdeapplications":
-        bumpVersionArgs += ["--kdeapplications"]
-    if args.balooversion:
-        bumpVersionArgs += ["--balooversion", args.balooversion]
-    print (bumpVersionArgs)
+                       "--version", upstreamVersion,
+                       "--releasetype", releaseType]
     subprocess.check_call(bumpVersionArgs)
 
-    #debianVersion = "0ubuntu"
-    #if sru:
-        #debianVersion += "0.1~ubuntu" + distversion + "~ppa1"
-    #else:
-        #debianVersion += "1"
+    debianVersion = "0ubuntu"
+    if sru:
+        debianVersion += "0.1~ubuntu" + distversion + "~ppa1"
+    else:
+        debianVersion += "1"
 
-    #if sru:
-        #changelogRelease = release
-    #else:
-        #changelogRelease = "UNRELEASED"
-    #pkgChangelog = readAllFromFile("debian/changelog")
-    ## Don't run dch again if the message is already part of the current
-    ## changelog entry for this upstream version
-    #pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, upstreamVersion), re.DOTALL)
-    #if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % changelogEntry, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
-        #subprocess.check_call(["dch", "-v", "%s%s-%s" % (changelogEpoch, upstreamVersion, debianVersion), "-D", changelogRelease, changelogEntry])
+    if sru:
+        changelogRelease = release
+    else:
+        changelogRelease = "UNRELEASED"
+    pkgChangelog = readAllFromFile("debian/changelog")
+    # Don't run dch again if the message is already part of the current
+    # changelog entry for this upstream version
+    pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, upstreamVersion), re.DOTALL)
+    if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % message, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
+        subprocess.check_call(["dch", "-v", "%s%s-%s" % (changelogEpoch, upstreamVersion, debianVersion), "-D", changelogRelease, message])
+    else:
+        print "No dch for " + package + " because it already has the same message in it"
 
-    #try:
-        #if sru:
-            #subprocess.check_call(["debuild", "-S", "-nc"])
-        #else:
-            #subprocess.call(["debcommit", "-a"])
-            #debianVersion += "~ubuntu" + distversion + "~ppa1"
-            #if not args.nopush:
-                #if releaseType == "kf5" or releaseType == "plasma" or releaseType == "kdeapplications":
-                    #subprocess.check_call(["git", "push"])
-                    #subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
-                #else:
-                    #subprocess.check_call(["bzr", "push", ":parent"])
-                    #subprocess.check_call(["bzr-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+    try:
+        if sru:
+            subprocess.check_call(["debuild", "-S", "-nc"])
+        else:
+            subprocess.call(["debcommit", "-a"])
+            debianVersion += "~ubuntu" + distversion + "~ppa1"
+            if not args.nopush:
+                subprocess.check_call(["git", "push"])
+                subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
-        #subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
-    #except subprocess.CalledProcessError, e:
-        ## package build failed, manual intervention necessary
-        #print "==== " + package + " build was interrupted, moving to manual/"
-        #shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-        #moved.append((package, "build was interrupted"))
+        print("pwd" + os.getcwd())
+        subprocess.check_call(["dcmd", "cp", "../build-area/%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
+    except subprocess.CalledProcessError, e:
+        # package build failed, manual intervention necessary
+        print "==== " + package + " build was interrupted, moving to manual/"
+        shutil.rmtree(basedir + "/manual/" + package)
+        shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+        moved.append((package, "build was interrupted"))
 
 print("\n\n=== Packages are ready for upload in " + uploaddir)
 

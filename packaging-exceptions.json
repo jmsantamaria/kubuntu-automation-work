@@ -1,8 +1,10 @@
 {
     "_comment": "here go various bits for exceptions to normal policies",
     "no-epoch-packages": ["baloo-kf5", "kfilemetadata-kf5"],
-    "no-epoch-dev-packages": ["baloo5-dev", "kfilemetadata5-dev"],
+    "no-epoch-dev-packages": ["baloo5-dev", "libkf5filemetadata-dev"],
     "baloo-kf5": "5.9.2",
+    "baloo-kf5-dev": "5.9.2",
     "kfilemetadata-kf5": "5.9.2",
+    "libkf5filemetadata-dev": "5.9.2",
     "packages-in-porting-aids": ["kdelibs4support", "khtml", "kjs", "kjsembed", "kmediaplayer", "kross", "krunner"]
 }

@@ -1,7 +1,7 @@
 baloo5-dev
 breeze-dev
 kde-cli-tools-dev
-kfilemetadata5-dev
+libkf5filemetadata-dev
 khelpcenter-dev
 khotkeys-dev
 kinfocenter-dev
