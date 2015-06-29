@@ -105,7 +105,7 @@ packages.sort()
 if releaseType == "applications":
     packages.append("kde-l10n")
 
-outFile = "package-name-lists/" + releaseType + "-" + dist + "-packages"
+outFile = "package-name-lists/" + releaseType + "-" + dist
 f = open(outFile, 'w')
 for package in packages:
     f.write(str(package) + "\n")

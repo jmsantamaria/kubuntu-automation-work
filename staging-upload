@@ -141,7 +141,7 @@ else:
 if args.packages:
     packages = args.packages.split(",")
 else:
-    packages = readPackages("package-name-lists/" + releaseType + "-" + release + "-packages")
+    packages = readPackages("package-name-lists/" + releaseType + "-" + release)
 
 # move libraries to the front
 packages.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
@@ -165,9 +165,9 @@ except OSError:
 
 moved = []
 
-with open('plasma-packages-versions.json') as data_file:
-    plasmaPackagesVersions = json.load(data_file)
-    plasmaPackagesWithoutEpoch = plasmaPackagesVersions['no-epoch-packages']
+with open('packaging-exceptions.json') as data_file:
+    packagingExceptions = json.load(data_file)
+    plasmaPackagesWithoutEpoch = packagingExceptions['no-epoch-packages']
 
 for package in packages:
     print("package: " + package)
@@ -194,8 +194,8 @@ for package in packages:
         shutil.rmtree(basedir + "/" + package)
         os.mkdir(basedir + "/" + package)
     os.chdir(basedir + "/" + package)
-    if package in plasmaPackagesVersions:
-        upstreamVersion = plasmaPackagesVersions[package]
+    if package in packagingExceptions:
+        upstreamVersion = packagingExceptions[package]
     else:
         upstreamVersion = version
 
@@ -204,7 +204,7 @@ for package in packages:
         versionDirOnDepot = splitVersion[0] + "." + splitVersion[1]
     else:
         versionDirOnDepot = version
-    if upstreamPackName in plasmaPackagesVersions["packages-in-porting-aids"]:
+    if upstreamPackName in packagingExceptions["packages-in-porting-aids"]:
         subdir = "portingAids/"
     else:
         subdir = ""
@@ -299,20 +299,20 @@ for package in packages:
             moved.append((package, "git unclean or out of sync"))
             continue
 
-    ## bump buil-dep versions for packages that were in kde-sc-dev-latest
-    #bumpVersionArgs = [cwd + "/kubuntu-bump-versions",
-                       #"--dist", release,
-                       #"--version", upstreamVersion]
-    #if releaseType == "kf5":
-        #bumpVersionArgs += ["--kf5"]
-    #if releaseType == "plasma":
-        #bumpVersionArgs += ["--plasma"]
-    #if releaseType == "kdeapplications":
-        #bumpVersionArgs += ["--kdeapplications"]
-    #if args.balooversion:
-        #bumpVersionArgs += ["--balooversion", args.balooversion]
-    #print (bumpVersionArgs)
-    #subprocess.check_call(bumpVersionArgs)
+    # bump build-dep versions for packages that were in kde-sc-dev-latest
+    bumpVersionArgs = [cwd + "/bump-build-dep-versions",
+                       "--dist", release,
+                       "--version", upstreamVersion]
+    if releaseType == "kf5":
+        bumpVersionArgs += ["--kf5"]
+    if releaseType == "plasma":
+        bumpVersionArgs += ["--plasma"]
+    if releaseType == "kdeapplications":
+        bumpVersionArgs += ["--kdeapplications"]
+    if args.balooversion:
+        bumpVersionArgs += ["--balooversion", args.balooversion]
+    print (bumpVersionArgs)
+    subprocess.check_call(bumpVersionArgs)
 
     #debianVersion = "0ubuntu"
     #if sru:
