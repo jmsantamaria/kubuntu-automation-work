@@ -78,6 +78,7 @@ def sanitizeBranch(package):
 
     if not releaseType == "frameworks" and (archiveTopline not in gitChangelog or archiveEndline not in gitChangelog):
         print("git does not match archive")
+        print("missing lines: " + archiveTopline + "\n" + archiveEndline)
         return False
 
     return True
