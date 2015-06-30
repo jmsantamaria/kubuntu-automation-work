@@ -106,5 +106,6 @@
     "oxygen-icons": [ "description-is-pkg-name" ],
     "konsole": [ "package-name-doesnt-match-sonames", "postinst-must-call-ldconfig" ],
     "kget": [ "source-is-missing" ],
-    "plasma-mediacenter": [ "package-name-doesnt-match-sonames" ]
+    "plasma-mediacenter": [ "package-name-doesnt-match-sonames" ],
+    "muon": [ "package-name-doesnt-match-sonames", "shlib-without-versioned-soname" ]
 }
