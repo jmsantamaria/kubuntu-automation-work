@@ -108,5 +108,6 @@
     "kget": [ "source-is-missing" ],
     "plasma-mediacenter": [ "package-name-doesnt-match-sonames" ],
     "muon": [ "package-name-doesnt-match-sonames", "shlib-without-versioned-soname" ],
-    "breeze": [ "not-binnmuable-any-depends-all" ]
+    "breeze": [ "not-binnmuable-any-depends-all" ],
+    "oxygen": [ "package-name-doesnt-match-sonames" ]
 }
