@@ -31,7 +31,7 @@ args = parser.parse_args()
 releaseType = args.releasetype
 
 if not args.paused:
-    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/"
+    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
     exit(1)
 
 # git base url for pkg-kde on moszumanska:
