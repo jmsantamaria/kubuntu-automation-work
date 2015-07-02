@@ -40,6 +40,9 @@ When builds fail retry e.g.:
 Update symbols by downloading buildlogs and running:
  pkgkde-symbolshelper batchpatch -v 4:4.14.9 -c amd64,i386 buildlog_ubuntu-wily-*
 
+Once everything works upload to Ubuntu:
+ ./ubuntu-archive-upload -v 5.3.2 -t ~/src/plasma/ -r plasma
+
 and retry in the main archive with:
  while true; do ubuntu-build --batch --retry `cat kf5-packages-wily.txt`; echo ====; sleep 1200; done
 
