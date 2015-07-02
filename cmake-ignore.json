@@ -34,7 +34,7 @@
   "solid": [ "MediaPlayerInfo" ],
   "kget": [ "NepomukCore", "NepomukWidgets", "KDE4Workspace" ],
   "kwallet-kf5": [ "Gpgme", "QGpgme", "KF5Gpgmepp" ],
-  "oxygen": [ "XCB_" ],
+  "oxygen": [ "XCB_", "KDE4Workspace" ],
   "frameworkintegration": [ "OxygenFont" ],
   "kdeplasma-addons": [ "Soprano", "SharedDesktopOntologies", "Nepomuk" ],
   "sonnet": [ "ASPELL" ],
