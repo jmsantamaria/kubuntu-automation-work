@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+
+# script to bump build-dep versions in KDE packaging
+# run in directory with debian/control file
+
+import argparse
+import os
+import re
+import subprocess
+
+from lib.utils import *
+
+parser = argparse.ArgumentParser(description="Things!")
+parser.add_argument("-d", "--dist", required=True, help="Distribution name")
+parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications]", default="frameworks")
+args = parser.parse_args()
+
+releaseType = args.releasetype
+pythonDir = os.path.dirname(os.path.realpath(__file__))
+
+control = readAllFromFile('debian/control')
+
+with open(pythonDir + '/packaging-exceptions.json') as data_file:
+    packagingExceptions = json.load(data_file)
+    noEpoch = packagingExceptions['no-epoch-dev-packages']
+
+for builddep in readPackages(pythonDir + "/dev-package-name-lists/%s-%s" % (releaseType, args.dist)):
+    epoch = ""
+    if (releaseType == "plasma" or releaseType == "applications") and builddep not in noEpoch:
+        epoch = "4:"
+    version = args.version
+    if builddep in packagingExceptions:
+        version = packagingExceptions[builddep]
+    control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s~)' % (builddep, epoch, version), control)
+
+f = open("debian/control", "w")
+f.write(control)
+f.close()
+
+print("=== bump-build-dep-versions diff start")
+subprocess.check_call(["git", "diff"])
+print("=== bump-build-dep-versions diff end")
