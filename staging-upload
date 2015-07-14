@@ -207,6 +207,8 @@ for package in packages:
         versionDirOnDepot = version
     if upstreamPackName in packagingExceptions["packages-in-porting-aids"]:
         subdir = "portingAids/"
+    elif releaseType == "applications":
+        subdir = "src"
     else:
         subdir = ""
     remote = "depot.kde.org:%s/%s/%s/%s/%s-%s.tar.xz" % \
@@ -305,7 +307,9 @@ for package in packages:
                        "--dist", release,
                        "--version", upstreamVersion,
                        "--releasetype", releaseType]
-    subprocess.check_call(bumpVersionArgs)
+    #TODO sort this out for applications
+    if releaseType != "applications":
+        subprocess.check_call(bumpVersionArgs)
 
     debianVersion = "0ubuntu"
     if sru:
