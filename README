@@ -1,4 +1,4 @@
-Add following to your .ssh/config and make sure you have an ssh-agent running and the key unlocked
+\Add following to your .ssh/config and make sure you have an ssh-agent running and the key unlocked
 
 Host depot.kde.org
     User ftpubuntu
@@ -16,8 +16,8 @@ For frameworks/plasma/applications pause CI:
 For a new feature release (not bugfix) merge in kubuntu_unstable using harald's script at
  https://github.com/apachelogger/kubuntu-repo-merge
 
-or manually
- ./kubuntu-initial-upload -d wily -v 5.3.1 -m "New upstream release" -y 15.10 -t ~/src/plasma -r plasma -e 5.9.1 -b stable
+or merge using staging-upload
+ ./staging-upload -d wily -v 5.12.0 -m new upstream release -r frameworks -t /home/jr/src/frameworks/
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
