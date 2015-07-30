@@ -110,5 +110,6 @@
     "muon": [ "package-name-doesnt-match-sonames", "shlib-without-versioned-soname" ],
     "breeze": [ "not-binnmuable-any-depends-all" ],
     "oxygen": [ "package-name-doesnt-match-sonames" ],
-    "kcodecs": [ "dep5-copyright-license-name-not-unique" ]
+    "kcodecs": [ "dep5-copyright-license-name-not-unique", "missing-license-paragraph-in-dep5-copyright gpl-2+" ]
+    
 }
