@@ -291,6 +291,8 @@ for package in packages:
         subprocess.check_call(["git", "clone", gitBranch + "/" + upstreamName(package), "git"])
         os.chdir("git")
         subprocess.check_call(["git", "checkout", "kubuntu_%s_archive" % (release)])
+        if releaseType == "frameworks":
+            branch = "unstable" # no stable branch to merge in frameworks
         try:
             subprocess.check_call(["git", "merge", "origin/kubuntu_%s" % (branch)])
         except:
