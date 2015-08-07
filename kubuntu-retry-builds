@@ -8,18 +8,17 @@ import re
 import sys
 
 parser = argparse.ArgumentParser(description="Retry builds whoes build-deps are built now.")
-parser.add_argument("-r", "--release", default="vivid", help="Release name (default: current development release)")
+parser.add_argument("-s", "--releaseseries", default="wily", help="Release name (default: current development release)")
+parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications,all]", default="frameworks")
 parser.add_argument("--ppa", default=None, help="Check kubuntu-ninjas PPA instead of the main archive.")
 parser.add_argument("--ppaname", default=None, help="Check kubuntu-ninjas PPA instead of the main archive.")
 parser.add_argument("--force", action="store_true", help="Retry every package without checking whether it's useful.")
 parser.add_argument("--forcedepwait", action="store_true", help="Retry not only FTBFS package but DEPWAIT too.")
-parser.add_argument("--all", action="store_true", help="Retry all ppa packages.")
-parser.add_argument("--kf5", action="store_true", help="Retry KDE Frameworks 5 packages.")
-parser.add_argument("--plasma", action="store_true", help="Retry Plasma 5 packages.")
 
 args = parser.parse_args()
 
-release = args.release
+release = args.releaseseries
+releaseType = args.releasetype
 ppa = args.ppa
 ppaname = args.ppaname
 pocket = "Proposed" # proposed is where builds are done now in the archive
@@ -71,15 +70,13 @@ def can_retry(log, arch):
     return True
 
 try:
-    if args.kf5:
-        f = open("kf5-packages-"+release+".txt", "r")
-    elif args.plasma:
-        f = open("plasma-packages-"+release+".txt", "r")
-    else:
-        f = open("kdesc-packages-"+release+".txt", "r")
+    if releaseType != "all":
+        packageFile = "package-name-lists/" + releaseType + "-" + release
+        f = open(packageFile)
     kdesc = f.readlines()
     f.close()
 except IOError:
+    print "Could not find package file" + packageFile
     kdesc = '' # don't crash if there is no file to open
 
 
@@ -89,7 +86,7 @@ kdesc = filter(lambda line: line and not line.startswith("#"), kdesc)
 # move libraries to the front
 kdesc.sort(key=lambda package: package.find("lib") != -1 and "_" + package or package)
 
-if args.all and (args.ppa or args.nextppa or args.experimental or args.kf5 or args.plasma) :
+if releaseType == "all" and (args.ppa or args.nextppa or args.experimental or args.kf5 or args.plasma) :
     packages_ = archive.getPublishedSources(distro_series=lpseries, status="Published")
     packages = set()
     for pkg in packages_:

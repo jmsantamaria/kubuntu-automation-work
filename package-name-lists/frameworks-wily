@@ -1,4 +1,5 @@
 attica-kf5
+baloo-kf5
 extra-cmake-modules
 frameworkintegration
 kactivities-kf5
@@ -23,6 +24,7 @@ kdewebkit
 kdnssd-kf5
 kdoctools
 kemoticons
+kfilemetadata-kf5
 kglobalaccel
 kguiaddons
 khtml
