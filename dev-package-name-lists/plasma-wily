@@ -1,7 +1,5 @@
-baloo5-dev
 breeze-dev
 kde-cli-tools-dev
-libkf5filemetadata-dev
 khelpcenter-dev
 khotkeys-dev
 kinfocenter-dev
@@ -19,5 +17,3 @@ plasma-desktop-dev
 plasma-workspace-dev
 powerdevil-dev
 systemsettings-dev
-libkf5networkmanagerqt-dev
-libkf5modemmanagerqt-dev
