@@ -35,7 +35,7 @@ packages ready for PPA upload
  ./kubuntu-initial-upload -d trusty -v 4.13.3 -m "new upstream bugfix release" -y 14.04 -t ~/src/4.13.3 --sru
 
 When builds fail retry e.g.:
- while true; do ./kubuntu-retry-builds --ppa=kubuntu-ppa --ppaname=staging-frameworks --force; sleep 1200; done
+ while true; do ./kubuntu-retry-builds --frameworks --ppa=kubuntu-ppa --ppaname=staging-frameworks --force; sleep 1200; done
 
 Update symbols by downloading buildlogs and running:
  pkgkde-symbolshelper batchpatch -v 4:4.14.9 -c amd64,i386 buildlog_ubuntu-wily-*
@@ -44,7 +44,7 @@ Once everything works upload to Ubuntu:
  ./ubuntu-archive-upload -v 5.3.2 -t ~/src/plasma/ -r plasma
 
 and retry in the main archive with:
- while true; do ubuntu-build --batch --retry `cat kf5-packages-wily.txt`; echo ====; sleep 1200; done
+ while true; do ubuntu-build --batch --retry `cat package-name-lists/frameworks-wily`; echo ====; sleep 1200; done
 
 Once it's built and tested copy it to another PPA with e.g.:
  for asdf in `cat plasma-packages-vivid.txt`; do echo ${asdf}; ~/src/ubuntu-archive/ubuntu-archive-tools/copy-package -b -s vivid -p kubuntu-ppa --ppa-name=next-staging --to-ppa=kubuntu-ppa --to-ppa-name=beta ${asdf} -y; done
