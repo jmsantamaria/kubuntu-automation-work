@@ -115,7 +115,10 @@ for package in packages:
 
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
-    archive_version = archive_package[0].source_package_version
+    try:
+        archive_version = archive_package[0].source_package_version
+    except IndexError:
+        print "=== %s not in the archive, new package?" % (package)
     if version in archive_version:
         print "=== Skipping %s because version %s is already in the archive" % (package, version)
         skipped.append(package)
@@ -191,8 +194,10 @@ for package in packages:
             pass
         except:
           print "already tagged"
-
-        subprocess.check_call(["gbp", "buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"])
+        try:
+            subprocess.check_call(["gbp", "buildpackage", "--git-ignore-branch", "--git-no-create-orig", "--git-ignore-new", "-S"])
+        except subprocess.CalledProcessError:
+            print "=== gbp failed"
     else:
         subprocess.check_call(["debuild", "-S", "-nc"])
 
