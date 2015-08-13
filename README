@@ -17,7 +17,7 @@ For a new feature release (not bugfix) merge in kubuntu_unstable using harald's 
  https://github.com/apachelogger/kubuntu-repo-merge
 
 or merge using staging-upload
- ./staging-upload -d wily -v 5.12.0 -m new upstream release -r frameworks -t /home/jr/src/frameworks/
+ ./staging-upload -d wily -v 5.12.0 -m "new upstream release" -r frameworks -t /home/jr/src/frameworks/
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf

@@ -347,7 +347,7 @@ for package in packages:
     except subprocess.CalledProcessError, e:
         # package build failed, manual intervention necessary
         print "==== " + package + " build was interrupted, moving to manual/"
-        shutil.rmtree(basedir + "/manual/" + package)
+        shutil.rmtree(basedir + "/manual/" + package, True)
         shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
         moved.append((package, "build was interrupted"))
 
