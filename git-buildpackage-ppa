@@ -60,14 +60,15 @@ if not os.path.isfile("../build-area/%s" % tarname):
 version = str(d.get_version())
 version += "~ubuntu" + str(args.distversion) + "~ppa" + str(args.suffix)
 
-application = ["gbp buildpackage",
+application = ["gbp", "buildpackage",
                 "--git-export-dir=../build-area",
                 "--git-tarball-dir=../build-area",
                 "--git-no-create-orig",
                 "--git-overlay",
                 "--git-ignore-branch",
                 "--git-ignore-new",
-                "--git-prebuild='dch -b -v " + version + " PPA build; dch -D " + args.dist + " -r PPA build'", "-S"]
+                "--git-prebuild=dch -b -v " + version + " PPA build; dch -D " + args.dist + " -r PPA build",
+                "-S"]
 if args.suffix > 1:
     application += ["-sd"]
 else:
