@@ -47,7 +47,7 @@ name = d.get_package()
 version = d.get_version().upstream_version
 tarname = "%s_%s.orig.tar.xz" % (name, version)
 
-subprocess.call(["apt-get", "source", ("%s" % name)])
+#subprocess.call(["apt-get", "source", ("%s" % name)])
 subprocess.call(["uscan", "--download-current-version", "--destdir=../build-area"])
 
 if os.path.isfile("../%s" % tarname) and not os.path.isfile("../build-area/%s" % tarname):
