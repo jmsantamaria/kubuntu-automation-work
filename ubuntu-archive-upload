@@ -57,8 +57,14 @@ if args.ppa:
     ppa = lp.people[team].getPPAByName(name=ppaName)
 else:
     ppaString = "kubuntu-ppa/staging-%s" % args.releasetype
-    print "Checking packages from ppaString"
-    ppa = lp.people["kubuntu-ppa"].getPPAByName(name="staging-%s" % args.releasetype)
+    if args.releasetype == "applications":
+        ppaString = "kubuntu-ppa/staging-%s" % "kdeapplications"
+        print "Checking packages from ppaString"
+        ppa = lp.people["kubuntu-ppa"].getPPAByName(name="staging-%s" % "kdeapplications")
+    else:
+        ppaString = "kubuntu-ppa/staging-%s" % args.releasetype
+        print "Checking packages from ppaString"
+        ppa = lp.people["kubuntu-ppa"].getPPAByName(name="staging-%s" % args.releasetype)
 
 if args.packages:
     packages = args.packages.split(",")
@@ -117,12 +123,12 @@ for package in packages:
     archive_package = archive.getPublishedSources(source_name=package)
     try:
         archive_version = archive_package[0].source_package_version
+        if version in archive_version:
+            print "=== Skipping %s because version %s is already in the archive" % (package, version)
+            skipped.append(package)
+            continue
     except IndexError:
         print "=== %s not in the archive, new package?" % (package)
-    if version in archive_version:
-        print "=== Skipping %s because version %s is already in the archive" % (package, version)
-        skipped.append(package)
-        continue
 
     packageDir = basedir + "/" + package
     try:
