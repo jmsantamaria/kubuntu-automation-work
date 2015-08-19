@@ -1,0 +1,4 @@
+#!/bin/bash
+
+uscan --download-current-version --destdir=..
+gbp buildpackage --git-ignore-branch --git-no-create-orig --git-ignore-new -S
