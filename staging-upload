@@ -168,7 +168,7 @@ moved = []
 
 with open('packaging-exceptions.json') as data_file:
     packagingExceptions = json.load(data_file)
-    plasmaPackagesWithoutEpoch = packagingExceptions['no-epoch-packages']
+    packagesWithoutEpoch = packagingExceptions['no-epoch-packages']
 
 for package in packages:
     print("package: " + package)
@@ -176,7 +176,7 @@ for package in packages:
 
     # check if it's a plasma package without an epoch
     changelogEpoch = epoch
-    if releaseType == "plasma":
+    if releaseType == "plasma" or releaseType == "applications":
        changelogEpoch = "" if package in plasmaPackagesWithoutEpoch else epoch
        print("setting epoch to %s for %s" % (changelogEpoch, package))
 
