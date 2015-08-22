@@ -111,5 +111,6 @@
     "breeze": [ "not-binnmuable-any-depends-all" ],
     "oxygen": [ "package-name-doesnt-match-sonames" ],
     "kcodecs": [ "dep5-copyright-license-name-not-unique", "missing-license-paragraph-in-dep5-copyright gpl-2+" ],
-    "knewstuff": [ "script-not-executable usr/share/kf5/kmoretools/presets-kmoretools/htop.desktop", "unusual-interpreter" ]
+    "knewstuff": [ "script-not-executable usr/share/kf5/kmoretools/presets-kmoretools/htop.desktop", "unusual-interpreter" ],
+    "kdenetwork-filesharing": [ "dep5-copyright-license-name-not-unique" ]
 }
