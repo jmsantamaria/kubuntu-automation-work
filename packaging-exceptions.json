@@ -3,7 +3,6 @@
     "no-epoch-packages": ["gpgmepp",
 			  "kalarmcal",
 			  "kblog",
-			  "kcalcore",
 			  "kcalutils",
 			  "kcontacts",
 			  "kdebugsettings",
