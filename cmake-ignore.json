@@ -42,5 +42,6 @@
   "kcm-touchpad": [ "XCB_XINPUT" ],
   "oxygen-qt4": [ "KDE4Workspace" ],
   "knewstuff": [ "unusual-interpreter", "script-not-executable" ],
-  "plasma-mediacenter": [ "mockcpp" ]
+  "plasma-mediacenter": [ "mockcpp" ],
+  "kwordquiz": [ "ECMInstallIcons" ]
 }
