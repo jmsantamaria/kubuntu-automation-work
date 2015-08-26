@@ -55,6 +55,7 @@ kde-dev-scripts
 kde-dev-utils
 kde-runtime
 kde-wallpapers
+kde4libs
 kdeartwork
 kdebugsettings
 kdeedu-data
@@ -175,7 +176,6 @@ marble
 mplayerthumbs
 okteta
 okular
-pairs
 palapeli
 parley
 picmi
