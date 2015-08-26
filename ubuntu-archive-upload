@@ -246,3 +246,4 @@ for package in packages:
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
 
 print "Skipped packages: " + ', '.join(skipped)
+print "Unpause http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/!"
