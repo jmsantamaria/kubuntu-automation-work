@@ -43,5 +43,6 @@
   "oxygen-qt4": [ "KDE4Workspace" ],
   "knewstuff": [ "unusual-interpreter", "script-not-executable" ],
   "plasma-mediacenter": [ "mockcpp" ],
-  "kwordquiz": [ "ECMInstallIcons" ]
+  "kwordquiz": [ "ECMInstallIcons" ],
+  "krfb": [ "TelepathyQt4", "KTp" ]
 }
