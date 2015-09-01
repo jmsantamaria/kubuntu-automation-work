@@ -1,7 +1,6 @@
 {
     "_comment": "here go various bits for exceptions to normal policies",
     "no-epoch-packages": ["gpgmepp",
-			  "kalarmcal",
 			  "kdebugsettings",
 			  "kholidays",
 			  "kidentitymanagement",
