@@ -35,7 +35,7 @@ packages ready for PPA upload
  ./kubuntu-initial-upload -d trusty -v 4.13.3 -m "new upstream bugfix release" -y 14.04 -t ~/src/4.13.3 --sru
 
 When builds fail retry e.g.:
- while true; do ./kubuntu-retry-builds --frameworks --ppa=kubuntu-ppa --ppaname=staging-frameworks --force; sleep 1200; done
+ while true; do ./kubuntu-retry-builds -r frameworks --ppa=kubuntu-ppa --ppaname=staging-frameworks --force; sleep 1200; done
 
 Update symbols by downloading buildlogs and running:
  pkgkde-symbolshelper batchpatch -v 4:4.14.9 -c amd64,i386 buildlog_ubuntu-wily-*
