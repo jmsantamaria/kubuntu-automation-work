@@ -327,7 +327,7 @@ for package in packages:
     # Don't run dch again if the message is already part of the current
     # changelog entry for this upstream version
     pattern = re.compile("^%s \((\d+:)?%s.*?\).*?\n --" % (package, upstreamVersion), re.DOTALL)
-    if not re.match(pattern, pkgChangelog) or not re.match(".*%s.*" % message, re.match(pattern, pkgChangelog).group(0), re.DOTALL):
+    if not re.match(pattern, pkgChangelog) or re.match(pattern, pkgChangelog).group(0).find(message) < 0:
         subprocess.check_call(["dch", "-v", "%s%s-%s" % (changelogEpoch, upstreamVersion, debianVersion), "-D", changelogRelease, message])
     else:
         print "No dch for " + package + " because it already has the same message in it"
