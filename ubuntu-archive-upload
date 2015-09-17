@@ -33,9 +33,10 @@ parser.add_argument("--nopush", action="store_true", help="don't push branches i
 args = parser.parse_args()
 releaseType = args.releasetype
 
-if not args.paused:
-    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
-    exit(1)
+# not needed, now just commits with NOCI
+#if not args.paused:
+#    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
+#    exit(1)
 
 # git base url for pkg-kde on moszumanska:
 debian_git = "git+ssh://git.debian.org/git/pkg-kde/"
@@ -191,7 +192,7 @@ for package in packages:
         sys.exit(1)
 
     if not args.sru:
-        subprocess.check_call(["git", "commit", "-a", "-m", "Release to " + release + "."])
+        subprocess.check_call(["git", "commit", "-a", "-m", "NOCI\nRelease to " + release + "."])
         try:
             subprocess.check_call(["gbp", "buildpackage", "--git-ignore-branch", "--git-tag-only", "--git-debian-tag=ubuntu/%(version)s", "--git-debian-tag-msg='%(pkg)s Ubuntu release %(version)s'"])
             # don't tag until we know what tags are actually accepted by
