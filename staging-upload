@@ -168,7 +168,7 @@ moved = []
 
 with open('packaging-exceptions.json') as data_file:
     packagingExceptions = json.load(data_file)
-    packagesWithoutEpoch = packagingExceptions['no-epoch-packages']
+    packagesWithEpoch = packagingExceptions['epoch-packages']
 
 for package in packages:
     print("package: " + package)
@@ -177,7 +177,7 @@ for package in packages:
     # check if it's a plasma package without an epoch
     changelogEpoch = epoch
     if releaseType == "plasma" or releaseType == "applications":
-       changelogEpoch = "" if package in packagesWithoutEpoch else epoch
+       changelogEpoch = epoch if package in packagesWithEpoch else ""
        print("setting epoch to %s for %s" % (changelogEpoch, package))
 
     archive = ubuntu.getArchive(name='primary')
