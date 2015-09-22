@@ -369,7 +369,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
 
             if version not in packageVersion and (package not in differentVersion):
                 builds[package][arch]["status"] = STATUS_ERROR
-                builds[package][arch]["message"] = "Version incorrect"
+                builds[package][arch]["message"] = "<b>Version incorrect</b>"
 
             output, status = get_symbols(log)
             if status == STATUS_ERROR:
