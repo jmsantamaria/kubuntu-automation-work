@@ -144,7 +144,13 @@ for package in packages:
         subprocess.check_call(["pull-ppa-source", "-d", ppaString, package, release])
         ppaDsc = glob.glob("%s_*.dsc" % (package,))[0]
 
-        subprocess.check_call(["git", "clone", debian_git + args.releasetype + "/" + upstreamName(package), "git"])
+        gitName = upstreamName(package)
+        print "gitName" + gitName
+        print "package" + package
+        if package == "kde4libs":
+            print "MMM gitName = kde4libs"
+            gitName = "kde4libs" # as an exception this one has git repo named after package
+        subprocess.check_call(["git", "clone", debian_git + args.releasetype + "/" + gitName, "git"])
         os.chdir("git")
         subprocess.check_call(["git", "checkout", "kubuntu_"+release+"_archive"])
     else:
