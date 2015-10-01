@@ -45,5 +45,6 @@
   "plasma-mediacenter": [ "mockcpp" ],
   "kwordquiz": [ "ECMInstallIcons" ],
   "krfb": [ "TelepathyQt4", "KTp" ],
-  "kaccounts-integration": [ "Akonadi" ]
+  "kaccounts-integration": [ "Akonadi" ],
+  "plasma-desktop": [ "XCB_XINPUT" ]
 }
