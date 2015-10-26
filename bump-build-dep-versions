@@ -1,4 +1,16 @@
 #!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 Jonathan Riddell                                      #
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
 
 # script to bump build-dep versions in KDE packaging
 # run in directory with debian/control file
@@ -7,37 +19,37 @@ import argparse
 import os
 import re
 import subprocess
+import json
 
-from lib.utils import *
+from lib.control_edit import *
 
 parser = argparse.ArgumentParser(description="Things!")
-parser.add_argument("-d", "--dist", required=True, help="Distribution name")
-parser.add_argument("-v", "--version", required=True, help="Upstream version")
+parser.add_argument("-d", "--dist", required=False, default="wily", help="Distribution name")
+
+#FIXME: Remove these, they are there for compatibility
+parser.add_argument("-v", "--version", required=False, help="Upstream version")
 parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications]", default="frameworks")
+
 args = parser.parse_args()
+dist = args.dist
 
 releaseType = args.releasetype
-pythonDir = os.path.dirname(os.path.realpath(__file__))
+cwd = os.path.dirname(os.path.realpath(__file__))
+build_depends_map_file = "%s/dev-package-name-lists/%s.json" % (cwd,dist)
+build_depends_map = json.load(open(build_depends_map_file, 'r'))
 
-control = readAllFromFile('debian/control')
+#Open the control file
+src_pkg, bin_pkg_list, bin_pkg_map = parse_control('./debian/control');
 
-with open(pythonDir + '/packaging-exceptions.json') as data_file:
-    packagingExceptions = json.load(data_file)
-    noEpoch = packagingExceptions['no-epoch-dev-packages']
+#Bump the build depends using the map from the json file
+bump_version_with_map(src_pkg, 'Build-Depends', build_depends_map)
+if 'Build-Depends-Indep' in src_pkg:
+	bump_version_with_map(src_pkg, 'Build-Depends-Indep', build_depends_map)
 
-for builddep in readPackages(pythonDir + "/dev-package-name-lists/%s-%s" % (releaseType, args.dist)):
-    epoch = ""
-    if (releaseType == "plasma" or releaseType == "applications") and builddep not in noEpoch:
-        epoch = "4:"
-    version = args.version
-    if builddep in packagingExceptions:
-        version = packagingExceptions[builddep]
-    control = re.sub(r'%s\s*\(>=.*?\)' % builddep, '%s (>= %s%s~)' % (builddep, epoch, version), control)
+#Dump the contents of the control file
+dump_control('./debian/control',src_pkg, bin_pkg_list, bin_pkg_map)
 
-f = open("debian/control", "w")
-f.write(control)
-f.close()
-
+#Print the git diff
 print("=== bump-build-dep-versions diff start")
-subprocess.check_call(["git", "diff"])
+subprocess.check_call(["git", "--no-pager", "diff"])
 print("=== bump-build-dep-versions diff end")

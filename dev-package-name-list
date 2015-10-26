@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 Jonathan Riddell                                      #
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
+
+from lib.utils import *
+
+import argparse
+import sys
+import os
+import json
+import re
+import warnings
+
+from debian import deb822
+from debian.changelog import Changelog, Version
+
+
+parser = argparse.ArgumentParser(description="Update -dev package name list used by bump-build-dep-versions")
+parser.add_argument("-d", "--dist", help="Distribution name", default="wily", required=False)
+args = parser.parse_args()
+dist = args.dist
+
+#Load configuration
+cwd = os.path.dirname(os.path.realpath(__file__))
+config = json.load( open(cwd + "/conf/dev-package-name-list.json", 'r') )
+
+bin_package_version_map = {}
+build_depends_set = set()
+#Populate the vars above inspecting the control files and changelogs
+_, dirs, _ = next(os.walk('.'))
+for d in dirs:
+    #Find out source package version
+    changelog = Changelog()
+    changelog_file_name = d + '/debian/changelog'
+    try:
+        changelog.parse_changelog(open(changelog_file_name, 'r'))
+    except FileNotFoundError:
+        print("WARNING: File " + changelog_file_name + " not found!")
+        continue
+    src_package_version = changelog.get_version().upstream_version
+    #Find out if the package has epoch or not, if so preprend it to the version
+    epoch = changelog.get_version().epoch
+    if epoch != None:
+        src_package_version = epoch + ":" + src_package_version
+    #Add configured upstream version suffix
+    src_package_version += config["uversion_suffix"]
+    #Include package revison if required
+    if config["include_pkg_revision"]:
+        src_package_version += '-' + changelog.get_version().debian_revision
+    # With the info parsed from $PWD/*/debian/control populate:
+    # - build_depends_set <- with all the binary packages appearing in Build-Depends[-Indep]
+    # - dev_package_version_map <- with all the binary packages with their versions
+    control_file_name = d + '/debian/control'
+    try:
+        control_file = deb822.Packages.iter_paragraphs(open(control_file_name, 'r'));
+    except FileNotFoundError:
+        print("WARNING: File " + control_file_name + " not found!")
+        continue
+    warnings.simplefilter('ignore', UserWarning) #Ignore the warnings from python-debian
+    for pkg in control_file:
+        if 'Source' in pkg:
+            #Read the build depends of the current package and add them to build_depends_set
+            relation_structured = deb822.PkgRelation.parse_relations(pkg['Build-Depends'])
+            for i in relation_structured:
+                for j in i:
+                    build_depends_set.add(j['name'])
+            if 'Build-Depends-Indep' in pkg:
+                relation_structured = deb822.PkgRelation.parse_relations(pkg['Build-Depends-Indep'])
+                for i in relation_structured:
+                    for j in i:
+                        build_depends_set.add(j['name'])
+        if 'Package' in pkg:
+            #Find out binary package names and add them to dev_package_version_map with their version 
+            bin_package_name = pkg['Package']
+            bin_package_version_map[bin_package_name] = src_package_version
+    control_file.close()
+    warnings.simplefilter('default', UserWarning) #Reset the user warnings
+
+#Now its easy, we have bin_package_version_map mapping all (binary_package -> version)
+#so we just have to discard the binary packages which are not build depends and we got it
+dev_package_version_map = dict(bin_package_version_map)
+for bin_package_name in bin_package_version_map:
+    if bin_package_name not in build_depends_set:
+        if re.match('.*-dev$', bin_package_name) == None:
+            dev_package_version_map.pop(bin_package_name)
+dev_package_version_map["_comment"] = "This file was generated automatically by dev-package-name-list."
+
+#Dump the thing to a json file
+json_str = json.dumps(dev_package_version_map, indent=4, sort_keys=True)
+
+cwd = os.path.dirname(os.path.realpath(__file__))
+outFile = cwd + "/dev-package-name-lists/" + dist + ".json"
+f = open(outFile, 'w')
+f.write(json_str)
+print("write " + outFile)
