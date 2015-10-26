@@ -56,6 +56,20 @@ def repoName(package):
 def getFtpVersionMap(releaseType):
     #Populate and return the map
     packageVersionMap = {}
+    #Find out the version
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    config_file = open(cwd + "/../conf/versions.json")
+    config_map = json.load(config_file)
+    version = config_map[releaseType]
+    #If the result is cached return it
+    cache_dir = cwd + "/../.cache/kubuntu-automation/"
+    cache_file_path = cache_dir + releaseType + "-" + version + ".json"
+    try:
+        fp = open(cache_file_path, 'r')
+        packageVersionMap = json.load(fp)
+        return packageVersionMap
+    except:
+        pass
     #Find out which subdirectories we have to inspeact in the ftp
     ftp_subdirs = []
     if releaseType == "frameworks":
@@ -64,11 +78,6 @@ def getFtpVersionMap(releaseType):
         ftp_subdirs = [""]
     elif releaseType == "applications":
         ftp_subdirs = ["src"]
-    #Find out the version
-    cwd = os.path.dirname(os.path.realpath(__file__))
-    config_file = open(cwd + "/../conf/versions.json")
-    config_map = json.load(config_file)
-    version = config_map[releaseType]
     #Find out the stability
     versionParts = version.split(".")
     lastDigit = int(versionParts[-1])
@@ -89,6 +98,16 @@ def getFtpVersionMap(releaseType):
                 package = match.group(1)
                 package_version = match.group(2)
                 packageVersionMap[package] = package_version
+    #Store the result in cache
+    try:
+        os.makedirs(cache_dir)
+    except:
+        pass
+    print(cache_dir)
+    cache_file = open(cache_file_path, 'w')
+    json.dump(packageVersionMap, cache_file)
+    cache_file.close()
+    #Return the resulting map
     return packageVersionMap
 
 # vim: expandtab ts=4
