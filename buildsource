@@ -40,4 +40,22 @@ config = json.load( open(cwd + "/conf/buildsource.json") )
 command = config["build_command"]
 
 returncode = subprocess.call(command,shell=True)
+if returncode != 0:
+    sys.exit(returncode)
+
+
+#Move the resulting source package files to the upload area
+changelog = Changelog()
+changelog.parse_changelog(open('./debian/changelog', 'r'))
+
+src_pkg = changelog.get_package()
+version = changelog.upstream_version
+if changelog.debian_revision != None:
+    version += "-" + changelog.debian_revision
+upload_area_dir = readConfigFile("areas.json")["upload-area"]
+
+os.makedirs(upload_area_dir, exist_ok=True)
+
+command = "dcmd mv ../%s_%s_source.changes %s" % (src_pkg,version,upload_area_dir)
+returncode = subprocess.call(command,shell=True)
 sys.exit(returncode)
