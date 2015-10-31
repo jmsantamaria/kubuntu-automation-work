@@ -50,6 +50,17 @@ def repoName(package):
         else:
           return package
 
+#Returns a map with the configuration items present in the file
+def readConfigFile(config_file_name):
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    config_file = open(cwd + "/../conf/" + config_file_name)
+    result = json.load(config_file)
+    if config_file_name == "tarball-locations.json":
+        #expand "~" in the tarball paths
+        for i in result:
+            result[i] = os.path.expanduser(result[i])
+    return result
+
 # ReleaseType example:
 # ["frameworks","plasma","applications"]
 # it would get a map of everything of frameworks/plasma/applications
