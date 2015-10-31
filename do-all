@@ -33,6 +33,9 @@ else:
 command = " ".join(sys.argv[command_index:])
 
 dirs_failed = []
+dirs_ignored = []
+
+skip_list = readConfigFile("skip.json")["do-all"]
 
 #Execute the command in all directories
 i = 0
@@ -43,6 +46,11 @@ for directory in dirs:
     print("----------------------------------------------------------------------")
     print("do-all current directory: %s (%s of %s)" % (directory,i,n))
     print("----------------------------------------------------------------------")
+    if directory in skip_list:
+        print("As requested by the conf/skip.json configuration file,\n"
+            "the command wasn't executed in this directory")
+        dirs_ignored.append(directory)
+        continue
     try:
         returncode = subprocess.call(command,shell=True)
     except KeyboardInterrupt:
@@ -61,4 +69,8 @@ else:
     for d in dirs_failed:
             directory, retcode = d
             print(directory + " (exit status = " + str(retcode) + ")")
+if dirs_ignored:
+    print("As requested by the conf/skip.json configuration file,\n"
+        "the command wasn't executed in the following directories:")
+    print(dirs_ignored)
 print("----------------------------------------------------------------------")

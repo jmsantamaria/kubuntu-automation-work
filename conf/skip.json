@@ -1,0 +1,4 @@
+{
+    "_comment":"The packages listed here will be skipped by the automation named in the key.",
+    "do-all":[ "ktux", "libkexiv2", "kde-workspace", "libkgeomap", "kde-l10n" ]
+}
