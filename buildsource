@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
+
+import os
+import json
+import subprocess
+import sys
+
+from lib.utils import *
+from lib.get_tarball import *
+
+#Find out the upstream package name
+upstream_name = os.path.basename( os.getcwd() )
+
+#Check if the package is from frameworks, plasma or applications
+release_types = ["frameworks", "plasma", "applications"]
+for rt in release_types:
+    version_map = getFtpVersionMap(rt)
+    if upstream_name in version_map:
+        release_type = rt
+        break
+
+#Get the tarball
+link_upstream_tarball(release_type)
+
+#Build the source
+cwd = os.path.dirname(os.path.realpath(__file__))
+config = json.load( open(cwd + "/conf/buildsource.json") )
+
+command = config["build_command"]
+
+returncode = subprocess.call(command,shell=True)
+sys.exit(returncode)
