@@ -39,7 +39,7 @@ if args.releasetype != None:
         print("Accepted release types are frameworks, plasma, applications")
         sys.exit(1)
     else:
-        releaseTypes.add(args.releasetype)
+        releaseTypes.append(args.releasetype)
 else:
     releaseTypes = ["frameworks", "plasma", "applications"]
 
