@@ -23,33 +23,36 @@ import json
 
 from lib.control_edit import *
 
-parser = argparse.ArgumentParser(description="Things!")
-parser.add_argument("-d", "--dist", required=False, default="wily", help="Distribution name")
 
-#FIXME: Remove these, they are there for compatibility
-parser.add_argument("-v", "--version", required=False, help="Upstream version")
-parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications]", default="frameworks")
+def bump_build_depends(dist):
+    #Open the build depends map
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    build_depends_map_file = "%s/dev-package-name-lists/%s.json" % (cwd,dist)
+    build_depends_map = json.load(open(build_depends_map_file, 'r'))
 
-args = parser.parse_args()
-dist = args.dist
+    #Open the control file
+    src_pkg, bin_pkg_list, bin_pkg_map = parse_control('./debian/control');
 
-releaseType = args.releasetype
-cwd = os.path.dirname(os.path.realpath(__file__))
-build_depends_map_file = "%s/dev-package-name-lists/%s.json" % (cwd,dist)
-build_depends_map = json.load(open(build_depends_map_file, 'r'))
+    #Bump the build depends using the map from the json file
+    bump_version_with_map(src_pkg, 'Build-Depends', build_depends_map)
+    if 'Build-Depends-Indep' in src_pkg:
+	    bump_version_with_map(src_pkg, 'Build-Depends-Indep', build_depends_map)
 
-#Open the control file
-src_pkg, bin_pkg_list, bin_pkg_map = parse_control('./debian/control');
+    #Dump the contents of the control file
+    dump_control('./debian/control',src_pkg, bin_pkg_list, bin_pkg_map)
 
-#Bump the build depends using the map from the json file
-bump_version_with_map(src_pkg, 'Build-Depends', build_depends_map)
-if 'Build-Depends-Indep' in src_pkg:
-	bump_version_with_map(src_pkg, 'Build-Depends-Indep', build_depends_map)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Things!")
+    parser.add_argument("-d", "--dist", required=False, default="wily", help="Distribution name")
 
-#Dump the contents of the control file
-dump_control('./debian/control',src_pkg, bin_pkg_list, bin_pkg_map)
+    #FIXME: Remove these, they are there for compatibility
+    parser.add_argument("-v", "--version", required=False, help="Upstream version")
+    parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications]", default="frameworks")
 
-#Print the git diff
-print("=== bump-build-dep-versions diff start")
-subprocess.check_call(["git", "--no-pager", "diff"])
-print("=== bump-build-dep-versions diff end")
+    args = parser.parse_args()
+
+    bump_build_depends(args.dist)
+    #Print the git diff
+    print("=== bump-build-dep-versions diff start")
+    subprocess.check_call(["git", "--no-pager", "diff"])
+    print("=== bump-build-dep-versions diff end")

@@ -17,6 +17,7 @@ import time
 from debian.changelog import Changelog, Version, get_maintainer
 
 from lib.utils import *
+from lib.bump_build_dep_versions import *
 
 #Parse arguments
 parser = argparse.ArgumentParser(description="Makes the changes needed in debian/* to provide a new upstream release.")
@@ -54,8 +55,9 @@ changelog.add_change('')
 changelog.add_change('  * New upstream release')
 changelog.add_change('')
 
-#Bump the build depends
-#TODO
-
 #Dump the contents to the file
 changelog.write_to_open_file(open('./debian/changelog', 'w'))
+
+#Bump the build depends
+bump_build_depends(args.dist)
+
