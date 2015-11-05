@@ -1,0 +1,61 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
+
+import argparse
+import time
+
+from debian.changelog import Changelog, Version, get_maintainer
+
+from lib.utils import *
+
+#Parse arguments
+parser = argparse.ArgumentParser(description="Makes the changes needed in debian/* to provide a new upstream release.")
+parser.add_argument("-d", "--dist", help="Distribution name", default="xenial")
+#parser.add_argument("-r", "--releasetype", help="KDE Release Type [frameworks,plasma,applications]", required=True)
+args = parser.parse_args()
+
+#Open and parse the current changelog.
+changelog = Changelog()
+changelog.parse_changelog(open('./debian/changelog', 'r'))
+
+#Create a new changelog block
+maintainer_str = "%s <%s>" % get_maintainer()
+upstream_name = os.path.basename( os.getcwd() )
+if upstream_name in getFtpVersionMap("frameworks"):
+    version = getFtpVersionMap("frameworks")[upstream_name]
+elif upstream_name in getFtpVersionMap("plasma"):
+    version = getFtpVersionMap("plasma")[upstream_name]
+elif upstream_name in getFtpVersionMap("applications"):
+    version = getFtpVersionMap("applications")[upstream_name]
+version_str = version + "-0ubuntu1"
+epoch = changelog.get_version().epoch
+if epoch != None:
+    version_str = epoch + ":" + version_str
+
+changelog.new_block(package = changelog.get_package(),
+    version = version_str,
+    distributions = args.dist,
+    urgency = 'low',
+    author = maintainer_str,
+    date = time.strftime('%a, %d %b %Y %X %z') )
+
+#Add the first changelog entry
+changelog.add_change('')
+changelog.add_change('  * New upstream release')
+changelog.add_change('')
+
+#Bump the build depends
+#TODO
+
+#Dump the contents to the file
+changelog.write_to_open_file(open('./debian/changelog', 'w'))
