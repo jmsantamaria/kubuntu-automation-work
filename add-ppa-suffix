@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
+
+import argparse
+
+from debian.changelog import Changelog, Version
+
+#Parse arguments
+parser = argparse.ArgumentParser(description="Add a ppa version suffix to the changelog")
+parser.add_argument("-d", "--dist", help="Distribution name", default="xenial", required=False)
+args = parser.parse_args()
+dist_name = args.dist
+
+#Find out the dist version
+if dist_name == "xenial":
+	dist_version = "16.04"
+elif dist_name == "wily":
+	dist_version = "15.10"
+elif dist_name == "vivid":
+	dist_version = "15.04"
+
+#Open and parse the current changelog.
+changelog = Changelog()
+changelog.parse_changelog(open('./debian/changelog', 'r'))
+
+#Alter the changelog version
+version = str(changelog.get_version())
+version += "~ubuntu" + dist_version + "~ppa1"
+changelog.set_version(version)
+
+#Dump the contents to the file
+changelog.write_to_open_file(open('./debian/changelog', 'w'))
