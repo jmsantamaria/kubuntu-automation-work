@@ -27,6 +27,9 @@ parser.add_argument("-r", "--releasetype",
 parser.add_argument("-d", "--dist",
     help="KDE Release Type [frameworks,plasma,applications]", 
     default="wily", required=False)
+parser.add_argument("-t", "--tmpdir",
+    help="Temprary dir where the packages are prepared",
+    required=False)
 
 #Check arguments
 args = parser.parse_args()
@@ -43,7 +46,6 @@ if args.releasetype != None:
 else:
     releaseTypes = ["frameworks", "plasma", "applications"]
 
-
 #Find out the base url to clone and the extra remotes
 cwd = os.path.dirname(os.path.realpath(__file__))
 config_file = open(cwd + "/conf/git-clone-all.json")
@@ -53,6 +55,10 @@ print("Template url to clone: %s" % template_url_clone)
 remotes_list = config_map["extra-remotes"]
 
 packages_not_cloned = []
+
+#Change to temporary work directory
+if args.tmpdir:
+    os.chdir(args.tmpdir)
 
 #Clone the repositories and add the extra remotes
 for releaseType in releaseTypes:
