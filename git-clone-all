@@ -100,5 +100,6 @@ else:
     print("The following packages couldn't be cloned:")
     for p in packages_not_cloned:
         print(p)
+    sys.exit(1)
 
 # vim: expandtab ts=4
