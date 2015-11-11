@@ -47,7 +47,14 @@ for d in dirs:
     except FileNotFoundError:
         print("WARNING: File " + changelog_file_name + " not found!")
         continue
-    src_package_version = changelog.get_version().upstream_version
+    upstream_name = os.path.basename( d )
+    if upstream_name in getFtpVersionMap("frameworks"):
+        src_package_version = getFtpVersionMap("frameworks")[upstream_name]
+    elif upstream_name in getFtpVersionMap("plasma"):
+        src_package_version = getFtpVersionMap("plasma")[upstream_name]
+    elif upstream_name in getFtpVersionMap("applications"):
+        src_package_version = getFtpVersionMap("applications")[upstream_name]
+
     #Find out if the package has epoch or not, if so preprend it to the version
     epoch = changelog.get_version().epoch
     if epoch != None:
