@@ -1,0 +1,3 @@
+#!/bin/sh
+
+gbp buildpackage --git-ignore-branch --git-tag-only --git-sign-tags --git-debian-tag="ubuntu/%(version)s" --git-debian-tag-msg="%(pkg)s Ubuntu release %(version)s"
