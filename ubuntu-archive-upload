@@ -200,7 +200,7 @@ for package in packages:
     if not args.sru:
         subprocess.check_call(["git", "commit", "-a", "-m", "NOCI\nRelease to " + release + "."])
         try:
-            subprocess.check_call(["gbp", "buildpackage", "--git-ignore-branch", "--git-tag-only", "--git-debian-tag=ubuntu/%(version)s", "--git-debian-tag-msg='%(pkg)s Ubuntu release %(version)s'"])
+            subprocess.check_call(["gbp", "buildpackage", "--git-ignore-branch", "--git-tag-only", "--git-sign-tags", "--git-debian-tag=ubuntu/%(version)s", "--git-debian-tag-msg='%(pkg)s Ubuntu release %(version)s'"])
             # don't tag until we know what tags are actually accepted by
             # pkg-kde
             print "FIXME tagging"
