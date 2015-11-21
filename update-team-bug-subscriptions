@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import argparse
+
+from launchpadlib.launchpad import Launchpad
+from lib.utils import *
+
+parser = argparse.ArgumentParser(description="Make sure kubuntu-bugs is subscribed to bugs")
+parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
+parser.add_argument("packagelistfile", help="file to read the packagelist from")
+
+args = parser.parse_args()
+
+if args.credentials:
+    lp = Launchpad.login_with("update-team-bug-subscriptions", "production", credentials_file=args.credentials)
+else:
+    lp = Launchpad.login_with("update-team-bug-subscriptions", "production")
+
+ubuntu = lp.distributions["ubuntu"]
+kubuntuBugs = lp.people['kubuntu-bugs']
+
+for source in readPackages(args.packagelistfile):
+    sourcePackage = ubuntu.getSourcePackage(name=source)
+
+    if not sourcePackage.getSubscription(person=kubuntuBugs):
+        subscription = sourcePackage.addBugSubscription(subscriber=kubuntuBugs)
+
+        sourcePackage.lp_save()
+        print("Subscribed to %s" % source)
