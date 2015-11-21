@@ -347,7 +347,10 @@ for package in packages:
                 subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         print("pwd" + os.getcwd())
-        subprocess.check_call(["dcmd", "cp", "../build-area/%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
+        if sru:
+            subprocess.check_call(["dcmd", "cp", "../%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
+        else:
+            subprocess.check_call(["dcmd", "cp", "../build-area/%s_%s-%s_source.changes" % (package, upstreamVersion, debianVersion), uploaddir])
     except subprocess.CalledProcessError, e:
         # package build failed, manual intervention necessary
         print "==== " + package + " build was interrupted, moving to manual/"
