@@ -116,7 +116,7 @@ def extractDebianFile(package, extractfile):
 
     return data
 
-if not args.paused:
+if not (args.paused or args.sru):
     print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
     exit(1)
 
@@ -230,68 +230,67 @@ for package in packages:
     os.rename("%s-%s.tar.xz" % (upstreamPackName, upstreamVersion), orig)
 
     if sru:
-        print "fix sru"
-        #subprocess.check_call(["tar", "xJf", orig])
+        subprocess.check_call(["tar", "xJf", orig])
 
-        ## fetch and extract previous version
-        #try:
-            #subprocess.check_call(["pull-lp-source", "-d", package, release + "-proposed"])
-        #except:
-            #try:
-                #subprocess.check_call(["pull-lp-source", "-d", package, release])
-            #except:
-                #moved.append((package, "something wicked happened when pulling package from launchpad"))
+        # fetch and extract previous version
+        try:
+            subprocess.check_call(["pull-lp-source", "-d", package, release + "-proposed"])
+        except:
+            try:
+                subprocess.check_call(["pull-lp-source", "-d", package, release])
+            except:
+                moved.append((package, "something wicked happened when pulling package from launchpad"))
 
-        #dscname = glob.glob("%s_*.dsc" % (package,))[0]
-        #match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
-        #if not match:
-            #print("==== Skipping %s, version parsing failed, moving to manual/" % (package,))
-            #shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
-            #moved.append((package, "version parsing failed"))
-            #continue
+        dscname = glob.glob("%s_*.dsc" % (package,))[0]
+        match = re.match(re.escape(package) + r'_([\d\.a-z]+)-', dscname)
+        if not match:
+            print("==== Skipping %s, version parsing failed, moving to manual/" % (package,))
+            shutil.move(basedir + "/" + package, basedir + "/manual/" + package)
+            moved.append((package, "version parsing failed"))
+            continue
 
-        #prevVersion = match.group(1)
+        prevVersion = match.group(1)
 
-        #subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
-        #os.rename("%s-%s/debian" % (package, prevVersion), "./debian")
+        subprocess.check_call(["dpkg-source", "-x", "--skip-patches", dscname])
+        os.rename("%s-%s/debian" % (package, prevVersion), "./debian")
 
-        #p = subprocess.Popen(["diff", "-Nurw", "%s-%s" % (package, prevVersion), "%s-%s" % (package, upstreamVersion)], stdout=subprocess.PIPE)
-        #diff, _ = p.communicate()
-        #p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        #diffstat, _ = p.communicate(diff)
-        #if p.returncode != 0:
-            #raise subprocess.CalledProcessError(p.returncode)
-        #diffstatLines = diffstat.strip("\r\n\t ").splitlines()
-        #diffstatLines = filter(lambda line: not line.endswith("/index.cache.bz2"), diffstatLines)
+        p = subprocess.Popen(["diff", "-Nurw", "%s-%s" % (package, prevVersion), "%s-%s" % (package, upstreamVersion)], stdout=subprocess.PIPE)
+        diff, _ = p.communicate()
+        p = subprocess.Popen(["diffstat", "-l", "-p1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        diffstat, _ = p.communicate(diff)
+        if p.returncode != 0:
+            raise subprocess.CalledProcessError(p.returncode)
+        diffstatLines = diffstat.strip("\r\n\t ").splitlines()
+        diffstatLines = filter(lambda line: not line.endswith("/index.cache.bz2"), diffstatLines)
 
-        ## we need to upload all packages that in kde-sc-dev-latest Breaks
-        ## except for the packages that have a stable ABI
-        ## TODO what about bindings?
-        #if package == "kde4libs" or package == "kdepimlibs" or package == "kde-workspace":
-            #significantChanges = True
-        #else:
-            #if not diffstatLines:
-                #print("==== Skipping %s, same as the previous version" % (package,))
-                #continue
-            #significantChanges = False
+        # we need to upload all packages that in kde-sc-dev-latest Breaks
+        # except for the packages that have a stable ABI
+        # TODO what about bindings?
+        if package == "kde4libs" or package == "kdepimlibs" or package == "kde-workspace":
+            significantChanges = True
+        else:
+            if not diffstatLines:
+                print("==== Skipping %s, same as the previous version" % (package,))
+                continue
+            significantChanges = False
 
-        #for line in diffstatLines:
-            #if line.endswith(".cpp") or line.endswith(".h") or line.endswith(".desktop"):
-                #significantChanges = True
-                #break
+        for line in diffstatLines:
+            if line.endswith(".cpp") or line.endswith(".h") or line.endswith(".desktop"):
+                significantChanges = True
+                break
 
-        #if not significantChanges:
-            #p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
-            #p.communicate("Package: %s\n\n=== diffstat ===\n\n%s\n\n=== diff ===\n\n%s" % (package, diffstat, diff))
-            #sys.stdout.write("Update package [Y/n]? ")
-            #choice = raw_input().lower()
-            #if choice not in ("yes", "y", ""):
-                #continue
+        if not significantChanges:
+            p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
+            p.communicate("Package: %s\n\n=== diffstat ===\n\n%s\n\n=== diff ===\n\n%s" % (package, diffstat, diff))
+            sys.stdout.write("Update package [Y/n]? ")
+            choice = raw_input().lower()
+            if choice not in ("yes", "y", ""):
+                continue
 
-        #if upstreamName(package) != package:
-            #os.rename("%s-%s" % (upstreamName(package), version), "%s-%s" % (package, version))
-        #os.rename("./debian", "%s-%s/debian" % (package, version))
-        #os.chdir("%s-%s" % (package, version))
+        if upstreamName(package) != package:
+            os.rename("%s-%s" % (upstreamName(package), version), "%s-%s" % (package, version))
+        os.rename("./debian", "%s-%s/debian" % (package, version))
+        os.chdir("%s-%s" % (package, version))
     else: #not sru
         subprocess.check_call(["git", "clone", gitBranch + "/" + upstreamName(package), "git"])
         os.chdir("git")
