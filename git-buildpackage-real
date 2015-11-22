@@ -1,4 +1,4 @@
 #!/bin/bash
 
-uscan --download-current-version --destdir=..
-gbp buildpackage --git-ignore-branch --git-no-create-orig --git-ignore-new -S
+uscan --download-current-version --destdir=../build-area/
+gbp buildpackage --git-export-dir=../build-area --git-tarball-dir=../build-area --git-overlay --git-ignore-branch --git-no-create-orig --git-ignore-new -S
