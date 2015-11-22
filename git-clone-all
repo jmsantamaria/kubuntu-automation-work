@@ -27,6 +27,9 @@ parser.add_argument("-r", "--releasetype",
 parser.add_argument("-d", "--dist",
     help="KDE Release Type [frameworks,plasma,applications]", 
     default="wily", required=False)
+parser.add_argument("-w", "--workdir",
+    help="Working directory to clone the repositories in. Default: CWD",
+    required=False)
 
 #Check arguments
 args = parser.parse_args()
@@ -46,6 +49,7 @@ else:
 
 #Find out the base url to clone and the extra remotes
 cwd = os.path.dirname(os.path.realpath(__file__))
+workdir = args.workdir if args.workdir else cwd
 config_file = open(cwd + "/conf/git-clone-all.json")
 config_map = json.load(config_file)
 template_url_clone = config_map[config_map["clone-this-one"]]
@@ -53,6 +57,8 @@ print("Template url to clone: %s" % template_url_clone)
 remotes_list = config_map["extra-remotes"]
 
 packages_not_cloned = []
+
+os.chdir(workdir)
 
 #Clone the repositories and add the extra remotes
 for releaseType in releaseTypes:
@@ -70,7 +76,7 @@ for releaseType in releaseTypes:
         except subprocess.CalledProcessError:
             #In any other exception we continue, this way we can use
             #git-clone-all against a directory with some repositories already cloned.
-            if not os.path.exists(os.getcwd() + '/' + package):
+            if not os.path.exists(workdir + '/' + package):
                 packages_not_cloned.append(package)
             continue
         for i in remotes_list:
