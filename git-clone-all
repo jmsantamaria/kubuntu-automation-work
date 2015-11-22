@@ -2,6 +2,7 @@
 
 ############################################################################
 #   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#   Copyright © 2015 Philip Muskovac <yofel@gmx.net>                       #
 #                                                                          #
 #   This program is free software; you can redistribute it and/or modify   #
 #   it under the terms of the GNU General Public License as published by   #
@@ -27,8 +28,8 @@ parser.add_argument("-r", "--releasetype",
 parser.add_argument("-d", "--dist",
     help="KDE Release Type [frameworks,plasma,applications]", 
     default="wily", required=False)
-parser.add_argument("-w", "--workdir",
-    help="Working directory to clone the repositories in. Default: CWD",
+parser.add_argument("-t", "--tmpdir",
+    help="Temprary dir where the packages are prepared",
     required=False)
 
 #Check arguments
@@ -46,10 +47,8 @@ if args.releasetype != None:
 else:
     releaseTypes = ["frameworks", "plasma", "applications"]
 
-
 #Find out the base url to clone and the extra remotes
 cwd = os.path.dirname(os.path.realpath(__file__))
-workdir = args.workdir if args.workdir else cwd
 config_file = open(cwd + "/conf/git-clone-all.json")
 config_map = json.load(config_file)
 template_url_clone = config_map[config_map["clone-this-one"]]
@@ -58,7 +57,9 @@ remotes_list = config_map["extra-remotes"]
 
 packages_not_cloned = []
 
-os.chdir(workdir)
+#Change to temporary work directory
+if args.tmpdir:
+    os.chdir(args.tmpdir)
 
 #Clone the repositories and add the extra remotes
 for releaseType in releaseTypes:
@@ -99,5 +100,6 @@ else:
     print("The following packages couldn't be cloned:")
     for p in packages_not_cloned:
         print(p)
+    sys.exit(1)
 
 # vim: expandtab ts=4
