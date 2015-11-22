@@ -344,7 +344,7 @@ for package in packages:
             debianVersion += "~ubuntu" + distversion + "~ppa1"
             if not args.nopush:
                 subprocess.check_call(["git", "push"])
-                subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
+            subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         print("pwd" + os.getcwd())
         if sru:
