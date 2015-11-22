@@ -246,8 +246,7 @@ for package in packages:
           print "IndexOutOfRange"
         if not args.nopush:
             os.chdir("git")
-            subprocess.check_call(["git", "push"])
-            subprocess.check_call(["git", "push", "--tags"])
+            subprocess.check_call(["git", "push", "--follow-tags"])
             os.chdir("..")
 
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
