@@ -38,8 +38,6 @@ cwd = os.getcwd()
 epoch = "4:"
 releaseType = args.releasetype
 branch = args.branch
-if releaseType == "frameworks":
-    epoch = ""
 
 # path in debian git
 gitPaths = {"frameworks": "frameworks",
@@ -179,11 +177,9 @@ for package in packages:
     print("package: " + package)
     upstreamPackName = upstreamName(package)
 
-    # check if it's a plasma package without an epoch
-    changelogEpoch = epoch
-    if releaseType == "plasma" or releaseType == "applications":
-       changelogEpoch = epoch if package in packagesWithEpoch else ""
-       print("setting epoch to %s for %s" % (changelogEpoch, package))
+    # check if it's a package with an epoch
+   changelogEpoch = epoch if package in packagesWithEpoch else ""
+   print("setting epoch to %s for %s" % (changelogEpoch, package))
 
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
