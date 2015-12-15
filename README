@@ -1,3 +1,5 @@
+Kubuntu Automation, for obsoleting people [http://dilbert.com/strip/2015-12-09]
+
 \Add following to your .ssh/config and make sure you have an ssh-agent running and the key unlocked
 
 Host depot.kde.org
