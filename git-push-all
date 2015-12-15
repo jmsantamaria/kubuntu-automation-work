@@ -61,7 +61,7 @@ if not ci_paused
   exit 1
 end
 
-git_folder_list(workdir).each do |dir|
+get_folder_list(workdir).each do |dir|
   Dir.chdir(dir)
   system('git push --follow-tags') or exit 1
 end
