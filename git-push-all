@@ -30,38 +30,38 @@
 require 'optparse'
 
 def getFolderList(path)
-    return Dir.glob(path + '/*/git')
+  return Dir.glob(path + '/*/git')
 end
 
 ciPaused = false
 workdir = Dir.pwd
 
 OptionParser.new do |opts|
-    opts.banner = "Usage: git-push-all [options]"
+  opts.banner = "Usage: git-push-all [options]"
 
-    opts.on('-h', '--help', 'Print help') do
-        puts opts
-        exit
-    end
+  opts.on('-h', '--help', 'Print help') do
+    puts opts
+    exit
+  end
 
-    opts.on('--force-paused',
-            "Don't ask Jenkins whether CI has been paused") do
-        ciPaused = true
-    end
+  opts.on('--force-paused',
+          "Don't ask Jenkins whether CI has been paused") do
+    ciPaused = true
+  end
 
-    opts.on('-w', '--workdir [PATH]', 'Work directory') do |w|
-        workdir = w
-    end
+  opts.on('-w', '--workdir [PATH]', 'Work directory') do |w|
+    workdir = w
+  end
 end.parse!
 
 ciPaused = system('check-ci-paused') if not ciPaused
 
 if not ciPaused
-    puts "Pause CI first!"
-    exit 1
+  puts "Pause CI first!"
+  exit 1
 end
 
 getFolderList(workdir).each do |dir|
-    Dir.chdir(dir)
-    system('git push --follow-tags') or exit 1
+  Dir.chdir(dir)
+  system('git push --follow-tags') or exit 1
 end
