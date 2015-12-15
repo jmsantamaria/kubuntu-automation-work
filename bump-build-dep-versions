@@ -23,12 +23,10 @@ control = readAllFromFile('debian/control')
 
 with open(pythonDir + '/packaging-exceptions.json') as data_file:
     packagingExceptions = json.load(data_file)
-    noEpoch = packagingExceptions['no-epoch-dev-packages']
+    packagesWithEpoch = packagingExceptions['epoch-packages']
 
 for builddep in readPackages(pythonDir + "/dev-package-name-lists/%s-%s" % (releaseType, args.dist)):
-    epoch = ""
-    if (releaseType == "plasma" or releaseType == "applications") and builddep not in noEpoch:
-        epoch = "4:"
+    eoch = "4:" if builddep in packagesWithEpoch else ""
     version = args.version
     if builddep in packagingExceptions:
         version = packagingExceptions[builddep]
