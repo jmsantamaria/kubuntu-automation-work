@@ -49,7 +49,7 @@ OptionParser.new do |opts|
     ci_paused = true
   end
 
-  opts.on('-w', '--workdir [PATH]', 'Work directory') do |w|
+  opts.on('-t', '--tmpdir [PATH]', 'Temporary work directory') do |w|
     workdir = w
   end
 end.parse!
