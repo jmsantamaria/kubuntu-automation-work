@@ -16,11 +16,11 @@ For frameworks/plasma/applications pause CI before pushing git changes:
 For a new feature release (not bugfix) merge in kubuntu_unstable using harald's script at
  https://github.com/apachelogger/kubuntu-repo-merge
 
-or merge using staging-upload
+Or merge using staging-upload
  ./staging-upload -d wily -v 5.12.0 -m "new upstream release" -r frameworks -t /home/jr/src/frameworks/
 Remember to update the exceptions in packaging-exceptions.json
 
-once the packages generated successfully, push the git changes:
+Once the packages generated successfully, push the git changes:
 ./git-push-all -t /home/jr/src/frameworks
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
@@ -46,6 +46,9 @@ Update symbols by downloading buildlogs and running:
 
 Once everything works upload to Ubuntu:
  ./ubuntu-archive-upload -v 5.3.2 -t ~/src/plasma/ -r plasma
+
+Again, push the git changes (no need to pause CI this time)
+./git-push-all --force-paused -t ~/src/plasma/
 
 and retry in the main archive with:
  while true; do ubuntu-build --batch --retry `cat package-name-lists/frameworks-wily`; echo ====; sleep 1200; done
