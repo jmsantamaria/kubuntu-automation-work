@@ -57,7 +57,7 @@ end.parse!
 ci_paused = system('check-ci-paused') if not ci_paused
 
 if not ci_paused
-  puts "Pause CI first!"
+  puts "Pause CI first! See http://kci.pangea.pub/job/mgmt_pause_integration/"
   exit 1
 end
 
