@@ -10,7 +10,7 @@ Update package list, e.g.:
 
 Ensure previous changelogs are all set to released (assuming you want a new changelog entry) then:
 
-For frameworks/plasma/applications pause CI:
+For frameworks/plasma/applications pause CI before pushing git changes:
  click build now at http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/
 
 For a new feature release (not bugfix) merge in kubuntu_unstable using harald's script at
@@ -19,6 +19,9 @@ For a new feature release (not bugfix) merge in kubuntu_unstable using harald's 
 or merge using staging-upload
  ./staging-upload -d wily -v 5.12.0 -m "new upstream release" -r frameworks -t /home/jr/src/frameworks/
 Remember to update the exceptions in packaging-exceptions.json
+
+once the packages generated successfully, push the git changes:
+./git-push-all -t /home/jr/src/frameworks
 
 Set up a cron job that generates the status page using kubuntu-ppa-build-status-cron:
 - copy kubuntu-ppa-build-status-cron.conf.tmpl to kubuntu-ppa-build-status-cron.conf
