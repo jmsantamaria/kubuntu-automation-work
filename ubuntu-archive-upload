@@ -27,16 +27,11 @@ parser.add_argument("-t", "--tmpdir", help="Temporary dir where the packages are
 parser.add_argument("-r", "--releasetype", help="Type [applications,frameworks,plasma]", default="applications")
 parser.add_argument("-a", "--ppa", help="PPA to get packages from (kubuntu-ppa/staging-RELEASETYPE)")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
-parser.add_argument("--paused", action="store_true", help="Have you paused KCI?")
-parser.add_argument("--nopush", action="store_true", help="don't push branches immediately")
+parser.add_argument("--paused", action="store_true", help="Obsolete, has no effect")
+parser.add_argument("--nopush", action="store_true", help="Obsolete, has no effect")
 
 args = parser.parse_args()
 releaseType = args.releasetype
-
-# not needed, now just commits with NOCI
-#if not args.paused:
-#    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
-#    exit(1)
 
 # git base url for pkg-kde on moszumanska:
 debian_git = "git+ssh://git.debian.org/git/pkg-kde/"
@@ -244,12 +239,8 @@ for package in packages:
                 continue
         except IndexError, e:
           print "IndexOutOfRange"
-        if not args.nopush:
-            os.chdir("git")
-            subprocess.check_call(["git", "push", "--follow-tags"])
-            os.chdir("..")
 
     subprocess.check_call(["dcmd", "cp", "%s_%s_source.changes" % (package, dscFileVersion), uploaddir])
 
 print "Skipped packages: " + ', '.join(skipped)
-print "Unpause http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/!"
+print "Rememeber to push the git changes!"

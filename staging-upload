@@ -23,10 +23,10 @@ parser.add_argument("-m", "--message", help="Changelog and commit message", defa
 parser.add_argument("-p", "--packages", help="Override the list of packages to upload (comma separated)")
 parser.add_argument("-t", "--tmpdir", help="Temprary dir where the packages are prepared")
 parser.add_argument("-y", "--distversion", help="Dist version number, e.g. 12.10")
-parser.add_argument("--nopush", action="store_true", help="Don't Push branches while preparing the packages")
+parser.add_argument("--nopush", action="store_true", help="Obsolete, has no effect")
 parser.add_argument("-r", "--releasetype", help="Type [frameworks,plasma,applications]", default="frameworks")
 parser.add_argument("--sru", action="store_true", help="Do a Stable Release Upload")
-parser.add_argument("--paused", action="store_true", help="Have you paused KCI?")
+parser.add_argument("--paused", action="store_true", help="Obsolete, has no effect")
 parser.add_argument("-b", "--branch", help="branch to merge [stable|unstable]", default="stable")
 args = parser.parse_args()
 
@@ -113,10 +113,6 @@ def extractDebianFile(package, extractfile):
         os.remove(filename)
 
     return data
-
-if not (args.paused or args.sru):
-    print "mind and pause KCI first, quitting. http://kci.pangea.pub/view/mgmt/job/mgmt_pause_integration/ then add --paused argument"
-    exit(1)
 
 launchpad = Launchpad.login_anonymously("staging-upload", "production")
 ubuntu = launchpad.distributions["ubuntu"]
@@ -338,8 +334,6 @@ for package in packages:
         else:
             subprocess.call(["debcommit", "-a"])
             debianVersion += "~ubuntu" + distversion + "~ppa1"
-            if not args.nopush:
-                subprocess.check_call(["git", "push"])
             subprocess.check_call(["git-buildpackage-ppa", "-d", release, "--distversion", distversion, "--", "-nc"])
 
         print("pwd" + os.getcwd())
@@ -363,4 +357,4 @@ if len(moved) > 0:
     print("\n=== The following packages couldn't be processed and have been moved to manual/")
     print("\n".join(output))
 
-print("remember to unpause! http://kci.pangea.pub/job/mgmt_pause_integration/")
+print("Remember to push the git changes!")
