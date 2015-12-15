@@ -29,11 +29,11 @@
 
 require 'optparse'
 
-def getFolderList(path)
+def get_folder_list(path)
   return Dir.glob(path + '/*/git')
 end
 
-ciPaused = false
+ci_paused = false
 workdir = Dir.pwd
 
 OptionParser.new do |opts|
@@ -46,7 +46,7 @@ OptionParser.new do |opts|
 
   opts.on('--force-paused',
           "Don't ask Jenkins whether CI has been paused") do
-    ciPaused = true
+    ci_paused = true
   end
 
   opts.on('-w', '--workdir [PATH]', 'Work directory') do |w|
@@ -54,14 +54,14 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-ciPaused = system('check-ci-paused') if not ciPaused
+ci_paused = system('check-ci-paused') if not ci_paused
 
-if not ciPaused
+if not ci_paused
   puts "Pause CI first!"
   exit 1
 end
 
-getFolderList(workdir).each do |dir|
+git_folder_list(workdir).each do |dir|
   Dir.chdir(dir)
   system('git push --follow-tags') or exit 1
 end
