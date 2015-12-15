@@ -35,6 +35,7 @@ end
 
 ci_paused = false
 workdir = Dir.pwd
+cwd = Dir.pwd
 
 OptionParser.new do |opts|
   opts.banner = "Usage: git-push-all [options]"
@@ -64,4 +65,5 @@ end
 get_folder_list(workdir).each do |dir|
   Dir.chdir(dir)
   system('git push --follow-tags') or exit 1
+  Dir.chdir(cwd)
 end
