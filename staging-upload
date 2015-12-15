@@ -178,8 +178,8 @@ for package in packages:
     upstreamPackName = upstreamName(package)
 
     # check if it's a package with an epoch
-   changelogEpoch = epoch if package in packagesWithEpoch else ""
-   print("setting epoch to %s for %s" % (changelogEpoch, package))
+    changelogEpoch = epoch if package in packagesWithEpoch else ""
+    print("setting epoch to %s for %s" % (changelogEpoch, package))
 
     archive = ubuntu.getArchive(name='primary')
     archive_package = archive.getPublishedSources(source_name=package)
