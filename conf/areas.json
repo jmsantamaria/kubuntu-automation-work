@@ -1,0 +1,4 @@
+{
+    "_comment":"Directories are relative to the directory containing the debian/* files",
+    "upload-area":"../upload"
+}

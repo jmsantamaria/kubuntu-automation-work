@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+# kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space modified;
+# vim: expandtab ts=4
+
+############################################################################
+#   Copyright © 2015 José Manuel Santamaría Lema <panfaust@gmail.com>      #
+#                                                                          #
+#   This program is free software; you can redistribute it and/or modify   #
+#   it under the terms of the GNU General Public License as published by   #
+#   the Free Software Foundation; either version 2 of the License, or      #
+#   (at your option) any later version.                                    #
+############################################################################
+
+import argparse
+import re
+
+from debian.changelog import Changelog, Version
+
+#Open and parse the current changelog.
+changelog = Changelog()
+changelog.parse_changelog(open('./debian/changelog', 'r'))
+
+#Alter the changelog version
+version = str(changelog.get_version())
+version = re.sub("~ubuntu\d\d.\d\d~ppa\d+","",version)
+changelog.set_version(version)
+
+#Dump the contents to the file
+changelog.write_to_open_file(open('./debian/changelog', 'w'))

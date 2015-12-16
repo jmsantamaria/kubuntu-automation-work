@@ -1,0 +1,3 @@
+{
+	"build_command":"dpkg-buildpackage -d -us -uc -sa -S"
+}
