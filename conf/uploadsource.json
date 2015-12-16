@@ -1,3 +1,0 @@
-{
-	"upload_command":"dput -u %s %s"
-}
