@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import argparse
 import cgi
@@ -19,6 +19,7 @@ parser.add_argument("-v", "--version", required=True, help="Upstream version")
 parser.add_argument("-c", "--credentials", help="Location of the credenticals file")
 parser.add_argument("-l", "--nolintian", action='store_true', help="Check lintian output... or not")
 parser.add_argument("-r", "--releasetype", help="Type [applications,frameworks,plasma]", default="applications")
+parser.add_argument('-j', '--jsonfile', help="JSON output file")
 parser.add_argument("--cache", default="cache", help="Directory where the cache is stored")
 
 #packages we know use a different version than the rest of the release
@@ -54,7 +55,7 @@ def get_log(build):
         f = gzip.GzipFile(cacheFilename, "r")
         content = f.read()
         f.close()
-        return content
+        return content.decode('utf-8')
 
     url = build.build_log_url
     # hack to get build log for private PPAs
@@ -70,7 +71,7 @@ def get_log(build):
         f.write(content)
         f.close()
 
-    return content
+    return content.decode('utf-8')
 
 def isCmakeDepIgnored(depLine, package):
     if 'all' in cmakeIgnore:
@@ -125,7 +126,7 @@ def get_cmake(log, package):
                         highlightLines.add(i)
 
         if numIgnored == 0 and numNotIgnored == 0:
-            print "Parsing of of the cmake log for %s failed as optional missing packages were detected but parsing of the actual packages failed" % package
+            print("Parsing of of the cmake log for %s failed as optional missing packages were detected but parsing of the actual packages failed" % package)
             sys.exit(1)
         elif numNotIgnored != 0:
             status = STATUS_WARNING
@@ -288,7 +289,18 @@ if not os.path.isdir(args.cache + "/buildlogs"):
     os.mkdir(args.cache + "/buildlogs")
 
 archive = ubuntu.main_archive
-print """
+
+# output data
+outputData = {}
+
+outputData['releaseString'] = releaseString;
+outputData['upstreamVersion'] = version
+outputData['release'] = release
+outputData['ppaOwner'] = ppaParts[0]
+outputData['ppaName'] = ppaParts[1]
+outputData['timestamp'] = datetime.datetime.utcnow().timestamp()
+
+print("""
 <html>
 
 <head>
@@ -315,9 +327,9 @@ print """
 <body>
 
 <h1 id="top">Kubuntu %s %s -> %s status [<a href="https://launchpad.net/~%s/+archive/%s/+packages">%s</a>]</h1>
-""" % (releaseString, releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa)
-print "<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
-print """
+""" % (releaseString, releaseString, version, release, ppaParts[0], ppaParts[1], args.ppa))
+print("<br/><div>Last updated on %s (UTC)</div>\n" % datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"))
+print("""
 <table class="grid">
 
 <thead><tr>
@@ -328,7 +340,7 @@ print """
   </tr></thead>
 
   <tbody>
-"""
+""")
 
 builds = {}
 
@@ -337,7 +349,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
     packageVersion = source.source_package_version
 
     if package in builds:
-        print "Error multiple versions of the same package %s" % package
+        print("Error multiple versions of the same package %s" % package)
         sys.exit(1)
 
     # we only care about packages listed in the foo-packages-vivid.txt file
@@ -446,10 +458,11 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             builds[package][arch]["message"] = build.buildstate
 
 
+outputData['builds'] = builds
 odd = True
 i = 1
 
-for package in sorted(builds.iterkeys()):
+for package in sorted(builds.keys()):
     for arch in builds[package]:
         build = builds[package][arch]
 
@@ -464,31 +477,42 @@ for package in sorted(builds.iterkeys()):
         if len(message) > 150:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
-        print '<tr class="%s"><td class="status%d"><span title="%s">%s - %s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, cgi.escape(build["version"]), build["weblink"], arch)
+        print('<tr class="%s"><td class="status%d"><span title="%s">%s - %s</span></td><td><a href="%s">%s</a></td>' % (trclass, build["status"], cgi.escape(build["version"]), package, cgi.escape(build["version"]), build["weblink"], arch))
         if build["logfile"]:
-            print '<td><a href="%s">logfile</a></td>' % (build["logfile"],)
+            print('<td><a href="%s">logfile</a></td>' % (build["logfile"],))
         else:
-            print '<td>&nbsp;</td>'
-        print '<td>%s</td></tr>\n' % (message,)
+            print('<td>&nbsp;</td>')
+        print('<td>%s</td></tr>\n' % (message,))
 
         i += 1
 
-print """
+print("""
 </tbody>
 
 </table>
-"""
+""")
 
-print "<p>Not in PPA: "
+missing = []
+
+print("<p>Not in PPA: ")
 for source in sources:
     source = source.rstrip()
     if source not in builds:
-        print source + ", "
-print "</p>"
+        missing.append(source)
+        print(source + ", ")
+print("</p>")
 
-print """
+outputData['missing'] = missing
+
+print("""
 </body>
 </html>
-"""
+""")
+
+if args.jsonfile:
+    file = open(args.jsonfile, "w")
+    file.write(json.dumps(outputData, indent=' '))
+
+    file.close()
 
 # kate: space-indent on; indent-width 4; replace-tabs on; indent-mode python; remove-trailing-space on;

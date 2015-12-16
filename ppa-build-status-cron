@@ -44,5 +44,5 @@ if [ -n "$KUBUNTU_PPA_BUILD_STATUS_LIGHTWEIGHT" ]; then
 fi
 
 # regenerate status page
-./ppa-build-status -r $RELEASE_TYPE -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS -p $PPA --cache $CACHEDIR > $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new 2>&1
+./ppa-build-status -r $RELEASE_TYPE -d $RELEASE -v $KDE_VERSION -c $LP_CREDENTIALS -p $PPA --cache $CACHEDIR -j $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.json > $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new 2>&1
 mv $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html.new $STATUSDIR/build_status_${KDE_VERSION}_${RELEASE}.html
