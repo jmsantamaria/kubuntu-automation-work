@@ -47,6 +47,9 @@ for d in dirs:
     except FileNotFoundError:
         print("WARNING: File " + changelog_file_name + " not found!")
         continue
+    except:
+        print("Failed to parse changelog file: " + changelog_file_name)
+        continue
     upstream_name = os.path.basename( d )
     if upstream_name in getFtpVersionMap("frameworks"):
         src_package_version = getFtpVersionMap("frameworks")[upstream_name]
