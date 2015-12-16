@@ -1,0 +1,13 @@
+{
+	"clone-this-one":"git-ssh-kubuntu",
+	"extra-remotes":["git-anon-siduction","git-anon-neon"],
+
+	"git-ssh-kubuntu":"git+ssh://git.debian.org/git/pkg-kde/%s/%s.git",
+	"git-anon-kubuntu":"git://anonscm.debian.org/pkg-kde/%s/%s.git",
+
+	"git-ssh-siduction":"git@gitlab.com:siduction-kde-%s/%s.git",
+	"git-anon-siduction":"https://gitlab.com/siduction-kde-%s/%s.git",
+
+	"git-ssh-neon":"git@kde.org:sample_url_please_replace_it_whenever_you_can/%s/%s.git",
+	"git-anon-neon":"git:/sample_url_please_replace_it_whenever_you_can/%s/%s.git"
+}

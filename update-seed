@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+workdir=$1
+seedfile=$2
+
+cd $workdir
+
+# Delete current auto-generated list
+sed -e '/^.*# added by update-seed$/d' -i $2
+
+for pkg in *; do 
+    echo -n " *" >> $2
+    grep Package $pkg/debian/control | head -n 1 | sed 's/$/ # added by update-seed/' | cut -f 2 -d \: >> $2
+done
