@@ -1,6 +1,6 @@
 {
-    "frameworks":"5.15",
-    "plasma":"5.4.3",
-    "applications":"15.08.2",
+    "frameworks":"5.17",
+    "plasma":"5.5.1",
+    "applications":"15.12.0",
     "qt":"5.5.0"
 }
