@@ -47,10 +47,10 @@ if args.releasetype != None:
 else:
     releaseTypes = ["frameworks", "plasma", "applications"]
 
+workdir = args.tmpdir if args.tmpdir else os.getcwd()
+
 #Find out the base url to clone and the extra remotes
-cwd = os.path.dirname(os.path.realpath(__file__))
-config_file = open(cwd + "/conf/git-clone-all.json")
-config_map = json.load(config_file)
+config_map = readConfigFile("git-clone-all.json")
 template_url_clone = config_map[config_map["clone-this-one"]]
 print("Template url to clone: %s" % template_url_clone)
 remotes_list = config_map["extra-remotes"]
