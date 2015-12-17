@@ -23,12 +23,19 @@ old_cwd = os.getcwd()
 command_index = 1
 r_option = False
 
-if sys.argv[1] == "-r":
-    command_index = 3
-    version_map = getFtpVersionMap(sys.argv[2])
-    dirs = version_map.keys()
+if len(sys.argv) == 1:
+    print("usage: do-all [-r <release_type>] <command>")
+    print("the above would execute 'command' in all the subdirectories of the current directory")
+    print("(or only in the ones belonging to 'release_type')")
+    print("'release_type' is either 'frameworks', 'plasma' or 'applications'")
+    sys.exit(1)
 else:
-    command_index = 1
+    if sys.argv[1] == "-r":
+        command_index = 3
+        version_map = getFtpVersionMap(sys.argv[2])
+        dirs = version_map.keys()
+    else:
+        command_index = 1
 
 command = " ".join(sys.argv[command_index:])
 
