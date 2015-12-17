@@ -230,15 +230,17 @@ def get_lintian(log, package):
     status = STATUS_SUCCESS
     output = []
     for line in result:
-        if line.startswith("warning") or line.startswith("make"):
+        if line.startswith("warning") or line.startswith("make") or len(line) == 0:
             continue # warnings unrelated to the actual lintian output
+        if line.startswith('N:'):
+            continue # overridden tags message and unimportant stuff
         if (line.startswith('E:') or line.startswith('W:')) and not is_lintian_warning_ignored(line, package):
             status = STATUS_WARNING
-            output.append("<b>" + line + "</b>")
+            output.append((line, True))
         else:
-            output.append(line)
+            output.append((line, False))
 
-    return ("\n".join(output), status)
+    return output, status
 
 def get_dh_list_missing(log):
     output = []
@@ -382,6 +384,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
             if version not in packageVersion and (package not in differentVersion):
                 builds[package][arch]["status"] = STATUS_ERROR
                 builds[package][arch]["message"] = "<b>Version incorrect</b>"
+                builds[package][arch]['note'] = 'Version incorrect'
 
             output, status = get_symbols(log)
             if status == STATUS_ERROR:
@@ -390,6 +393,7 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                 msg = "New symbols"
 
             if status != STATUS_SUCCESS:
+                builds[package][arch]['symbols'] = msg
                 builds[package][arch]["message"] += "<h3>symbol files:</h3>\n<div style=\"font-weight: bold;\">" + msg + "</div>\n"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
@@ -403,29 +407,41 @@ for source in ppa.getPublishedSources(distro_series=lpseries, status="Published"
                     status = STATUS_SUCCESS
             if status != STATUS_SUCCESS:
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+                builds[package][arch]['list-missing'] = output
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             output, status = get_dh_list_missing(log)
             if status != STATUS_SUCCESS:
                 builds[package][arch]["message"] += "<h3>list-missing:</h3>\n<pre>" + cgi.escape(output) + "</pre>\n"
+                builds[package][arch]['dh-list-missing'] = output
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             # Lintian output is only generated on i386
             if (arch == archindep and not args.nolintian):
                 try:
                     output, status = get_lintian(log, package)
+                    outlist = []
+                    for line, important in output:
+                        if important:
+                            outlist.append("<b>" + line + "</b>")
+                        else:
+                            outlist.append(line)
+                    outstr = "\n".join(outlist)
                 except ValueError:
                     status = STATUS_WARNING
-                    output = "No lintian output in build log."
-                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + output + "</pre>\n"
+                    outstr = "No lintian output in build log."
+                builds[package][arch]["message"] += "<h3>lintian:</h3>\n<pre>" + outstr + "</pre>\n"
+                builds[package][arch]['lintian'] = output
                 builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
 
             try:
                 output, status = get_cmake(log, package)
                 builds[package][arch]["message"] += "<h3>cmake:</h3>\n<pre>" + output + "</pre>\n"
+                builds[package][arch]['cmake'] = output
             except ValueError:
                 status = STATUS_WARNING
                 builds[package][arch]["message"] = "error while fetching cmake log"
+                builds[package][arch]['cmake'] = "error while fetching cmake log"
             builds[package][arch]["status"] = max(status, builds[package][arch]["status"])
         elif build.buildstate == "Needs building":
             builds[package][arch]["status"] = STATUS_WAITING
