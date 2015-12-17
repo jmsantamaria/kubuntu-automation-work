@@ -490,6 +490,7 @@ for package in sorted(builds.keys()):
             odd = True
 
         message = build["message"]
+        del (build['message'])
         if len(message) > 150:
             message = '<a href="#" onclick="return toggleVisibility(\'msg-%d\')">show/hide</a><div id="msg-%d" style="display:none;">%s</div>' % (i, i, message)
 
