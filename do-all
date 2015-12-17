@@ -40,6 +40,7 @@ else:
 command = " ".join(sys.argv[command_index:])
 
 dirs_failed = []
+dirs_not_accessible = []
 dirs_ignored = []
 
 skip_list = readConfigFile("skip.json")["do-all"]
@@ -49,10 +50,14 @@ i = 0
 n = len(dirs)
 for directory in dirs:
     i += 1
-    os.chdir(old_cwd + '/' + directory)
     print("----------------------------------------------------------------------")
     print("do-all current directory: %s (%s of %s)" % (directory,i,n))
     print("----------------------------------------------------------------------")
+    try:
+        os.chdir(old_cwd + '/' + directory)
+    except:
+        dirs_not_accessible.append(directory)
+        print("directory not accessible, failed to 'cd' into it")
     if directory in skip_list:
         print("As requested by the conf/skip.json configuration file,\n"
             "the command wasn't executed in this directory")
@@ -80,4 +85,7 @@ if dirs_ignored:
     print("As requested by the conf/skip.json configuration file,\n"
         "the command wasn't executed in the following directories:")
     print(dirs_ignored)
+if dirs_not_accessible:
+    print("The command was skipped for the following non accesible directories:")
+    print(dirs_not_accessible)
 print("----------------------------------------------------------------------")
