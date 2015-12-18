@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import re
+import sys
 
 def readAllFromFile(filename):
     f = open(filename, "r")
@@ -98,9 +99,14 @@ def getFtpVersionMap(releaseType):
         stability = "stable"
     #Inspect the ftp
     for subdir in ftp_subdirs:
-        p = subprocess.Popen(["sftp", "-b", "-", "depot.kde.org:%s/%s/%s/%s" % (stability, releaseType, version, subdir)],
-                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        ftp_command = ["sftp", "-b", "-", "depot.kde.org:%s/%s/%s/%s" % (stability, releaseType, version, subdir)]
+        p = subprocess.Popen(ftp_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         output, _ = p.communicate(bytes("ls *xz", 'utf-8'))
+
+        if p.returncode != 0:
+            print("The sftp process failed with return code: " + str(p.returncode))
+            print("Command attempted: " + " ".join(ftp_command))
+            sys.exit(1)
 
         for line in output.splitlines():
             line = line.decode('utf-8')
